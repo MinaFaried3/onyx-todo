@@ -182,7 +182,7 @@ class StatusGroupSection extends HookWidget {
                 children: [
                   const SizedBox(width: 28), // space for status ring
                   SizedBox(
-                    width: 100,
+                    width: 135,
                     child: Text(
                       AppStrings.taskId.tr(),
                       style: TextStyle(
@@ -280,7 +280,7 @@ class StatusGroupSection extends HookWidget {
 
                       // Task ID Badge Column
                       SizedBox(
-                        width: 100,
+                        width: 135,
                         child: Align(
                           alignment: Alignment.centerLeft,
                           child: TaskIdBadge(
