@@ -1,6 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:onyx_todo/core/ui/clickup_colors.dart';
+import 'package:onyx_todo/core/ui/onyx_colors.dart';
 import 'package:onyx_todo/feature/task/domain/entities/task_history_item.dart';
 
 class TaskHistoryTile extends StatelessWidget {
@@ -23,7 +23,7 @@ class TaskHistoryTile extends StatelessWidget {
             width: 6,
             height: 6,
             decoration: const BoxDecoration(
-              color: ClickUpColors.primary,
+              color: OnyxColors.primary,
               shape: BoxShape.circle,
             ),
           ),
@@ -39,7 +39,7 @@ class TaskHistoryTile extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
-                        color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                        color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
                       ),
                     ),
                     const Spacer(),
@@ -47,7 +47,7 @@ class TaskHistoryTile extends StatelessWidget {
                       timeStr,
                       style: TextStyle(
                         fontSize: 10,
-                        color: isDark ? ClickUpColors.neutral400 : ClickUpColors.neutral500,
+                        color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
                       ),
                     ),
                   ],
@@ -56,7 +56,7 @@ class TaskHistoryTile extends StatelessWidget {
                   item.details,
                   style: TextStyle(
                     fontSize: 11,
-                    color: isDark ? ClickUpColors.neutral300 : ClickUpColors.neutral700,
+                    color: isDark ? OnyxColors.neutral300 : OnyxColors.neutral700,
                   ),
                 ),
               ],

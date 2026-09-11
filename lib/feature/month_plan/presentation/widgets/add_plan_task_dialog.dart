@@ -5,7 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:onyx_todo/core/extension/bloc_reader.dart';
 import 'package:onyx_todo/core/extension/context_extensions.dart';
 import 'package:onyx_todo/core/localization/app_strings.dart';
-import 'package:onyx_todo/core/ui/clickup_colors.dart';
+import 'package:onyx_todo/core/ui/onyx_colors.dart';
 import 'package:onyx_todo/feature/month_plan/domain/entities/monthly_plan_entity.dart';
 import 'package:onyx_todo/feature/month_plan/domain/entities/monthly_plan_task_item.dart';
 
@@ -28,7 +28,7 @@ class AddPlanTaskDialog extends HookWidget {
     return AlertDialog(
       title: Row(
         children: [
-          const FaIcon(FontAwesomeIcons.plus, size: 18, color: ClickUpColors.primary),
+          const FaIcon(FontAwesomeIcons.plus, size: 18, color: OnyxColors.primary),
           const SizedBox(width: 10),
           Text(AppStrings.addTaskToPlan.tr()),
         ],
@@ -44,7 +44,7 @@ class AddPlanTaskDialog extends HookWidget {
                 labelText: AppStrings.taskTitle.tr(),
                 prefixIcon: const Center(
                   widthFactor: 1.0,
-                  child: FaIcon(FontAwesomeIcons.heading, size: 14, color: ClickUpColors.neutral500),
+                  child: FaIcon(FontAwesomeIcons.heading, size: 14, color: OnyxColors.neutral500),
                 ),
               ),
             ),
@@ -58,7 +58,7 @@ class AddPlanTaskDialog extends HookWidget {
                       labelText: AppStrings.moduleCodeHint.tr(),
                       prefixIcon: const Center(
                         widthFactor: 1.0,
-                        child: FaIcon(FontAwesomeIcons.cubes, size: 14, color: ClickUpColors.neutral500),
+                        child: FaIcon(FontAwesomeIcons.cubes, size: 14, color: OnyxColors.neutral500),
                       ),
                     ),
                   ),
@@ -71,7 +71,7 @@ class AddPlanTaskDialog extends HookWidget {
                       labelText: AppStrings.screenName.tr(),
                       prefixIcon: const Center(
                         widthFactor: 1.0,
-                        child: FaIcon(FontAwesomeIcons.desktop, size: 14, color: ClickUpColors.neutral500),
+                        child: FaIcon(FontAwesomeIcons.desktop, size: 14, color: OnyxColors.neutral500),
                       ),
                     ),
                   ),
@@ -89,7 +89,7 @@ class AddPlanTaskDialog extends HookWidget {
                       labelText: AppStrings.estDaysCol.tr(),
                       prefixIcon: const Center(
                         widthFactor: 1.0,
-                        child: FaIcon(FontAwesomeIcons.calendarDay, size: 14, color: ClickUpColors.neutral500),
+                        child: FaIcon(FontAwesomeIcons.calendarDay, size: 14, color: OnyxColors.neutral500),
                       ),
                     ),
                   ),
@@ -103,7 +103,7 @@ class AddPlanTaskDialog extends HookWidget {
                       labelText: AppStrings.estHoursCol.tr(),
                       prefixIcon: const Center(
                         widthFactor: 1.0,
-                        child: FaIcon(FontAwesomeIcons.clock, size: 14, color: ClickUpColors.neutral500),
+                        child: FaIcon(FontAwesomeIcons.clock, size: 14, color: OnyxColors.neutral500),
                       ),
                     ),
                   ),
@@ -121,8 +121,8 @@ class AddPlanTaskDialog extends HookWidget {
         ),
         ElevatedButton.icon(
           style: ElevatedButton.styleFrom(
-            backgroundColor: ClickUpColors.primary,
-            foregroundColor: ClickUpColors.lightCard,
+            backgroundColor: OnyxColors.primary,
+            foregroundColor: OnyxColors.lightCard,
           ),
           onPressed: () {
             if (titleController.text.trim().isNotEmpty) {

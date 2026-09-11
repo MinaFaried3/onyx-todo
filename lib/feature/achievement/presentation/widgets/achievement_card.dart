@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:onyx_todo/core/extension/context_extensions.dart';
 import 'package:onyx_todo/core/localization/app_strings.dart';
-import 'package:onyx_todo/core/ui/clickup_colors.dart';
+import 'package:onyx_todo/core/ui/onyx_colors.dart';
 import 'package:onyx_todo/feature/achievement/domain/entities/daily_achievement_entity.dart';
 import 'package:onyx_todo/feature/task/presentation/widgets/task_id_badge.dart';
 
@@ -28,10 +28,10 @@ class AchievementCard extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
         side: BorderSide(
-          color: isDark ? ClickUpColors.darkBorder : ClickUpColors.lightBorder,
+          color: isDark ? OnyxColors.darkBorder : OnyxColors.lightBorder,
         ),
       ),
-      color: isDark ? ClickUpColors.darkCard : ClickUpColors.lightCard,
+      color: isDark ? OnyxColors.darkCard : OnyxColors.lightCard,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -42,10 +42,10 @@ class AchievementCard extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 18,
-                  backgroundColor: ClickUpColors.primary.withValues(alpha: 0.2),
+                  backgroundColor: OnyxColors.primary.withValues(alpha: 0.2),
                   child: Text(
                     item.developerName.substring(0, item.developerName.length >= 2 ? 2 : 1).toUpperCase(),
-                    style: const TextStyle(color: ClickUpColors.primary, fontWeight: FontWeight.bold),
+                    style: const TextStyle(color: OnyxColors.primary, fontWeight: FontWeight.bold),
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -59,21 +59,21 @@ class AchievementCard extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
-                            color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                            color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
                           ),
                         ),
                         const SizedBox(width: 8),
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
-                            color: ClickUpColors.primary.withValues(alpha: 0.1),
+                            color: OnyxColors.primary.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
                             item.developerStack.label,
                             style: const TextStyle(
                               fontSize: 10,
-                              color: ClickUpColors.primary,
+                              color: OnyxColors.primary,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -84,7 +84,7 @@ class AchievementCard extends StatelessWidget {
                       dateStr,
                       style: TextStyle(
                         fontSize: 11,
-                        color: isDark ? ClickUpColors.neutral400 : ClickUpColors.neutral500,
+                        color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
                       ),
                     ),
                   ],
@@ -93,7 +93,7 @@ class AchievementCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: ClickUpColors.success.withValues(alpha: 0.12),
+                    color: OnyxColors.success.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
@@ -101,13 +101,13 @@ class AchievementCard extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
-                      color: ClickUpColors.success,
+                      color: OnyxColors.success,
                     ),
                   ),
                 ),
                 const SizedBox(width: 10),
                 IconButton(
-                  icon: const FaIcon(FontAwesomeIcons.shareNodes, size: 16, color: ClickUpColors.teal),
+                  icon: const FaIcon(FontAwesomeIcons.shareNodes, size: 16, color: OnyxColors.teal),
                   tooltip: AppStrings.copyWhatsappSummary.tr(),
                   onPressed: () {
                     Clipboard.setData(ClipboardData(text: item.toWhatsAppSummary()));
@@ -118,7 +118,7 @@ class AchievementCard extends StatelessWidget {
             ),
             Divider(
               height: 20,
-              color: isDark ? ClickUpColors.darkBorder : ClickUpColors.lightBorder,
+              color: isDark ? OnyxColors.darkBorder : OnyxColors.lightBorder,
             ),
 
             // Tasks List
@@ -132,7 +132,7 @@ class AchievementCard extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
-                        color: isDark ? ClickUpColors.neutral700 : ClickUpColors.neutral200,
+                        color: isDark ? OnyxColors.neutral700 : OnyxColors.neutral200,
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
@@ -140,7 +140,7 @@ class AchievementCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
-                          color: isDark ? ClickUpColors.neutral300 : ClickUpColors.neutral700,
+                          color: isDark ? OnyxColors.neutral300 : OnyxColors.neutral700,
                         ),
                       ),
                     ),
@@ -150,7 +150,7 @@ class AchievementCard extends StatelessWidget {
                         t.title,
                         style: TextStyle(
                           fontSize: 13,
-                          color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                          color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
                         ),
                       ),
                     ),
@@ -159,7 +159,7 @@ class AchievementCard extends StatelessWidget {
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 12,
-                        color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                        color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
                       ),
                     ),
                   ],
@@ -173,20 +173,20 @@ class AchievementCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: ClickUpColors.danger.withValues(alpha: 0.08),
+                  color: OnyxColors.danger.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(6),
                   border: Border.all(
-                    color: ClickUpColors.danger.withValues(alpha: 0.2),
+                    color: OnyxColors.danger.withValues(alpha: 0.2),
                   ),
                 ),
                 child: Row(
                   children: [
-                    const FaIcon(FontAwesomeIcons.circleExclamation, size: 14, color: ClickUpColors.danger),
+                    const FaIcon(FontAwesomeIcons.circleExclamation, size: 14, color: OnyxColors.danger),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         '${AppStrings.blockers.tr()}: ${item.blockers}',
-                        style: const TextStyle(fontSize: 11, color: ClickUpColors.danger),
+                        style: const TextStyle(fontSize: 11, color: OnyxColors.danger),
                       ),
                     ),
                   ],
@@ -198,20 +198,20 @@ class AchievementCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: ClickUpColors.info.withValues(alpha: 0.08),
+                  color: OnyxColors.info.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(6),
                   border: Border.all(
-                    color: ClickUpColors.info.withValues(alpha: 0.2),
+                    color: OnyxColors.info.withValues(alpha: 0.2),
                   ),
                 ),
                 child: Row(
                   children: [
-                    const FaIcon(FontAwesomeIcons.arrowTrendUp, size: 14, color: ClickUpColors.info),
+                    const FaIcon(FontAwesomeIcons.arrowTrendUp, size: 14, color: OnyxColors.info),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         '${AppStrings.nextDayPlan.tr()}: ${item.nextDayPlan}',
-                        style: const TextStyle(fontSize: 11, color: ClickUpColors.info),
+                        style: const TextStyle(fontSize: 11, color: OnyxColors.info),
                       ),
                     ),
                   ],

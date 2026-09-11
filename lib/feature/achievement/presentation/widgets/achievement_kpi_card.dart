@@ -26,10 +26,10 @@ class AchievementKpiCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isDark ? ClickUpColors.darkCard : ClickUpColors.lightCard,
+          color: isDark ? OnyxColors.darkCard : OnyxColors.lightCard,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: isDark ? ClickUpColors.darkBorder : ClickUpColors.lightBorder,
+            color: isDark ? OnyxColors.darkBorder : OnyxColors.lightBorder,
           ),
         ),
         child: Column(
@@ -45,7 +45,7 @@ class AchievementKpiCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       fontSize: 12,
-                      color: isDark ? ClickUpColors.neutral400 : ClickUpColors.neutral500,
+                      color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
                     ),
                   ),
                 ),
@@ -62,7 +62,7 @@ class AchievementKpiCard extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 fontSize: 11,
-                color: isDark ? ClickUpColors.neutral400 : ClickUpColors.neutral500,
+                color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
               ),
             ),
           ],

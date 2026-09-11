@@ -5,7 +5,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:onyx_todo/core/extension/bloc_reader.dart';
 import 'package:onyx_todo/core/localization/app_strings.dart';
-import 'package:onyx_todo/core/ui/clickup_colors.dart';
+import 'package:onyx_todo/core/ui/onyx_colors.dart';
 import 'package:onyx_todo/feature/achievement/presentation/cubit/achievement_cubit.dart';
 import 'package:onyx_todo/feature/achievement/presentation/cubit/achievement_state.dart';
 import 'package:onyx_todo/feature/achievement/presentation/widgets/achievement_card.dart';
@@ -58,7 +58,7 @@ class AchievementScreen extends HookWidget {
                 // Top Header Bar
                 Row(
                   children: [
-                    const FaIcon(FontAwesomeIcons.chartLine, color: ClickUpColors.primary, size: 24),
+                    const FaIcon(FontAwesomeIcons.chartLine, color: OnyxColors.primary, size: 24),
                     const SizedBox(width: 12),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -68,14 +68,14 @@ class AchievementScreen extends HookWidget {
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                            color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
                           ),
                         ),
                         Text(
                           AppStrings.teamAchievementSubtitle.tr(),
                           style: TextStyle(
                             fontSize: 12,
-                            color: isDark ? ClickUpColors.neutral400 : ClickUpColors.neutral500,
+                            color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
                           ),
                         ),
                       ],
@@ -85,8 +85,8 @@ class AchievementScreen extends HookWidget {
                     // Log Daily Achievement Button (for Developers)
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: ClickUpColors.success,
-                        foregroundColor: ClickUpColors.lightCard,
+                        backgroundColor: OnyxColors.success,
+                        foregroundColor: OnyxColors.lightCard,
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                       ),
                       icon: const FaIcon(FontAwesomeIcons.circleCheck, size: 14),
@@ -115,7 +115,7 @@ class AchievementScreen extends HookWidget {
                         child: ChoiceChip(
                           label: Text(f['label']!),
                           selected: isSelected,
-                          selectedColor: ClickUpColors.primary.withValues(alpha: 0.2),
+                          selectedColor: OnyxColors.primary.withValues(alpha: 0.2),
                           onSelected: (_) => achievementCubit.setFilter(f['key']!),
                         ),
                       );
@@ -128,7 +128,7 @@ class AchievementScreen extends HookWidget {
                         '${AppStrings.filterByDeveloper.tr()}: ',
                         style: TextStyle(
                           fontSize: 12,
-                          color: isDark ? ClickUpColors.neutral400 : ClickUpColors.neutral500,
+                          color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
                         ),
                       ),
                       DropdownButton<String?>(
@@ -168,7 +168,7 @@ class AchievementScreen extends HookWidget {
                       value: '${totalHours.toStringAsFixed(1)}h',
                       subtitle: AppStrings.workHoursUnit.tr(),
                       icon: FontAwesomeIcons.clock,
-                      color: ClickUpColors.info,
+                      color: OnyxColors.info,
                       isDark: isDark,
                     ),
                     const SizedBox(width: 14),
@@ -177,7 +177,7 @@ class AchievementScreen extends HookWidget {
                       value: '$totalTasks',
                       subtitle: AppStrings.taskCountLabel.tr(),
                       icon: FontAwesomeIcons.circleCheck,
-                      color: ClickUpColors.success,
+                      color: OnyxColors.success,
                       isDark: isDark,
                     ),
                     const SizedBox(width: 14),
@@ -186,7 +186,7 @@ class AchievementScreen extends HookWidget {
                       value: '${achievements.map((a) => a.developerName).toSet().length}',
                       subtitle: AppStrings.activeDevelopers.tr(),
                       icon: FontAwesomeIcons.users,
-                      color: ClickUpColors.purple,
+                      color: OnyxColors.purple,
                       isDark: isDark,
                     ),
                   ],
@@ -223,14 +223,14 @@ class AchievementScreen extends HookWidget {
           FaIcon(
             FontAwesomeIcons.newspaper,
             size: 48,
-            color: isDark ? ClickUpColors.neutral600 : ClickUpColors.neutral400,
+            color: isDark ? OnyxColors.neutral600 : OnyxColors.neutral400,
           ),
           const SizedBox(height: 12),
           Text(
             AppStrings.noAchievementsFound.tr(),
             style: TextStyle(
               fontSize: 14,
-              color: isDark ? ClickUpColors.neutral400 : ClickUpColors.neutral500,
+              color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
               fontWeight: FontWeight.bold,
             ),
           ),

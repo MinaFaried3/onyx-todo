@@ -7,7 +7,7 @@ import 'package:onyx_todo/core/enum/task_enums.dart';
 import 'package:onyx_todo/core/extension/bloc_reader.dart';
 import 'package:onyx_todo/core/extension/context_extensions.dart';
 import 'package:onyx_todo/core/localization/app_strings.dart';
-import 'package:onyx_todo/core/ui/clickup_colors.dart';
+import 'package:onyx_todo/core/ui/onyx_colors.dart';
 import 'package:onyx_todo/feature/month_plan/domain/entities/monthly_plan_entity.dart';
 import 'package:onyx_todo/feature/month_plan/presentation/cubit/month_plan_cubit.dart';
 import 'package:onyx_todo/feature/month_plan/presentation/cubit/month_plan_state.dart';
@@ -52,7 +52,7 @@ class MonthPlanScreen extends HookWidget {
                 // Top Header Bar
                 Row(
                   children: [
-                    const FaIcon(FontAwesomeIcons.calendarCheck, color: ClickUpColors.primary, size: 24),
+                    const FaIcon(FontAwesomeIcons.calendarCheck, color: OnyxColors.primary, size: 24),
                     const SizedBox(width: 12),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,14 +62,14 @@ class MonthPlanScreen extends HookWidget {
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                            color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
                           ),
                         ),
                         Text(
                           AppStrings.crmSystemTitle.tr(),
                           style: TextStyle(
                             fontSize: 12,
-                            color: isDark ? ClickUpColors.neutral400 : ClickUpColors.neutral500,
+                            color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
                           ),
                         ),
                       ],
@@ -80,10 +80,10 @@ class MonthPlanScreen extends HookWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: isDark ? ClickUpColors.darkCard : ClickUpColors.lightCard,
+                        color: isDark ? OnyxColors.darkCard : OnyxColors.lightCard,
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: isDark ? ClickUpColors.darkBorder : ClickUpColors.lightBorder,
+                          color: isDark ? OnyxColors.darkBorder : OnyxColors.lightBorder,
                         ),
                       ),
                       child: Row(
@@ -130,8 +130,8 @@ class MonthPlanScreen extends HookWidget {
                     // New Plan Button
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: ClickUpColors.primary,
-                        foregroundColor: ClickUpColors.lightCard,
+                        backgroundColor: OnyxColors.primary,
+                        foregroundColor: OnyxColors.lightCard,
                       ),
                       icon: const FaIcon(FontAwesomeIcons.plus, size: 13),
                       label: Text(AppStrings.createMonthPlan.tr()),
@@ -163,7 +163,7 @@ class MonthPlanScreen extends HookWidget {
                         return ChoiceChip(
                           label: Text('${p.developerName} (${p.status.label})'),
                           selected: isSelected,
-                          selectedColor: ClickUpColors.primary.withValues(alpha: 0.2),
+                          selectedColor: OnyxColors.primary.withValues(alpha: 0.2),
                           onSelected: (_) {
                             monthPlanCubit.saveOrUpdatePlan(p);
                           },
@@ -196,7 +196,7 @@ class MonthPlanScreen extends HookWidget {
           FaIcon(
             FontAwesomeIcons.calendarDays,
             size: 52,
-            color: isDark ? ClickUpColors.neutral600 : ClickUpColors.neutral400,
+            color: isDark ? OnyxColors.neutral600 : OnyxColors.neutral400,
           ),
           const SizedBox(height: 16),
           Text(
@@ -204,14 +204,14 @@ class MonthPlanScreen extends HookWidget {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: isDark ? ClickUpColors.neutral400 : ClickUpColors.neutral500,
+              color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
             ),
           ),
           const SizedBox(height: 14),
           ElevatedButton.icon(
             style: ElevatedButton.styleFrom(
-              backgroundColor: ClickUpColors.primary,
-              foregroundColor: ClickUpColors.lightCard,
+              backgroundColor: OnyxColors.primary,
+              foregroundColor: OnyxColors.lightCard,
             ),
             icon: const FaIcon(FontAwesomeIcons.plus, size: 14),
             label: Text(AppStrings.createMonthPlan.tr()),
@@ -250,7 +250,7 @@ class MonthPlanScreen extends HookWidget {
               value: '${targetHours.toStringAsFixed(0)}h',
               subtitle: '${plan.workingDays} ${AppStrings.workingDaysCount.tr()}',
               icon: FontAwesomeIcons.clock,
-              color: ClickUpColors.info,
+              color: OnyxColors.info,
               isDark: isDark,
             ),
             const SizedBox(width: 14),
@@ -259,7 +259,7 @@ class MonthPlanScreen extends HookWidget {
               value: '${estimatedHours.toStringAsFixed(1)}h',
               subtitle: '${AppStrings.coveragePercentage.tr()}: ${(completionRate * 100).toStringAsFixed(0)}%',
               icon: FontAwesomeIcons.hourglassHalf,
-              color: ClickUpColors.warning,
+              color: OnyxColors.warning,
               isDark: isDark,
             ),
             const SizedBox(width: 14),
@@ -268,7 +268,7 @@ class MonthPlanScreen extends HookWidget {
               value: '${actualHours.toStringAsFixed(1)}h',
               subtitle: AppStrings.endOfMonthActual.tr(),
               icon: FontAwesomeIcons.checkDouble,
-              color: ClickUpColors.success,
+              color: OnyxColors.success,
               isDark: isDark,
             ),
             const SizedBox(width: 14),
@@ -285,7 +285,7 @@ class MonthPlanScreen extends HookWidget {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
               ),
             ),
             const Spacer(),
@@ -307,8 +307,8 @@ class MonthPlanScreen extends HookWidget {
             if (plan.status == PlanStatus.draft || plan.status == PlanStatus.rejected)
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: ClickUpColors.primary,
-                  foregroundColor: ClickUpColors.lightCard,
+                  backgroundColor: OnyxColors.primary,
+                  foregroundColor: OnyxColors.lightCard,
                 ),
                 icon: const FaIcon(FontAwesomeIcons.paperPlane, size: 13),
                 label: Text(AppStrings.submitForApproval.tr()),
@@ -327,8 +327,8 @@ class MonthPlanScreen extends HookWidget {
             if (isDepartmentManager && plan.status == PlanStatus.submitted) ...[
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: ClickUpColors.success,
-                  foregroundColor: ClickUpColors.lightCard,
+                  backgroundColor: OnyxColors.success,
+                  foregroundColor: OnyxColors.lightCard,
                 ),
                 icon: const FaIcon(FontAwesomeIcons.circleCheck, size: 13),
                 label: Text(AppStrings.approvePlan.tr()),
@@ -345,8 +345,8 @@ class MonthPlanScreen extends HookWidget {
               const SizedBox(width: 8),
               OutlinedButton.icon(
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: ClickUpColors.danger,
-                  side: const BorderSide(color: ClickUpColors.danger),
+                  foregroundColor: OnyxColors.danger,
+                  side: const BorderSide(color: OnyxColors.danger),
                 ),
                 icon: const FaIcon(FontAwesomeIcons.circleXmark, size: 13),
                 label: Text(AppStrings.rejectPlan.tr()),
@@ -363,8 +363,8 @@ class MonthPlanScreen extends HookWidget {
             if (plan.status == PlanStatus.approved) ...[
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: ClickUpColors.purple,
-                  foregroundColor: ClickUpColors.lightCard,
+                  backgroundColor: OnyxColors.purple,
+                  foregroundColor: OnyxColors.lightCard,
                 ),
                 icon: const FaIcon(FontAwesomeIcons.lock, size: 13),
                 label: Text(AppStrings.closePlan.tr()),
@@ -386,10 +386,10 @@ class MonthPlanScreen extends HookWidget {
         // Tasks Table
         Container(
           decoration: BoxDecoration(
-            color: isDark ? ClickUpColors.darkCard : ClickUpColors.lightCard,
+            color: isDark ? OnyxColors.darkCard : OnyxColors.lightCard,
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
-              color: isDark ? ClickUpColors.darkBorder : ClickUpColors.lightBorder,
+              color: isDark ? OnyxColors.darkBorder : OnyxColors.lightBorder,
             ),
           ),
           child: Column(
@@ -398,7 +398,7 @@ class MonthPlanScreen extends HookWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 decoration: BoxDecoration(
-                  color: isDark ? ClickUpColors.neutral800 : ClickUpColors.neutral100,
+                  color: isDark ? OnyxColors.neutral800 : OnyxColors.neutral100,
                   borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
                 ),
                 child: Row(
@@ -415,7 +415,7 @@ class MonthPlanScreen extends HookWidget {
               ),
               Divider(
                 height: 1,
-                color: isDark ? ClickUpColors.darkBorder : ClickUpColors.lightBorder,
+                color: isDark ? OnyxColors.darkBorder : OnyxColors.lightBorder,
               ),
 
               // Rows
@@ -426,7 +426,7 @@ class MonthPlanScreen extends HookWidget {
                     child: Text(
                       AppStrings.noTasksInPlan.tr(),
                       style: TextStyle(
-                        color: isDark ? ClickUpColors.neutral400 : ClickUpColors.neutral500,
+                        color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
                       ),
                     ),
                   ),
@@ -438,7 +438,7 @@ class MonthPlanScreen extends HookWidget {
                     decoration: BoxDecoration(
                       border: Border(
                         bottom: BorderSide(
-                          color: isDark ? ClickUpColors.darkBorder : ClickUpColors.lightBorder,
+                          color: isDark ? OnyxColors.darkBorder : OnyxColors.lightBorder,
                           width: 0.5,
                         ),
                       ),
@@ -458,7 +458,7 @@ class MonthPlanScreen extends HookWidget {
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 12,
-                              color: t.actualHours > 0 ? ClickUpColors.success : (isDark ? ClickUpColors.neutral400 : ClickUpColors.neutral500),
+                              color: t.actualHours > 0 ? OnyxColors.success : (isDark ? OnyxColors.neutral400 : OnyxColors.neutral500),
                             ),
                           ),
                         ),

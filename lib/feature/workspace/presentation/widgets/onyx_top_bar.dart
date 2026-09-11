@@ -2,7 +2,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:onyx_todo/core/extension/bloc_reader.dart';
-import 'package:onyx_todo/core/extension/context_extensions.dart';
 import 'package:onyx_todo/core/localization/app_strings.dart';
 import 'package:onyx_todo/core/ui/onyx_colors.dart';
 import 'package:onyx_todo/feature/task/presentation/widgets/task_create_dialog.dart';
@@ -141,7 +140,7 @@ class OnyxTopBar extends StatelessWidget {
               showDialog(
                 context: context,
                 builder: (ctx) => TaskCreateDialog(
-                  defaultVersion: state.selectedVersion,
+                  defaultVersion: state.selectedVersionCode,
                   defaultModuleCode: state.selectedModuleCode,
                 ),
               );

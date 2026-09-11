@@ -1,7 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:onyx_todo/core/localization/app_strings.dart';
-import 'package:onyx_todo/core/ui/clickup_colors.dart';
+import 'package:onyx_todo/core/ui/onyx_colors.dart';
 import 'package:onyx_todo/feature/task/domain/entities/task_entity.dart';
 import 'package:onyx_todo/feature/task/presentation/widgets/task_id_badge.dart';
 
@@ -30,10 +30,10 @@ class DeveloperWorkloadCard extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
         side: BorderSide(
-          color: isDark ? ClickUpColors.darkBorder : ClickUpColors.lightBorder,
+          color: isDark ? OnyxColors.darkBorder : OnyxColors.lightBorder,
         ),
       ),
-      color: isDark ? ClickUpColors.darkCard : ClickUpColors.lightCard,
+      color: isDark ? OnyxColors.darkCard : OnyxColors.lightCard,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -44,11 +44,11 @@ class DeveloperWorkloadCard extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 18,
-                  backgroundColor: ClickUpColors.primary.withValues(alpha: 0.2),
+                  backgroundColor: OnyxColors.primary.withValues(alpha: 0.2),
                   child: Text(
                     devName.substring(0, devName.length >= 2 ? 2 : 1).toUpperCase(),
                     style: const TextStyle(
-                      color: ClickUpColors.primary,
+                      color: OnyxColors.primary,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -62,14 +62,14 @@ class DeveloperWorkloadCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
-                        color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                        color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
                       ),
                     ),
                     Text(
                       '${tasks.length} ${AppStrings.assignedTasksCount.tr()} ($completedCount ${AppStrings.completedCount.tr()})',
                       style: TextStyle(
                         fontSize: 11,
-                        color: isDark ? ClickUpColors.neutral400 : ClickUpColors.neutral500,
+                        color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
                       ),
                     ),
                   ],
@@ -78,7 +78,7 @@ class DeveloperWorkloadCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: ClickUpColors.primary.withValues(alpha: 0.12),
+                    color: OnyxColors.primary.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
@@ -86,7 +86,7 @@ class DeveloperWorkloadCard extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
-                      color: ClickUpColors.primary,
+                      color: OnyxColors.primary,
                     ),
                   ),
                 ),
@@ -100,8 +100,8 @@ class DeveloperWorkloadCard extends StatelessWidget {
               child: LinearProgressIndicator(
                 value: progress,
                 minHeight: 6,
-                backgroundColor: isDark ? ClickUpColors.neutral700 : ClickUpColors.neutral200,
-                valueColor: const AlwaysStoppedAnimation<Color>(ClickUpColors.primary),
+                backgroundColor: isDark ? OnyxColors.neutral700 : OnyxColors.neutral200,
+                valueColor: const AlwaysStoppedAnimation<Color>(OnyxColors.primary),
               ),
             ),
             const SizedBox(height: 12),

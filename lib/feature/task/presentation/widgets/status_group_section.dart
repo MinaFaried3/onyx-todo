@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:onyx_todo/core/enum/task_enums.dart';
-import 'package:onyx_todo/core/ui/clickup_colors.dart';
+import 'package:onyx_todo/core/ui/onyx_colors.dart';
 import 'package:onyx_todo/feature/task/domain/entities/task_entity.dart';
 import 'package:onyx_todo/feature/task/presentation/widgets/task_id_badge.dart';
 import 'package:onyx_todo/feature/task/presentation/widgets/task_priority_flag.dart';
@@ -31,10 +31,10 @@ class StatusGroupSection extends HookWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: isDark ? ClickUpColors.darkCard : ClickUpColors.lightCard,
+        color: isDark ? OnyxColors.darkCard : OnyxColors.lightCard,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: isDark ? ClickUpColors.darkBorder : ClickUpColors.lightBorder,
+          color: isDark ? OnyxColors.darkBorder : OnyxColors.lightBorder,
         ),
       ),
       child: Column(
@@ -105,7 +105,7 @@ class StatusGroupSection extends HookWidget {
                   decoration: BoxDecoration(
                     border: Border(
                       top: BorderSide(
-                        color: isDark ? ClickUpColors.darkBorder : ClickUpColors.lightBorder,
+                        color: isDark ? OnyxColors.darkBorder : OnyxColors.lightBorder,
                         width: 0.5,
                       ),
                     ),
@@ -120,7 +120,7 @@ class StatusGroupSection extends HookWidget {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
-                          color: isDark ? ClickUpColors.neutral700 : ClickUpColors.neutral200,
+                          color: isDark ? OnyxColors.neutral700 : OnyxColors.neutral200,
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
@@ -128,7 +128,7 @@ class StatusGroupSection extends HookWidget {
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
-                            color: isDark ? ClickUpColors.neutral300 : ClickUpColors.neutral700,
+                            color: isDark ? OnyxColors.neutral300 : OnyxColors.neutral700,
                           ),
                         ),
                       ),
@@ -141,7 +141,7 @@ class StatusGroupSection extends HookWidget {
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w500,
-                            color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                            color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
                           ),
                         ),
                       ),
@@ -157,28 +157,28 @@ class StatusGroupSection extends HookWidget {
                       ),
                       const SizedBox(width: 12),
                       if (task.frontendDevName != null) ...[
-                        _buildDevChip(task.frontendDevName!, ClickUpColors.info),
+                        _buildDevChip(task.frontendDevName!, OnyxColors.info),
                         const SizedBox(width: 6),
                       ],
                       if (task.backendDevName != null) ...[
-                        _buildDevChip(task.backendDevName!, ClickUpColors.accentPurple),
+                        _buildDevChip(task.backendDevName!, OnyxColors.accentPurple),
                         const SizedBox(width: 6),
                       ],
                       if (task.estimatedHours > 0 || task.actualHours > 0)
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
-                            color: ClickUpColors.primary.withValues(alpha: 0.12),
+                            color: OnyxColors.primary.withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const FaIcon(FontAwesomeIcons.clock, size: 9, color: ClickUpColors.primary),
+                              const FaIcon(FontAwesomeIcons.clock, size: 9, color: OnyxColors.primary),
                               const SizedBox(width: 4),
                               Text(
                                 '${task.actualHours > 0 ? task.actualHours : task.estimatedHours}h',
-                                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: ClickUpColors.primary),
+                                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: OnyxColors.primary),
                               ),
                             ],
                           ),

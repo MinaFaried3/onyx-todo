@@ -6,7 +6,7 @@ import 'package:onyx_todo/core/enum/task_enums.dart';
 import 'package:onyx_todo/core/extension/bloc_reader.dart';
 import 'package:onyx_todo/core/extension/context_extensions.dart';
 import 'package:onyx_todo/core/localization/app_strings.dart';
-import 'package:onyx_todo/core/ui/clickup_colors.dart';
+import 'package:onyx_todo/core/ui/onyx_colors.dart';
 import 'package:onyx_todo/feature/month_plan/domain/entities/monthly_plan_entity.dart';
 
 class RejectPlanDialog extends HookWidget {
@@ -24,7 +24,7 @@ class RejectPlanDialog extends HookWidget {
     return AlertDialog(
       title: Row(
         children: [
-          const FaIcon(FontAwesomeIcons.rotateLeft, size: 18, color: ClickUpColors.danger),
+          const FaIcon(FontAwesomeIcons.rotateLeft, size: 18, color: OnyxColors.danger),
           const SizedBox(width: 10),
           Text(AppStrings.rejectPlanTitle.tr()),
         ],
@@ -40,7 +40,7 @@ class RejectPlanDialog extends HookWidget {
               padding: EdgeInsets.only(bottom: 40),
               child: Center(
                 widthFactor: 1.0,
-                child: FaIcon(FontAwesomeIcons.commentDots, size: 14, color: ClickUpColors.neutral500),
+                child: FaIcon(FontAwesomeIcons.commentDots, size: 14, color: OnyxColors.neutral500),
               ),
             ),
           ),
@@ -54,8 +54,8 @@ class RejectPlanDialog extends HookWidget {
         ),
         ElevatedButton.icon(
           style: ElevatedButton.styleFrom(
-            backgroundColor: ClickUpColors.danger,
-            foregroundColor: ClickUpColors.lightCard,
+            backgroundColor: OnyxColors.danger,
+            foregroundColor: OnyxColors.lightCard,
           ),
           onPressed: () {
             context.monthPlanCubit.updatePlanStatus(

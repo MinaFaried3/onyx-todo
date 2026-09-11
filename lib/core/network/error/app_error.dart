@@ -1,6 +1,8 @@
 
 import 'package:equatable/equatable.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:onyx_todo/core/extension/empty_or_null.dart';
+import 'package:onyx_todo/core/localization/core_strings.dart';
 
 final class AppErrors extends Equatable {
   final Map<String, List<String>>? errors;
@@ -9,7 +11,7 @@ final class AppErrors extends Equatable {
   const AppErrors({required this.errors, this.message});
 
   String getAllErrorsMessagesAsOneMessage() {
-    if (errors.isNullOrEmpty) return message ?? 'AppStrings.unknownError.tr()';
+    if (errors.isNullOrEmpty) return message ?? CoreStrings.unknownError.tr();
 
     final String errorMessage = errors!.entries.map((entry) {
       return entry.value.join(', ');

@@ -6,7 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:onyx_todo/core/extension/bloc_reader.dart';
 import 'package:onyx_todo/core/extension/context_extensions.dart';
 import 'package:onyx_todo/core/localization/app_strings.dart';
-import 'package:onyx_todo/core/ui/clickup_colors.dart';
+import 'package:onyx_todo/core/ui/onyx_colors.dart';
 import 'package:onyx_todo/feature/achievement/domain/entities/achievement_task_item.dart';
 import 'package:onyx_todo/feature/achievement/domain/entities/daily_achievement_entity.dart';
 import 'package:onyx_todo/feature/task/presentation/widgets/task_id_badge.dart';
@@ -34,7 +34,7 @@ class LogAchievementDialog extends HookWidget {
     final tasksList = useState<List<AchievementTaskItem>>([]);
 
     return Dialog(
-      backgroundColor: isDark ? ClickUpColors.darkCard : ClickUpColors.lightCard,
+      backgroundColor: isDark ? OnyxColors.darkCard : OnyxColors.lightCard,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Container(
         width: 600,
@@ -46,14 +46,14 @@ class LogAchievementDialog extends HookWidget {
             // Header
             Row(
               children: [
-                const FaIcon(FontAwesomeIcons.circleCheck, color: ClickUpColors.success, size: 20),
+                const FaIcon(FontAwesomeIcons.circleCheck, color: OnyxColors.success, size: 20),
                 const SizedBox(width: 10),
                 Text(
                   AppStrings.logDailyAchievement.tr(),
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                    color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
                   ),
                 ),
                 const Spacer(),
@@ -61,7 +61,7 @@ class LogAchievementDialog extends HookWidget {
                   icon: FaIcon(
                     FontAwesomeIcons.xmark,
                     size: 16,
-                    color: isDark ? ClickUpColors.neutral400 : ClickUpColors.neutral600,
+                    color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral600,
                   ),
                   onPressed: () => context.safePop(),
                 ),
@@ -69,7 +69,7 @@ class LogAchievementDialog extends HookWidget {
             ),
             Divider(
               height: 20,
-              color: isDark ? ClickUpColors.darkBorder : ClickUpColors.lightBorder,
+              color: isDark ? OnyxColors.darkBorder : OnyxColors.lightBorder,
             ),
 
             // Developer Info
@@ -78,7 +78,7 @@ class LogAchievementDialog extends HookWidget {
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 13,
-                color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
               ),
             ),
             const SizedBox(height: 14),
@@ -87,10 +87,10 @@ class LogAchievementDialog extends HookWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: isDark ? ClickUpColors.neutral800 : ClickUpColors.neutral100,
+                color: isDark ? OnyxColors.neutral800 : OnyxColors.neutral100,
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: isDark ? ClickUpColors.darkBorder : ClickUpColors.lightBorder,
+                  color: isDark ? OnyxColors.darkBorder : OnyxColors.lightBorder,
                 ),
               ),
               child: Column(
@@ -101,7 +101,7 @@ class LogAchievementDialog extends HookWidget {
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 12,
-                      color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                      color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -148,8 +148,8 @@ class LogAchievementDialog extends HookWidget {
                       const SizedBox(width: 8),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: ClickUpColors.primary,
-                          foregroundColor: ClickUpColors.lightCard,
+                          backgroundColor: OnyxColors.primary,
+                          foregroundColor: OnyxColors.lightCard,
                         ),
                         onPressed: () {
                           if (taskTitleController.text.trim().isNotEmpty) {
@@ -186,7 +186,7 @@ class LogAchievementDialog extends HookWidget {
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 12,
-                  color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                  color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
                 ),
               ),
               const SizedBox(height: 6),
@@ -195,10 +195,10 @@ class LogAchievementDialog extends HookWidget {
                   margin: const EdgeInsets.only(bottom: 6),
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   decoration: BoxDecoration(
-                    color: ClickUpColors.success.withValues(alpha: 0.08),
+                    color: OnyxColors.success.withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(6),
                     border: Border.all(
-                      color: ClickUpColors.success.withValues(alpha: 0.2),
+                      color: OnyxColors.success.withValues(alpha: 0.2),
                     ),
                   ),
                   child: Row(
@@ -210,7 +210,7 @@ class LogAchievementDialog extends HookWidget {
                           t.title,
                           style: TextStyle(
                             fontSize: 12,
-                            color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                            color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
                           ),
                         ),
                       ),
@@ -219,11 +219,11 @@ class LogAchievementDialog extends HookWidget {
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
-                          color: ClickUpColors.success,
+                          color: OnyxColors.success,
                         ),
                       ),
                       IconButton(
-                        icon: const FaIcon(FontAwesomeIcons.trashCan, size: 14, color: ClickUpColors.danger),
+                        icon: const FaIcon(FontAwesomeIcons.trashCan, size: 14, color: OnyxColors.danger),
                         onPressed: () {
                           tasksList.value = tasksList.value.where((item) => item != t).toList();
                         },
@@ -296,8 +296,8 @@ class LogAchievementDialog extends HookWidget {
                 const SizedBox(width: 10),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: ClickUpColors.success,
-                    foregroundColor: ClickUpColors.lightCard,
+                    backgroundColor: OnyxColors.success,
+                    foregroundColor: OnyxColors.lightCard,
                   ),
                   onPressed: () async {
                     final totalHours = tasksList.value.fold<double>(0.0, (s, t) => s + t.hoursSpent);

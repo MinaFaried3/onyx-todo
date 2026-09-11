@@ -30,7 +30,7 @@ class AssigneeInfoRow extends StatelessWidget {
             '$label: ',
             style: TextStyle(
               fontSize: 12,
-              color: isDark ? ClickUpColors.neutral400 : ClickUpColors.neutral500,
+              color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
             ),
           ),
           Text(
@@ -38,7 +38,7 @@ class AssigneeInfoRow extends StatelessWidget {
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+              color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
             ),
           ),
         ],

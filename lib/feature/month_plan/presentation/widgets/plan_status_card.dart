@@ -2,7 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:onyx_todo/core/enum/task_enums.dart';
 import 'package:onyx_todo/core/localization/app_strings.dart';
-import 'package:onyx_todo/core/ui/clickup_colors.dart';
+import 'package:onyx_todo/core/ui/onyx_colors.dart';
 
 class PlanStatusCard extends StatelessWidget {
   final PlanStatus status;
@@ -28,7 +28,7 @@ class PlanStatusCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isDark ? ClickUpColors.darkCard : ClickUpColors.lightCard,
+          color: isDark ? OnyxColors.darkCard : OnyxColors.lightCard,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(color: status.color.withValues(alpha: 0.5)),
         ),
@@ -39,7 +39,7 @@ class PlanStatusCard extends StatelessWidget {
               AppStrings.planStatus.tr(),
               style: TextStyle(
                 fontSize: 12,
-                color: isDark ? ClickUpColors.neutral400 : ClickUpColors.neutral500,
+                color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
               ),
             ),
             const SizedBox(height: 10),
@@ -53,7 +53,7 @@ class PlanStatusCard extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 fontSize: 11,
-                color: isDark ? ClickUpColors.neutral400 : ClickUpColors.neutral500,
+                color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
               ),
             ),
           ],

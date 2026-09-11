@@ -4,7 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:onyx_todo/core/extension/bloc_reader.dart';
 import 'package:onyx_todo/core/localization/app_strings.dart';
-import 'package:onyx_todo/core/ui/clickup_colors.dart';
+import 'package:onyx_todo/core/ui/onyx_colors.dart';
 import 'package:onyx_todo/feature/task/domain/entities/task_entity.dart';
 import 'package:onyx_todo/feature/task/domain/entities/task_history_item.dart';
 import 'package:onyx_todo/feature/task/presentation/widgets/assignee_info_row.dart';
@@ -40,10 +40,10 @@ class TaskDrawerDetail extends HookWidget {
     return Container(
       width: 520,
       decoration: BoxDecoration(
-        color: isDark ? ClickUpColors.darkCard : ClickUpColors.lightCard,
+        color: isDark ? OnyxColors.darkCard : OnyxColors.lightCard,
         border: Border(
           left: BorderSide(
-            color: isDark ? ClickUpColors.darkBorder : ClickUpColors.lightBorder,
+            color: isDark ? OnyxColors.darkBorder : OnyxColors.lightBorder,
             width: 1,
           ),
         ),
@@ -56,7 +56,7 @@ class TaskDrawerDetail extends HookWidget {
             decoration: BoxDecoration(
               border: Border(
                 bottom: BorderSide(
-                  color: isDark ? ClickUpColors.darkBorder : ClickUpColors.lightBorder,
+                  color: isDark ? OnyxColors.darkBorder : OnyxColors.lightBorder,
                 ),
               ),
             ),
@@ -69,7 +69,7 @@ class TaskDrawerDetail extends HookWidget {
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 13,
-                    color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                    color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
                   ),
                 ),
                 const Spacer(),
@@ -95,7 +95,7 @@ class TaskDrawerDetail extends HookWidget {
                   icon: FaIcon(
                     FontAwesomeIcons.xmark,
                     size: 16,
-                    color: isDark ? ClickUpColors.neutral400 : ClickUpColors.neutral600,
+                    color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral600,
                   ),
                   tooltip: AppStrings.close.tr(),
                   onPressed: onClose,
@@ -115,20 +115,20 @@ class TaskDrawerDetail extends HookWidget {
                     FaIcon(
                       FontAwesomeIcons.layerGroup,
                       size: 14,
-                      color: isDark ? ClickUpColors.neutral400 : ClickUpColors.neutral500,
+                      color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
                     ),
                     const SizedBox(width: 8),
                     Text(
                       '${AppStrings.screenName.tr()}: ',
                       style: TextStyle(
                         fontSize: 12,
-                        color: isDark ? ClickUpColors.neutral400 : ClickUpColors.neutral500,
+                        color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
                       ),
                     ),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(
-                        color: ClickUpColors.primary.withValues(alpha: 0.12),
+                        color: OnyxColors.primary.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
@@ -136,7 +136,7 @@ class TaskDrawerDetail extends HookWidget {
                         style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
-                          color: ClickUpColors.primary,
+                          color: OnyxColors.primary,
                         ),
                       ),
                     ),
@@ -150,7 +150,7 @@ class TaskDrawerDetail extends HookWidget {
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                    color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
                   ),
                   decoration: InputDecoration(
                     border: InputBorder.none,
@@ -170,7 +170,7 @@ class TaskDrawerDetail extends HookWidget {
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.bold,
-                    color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                    color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -183,7 +183,7 @@ class TaskDrawerDetail extends HookWidget {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide: BorderSide(
-                        color: isDark ? ClickUpColors.darkBorder : ClickUpColors.lightBorder,
+                        color: isDark ? OnyxColors.darkBorder : OnyxColors.lightBorder,
                       ),
                     ),
                   ),
@@ -204,7 +204,7 @@ class TaskDrawerDetail extends HookWidget {
                             AppStrings.estimatedHours.tr(),
                             style: TextStyle(
                               fontSize: 12,
-                              color: isDark ? ClickUpColors.neutral400 : ClickUpColors.neutral500,
+                              color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
                             ),
                           ),
                           const SizedBox(height: 6),
@@ -233,7 +233,7 @@ class TaskDrawerDetail extends HookWidget {
                             AppStrings.actualHours.tr(),
                             style: TextStyle(
                               fontSize: 12,
-                              color: isDark ? ClickUpColors.neutral400 : ClickUpColors.neutral500,
+                              color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
                             ),
                           ),
                           const SizedBox(height: 6),
@@ -263,7 +263,7 @@ class TaskDrawerDetail extends HookWidget {
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.bold,
-                    color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                    color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -271,20 +271,20 @@ class TaskDrawerDetail extends HookWidget {
                   label: AppStrings.frontendDev.tr(),
                   name: task.frontendDevName ?? AppStrings.unassigned.tr(),
                   icon: FontAwesomeIcons.laptopCode,
-                  color: ClickUpColors.teal,
+                  color: OnyxColors.teal,
                 ),
                 AssigneeInfoRow(
                   label: AppStrings.backendDev.tr(),
                   name: task.backendDevName ?? AppStrings.unassigned.tr(),
                   icon: FontAwesomeIcons.server,
-                  color: ClickUpColors.purple,
+                  color: OnyxColors.purple,
                 ),
                 if (task.qaTesterName != null)
                   AssigneeInfoRow(
                     label: AppStrings.qaTester.tr(),
                     name: task.qaTesterName!,
                     icon: FontAwesomeIcons.circleCheck,
-                    color: ClickUpColors.warning,
+                    color: OnyxColors.warning,
                   ),
                 const SizedBox(height: 20),
 
@@ -295,24 +295,24 @@ class TaskDrawerDetail extends HookWidget {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
-                      color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                      color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: ClickUpColors.info.withValues(alpha: 0.1),
+                      color: OnyxColors.info.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(6),
                       border: Border.all(
-                        color: ClickUpColors.info.withValues(alpha: 0.25),
+                        color: OnyxColors.info.withValues(alpha: 0.25),
                       ),
                     ),
                     child: Text(
                       task.devNotes!,
                       style: TextStyle(
                         fontSize: 12,
-                        color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                        color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
                       ),
                     ),
                   ),
@@ -325,7 +325,7 @@ class TaskDrawerDetail extends HookWidget {
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.bold,
-                    color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                    color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -334,7 +334,7 @@ class TaskDrawerDetail extends HookWidget {
                     AppStrings.noHistoryYet.tr(),
                     style: TextStyle(
                       fontSize: 11,
-                      color: isDark ? ClickUpColors.neutral400 : ClickUpColors.neutral500,
+                      color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
                     ),
                   )
                 else
@@ -358,8 +358,8 @@ class TaskDrawerDetail extends HookWidget {
                     const SizedBox(width: 8),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: ClickUpColors.primary,
-                        foregroundColor: ClickUpColors.lightCard,
+                        backgroundColor: OnyxColors.primary,
+                        foregroundColor: OnyxColors.lightCard,
                       ),
                       onPressed: () {
                         if (commentController.text.trim().isNotEmpty) {

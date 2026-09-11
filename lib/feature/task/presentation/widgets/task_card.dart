@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:onyx_todo/core/ui/clickup_colors.dart';
+import 'package:onyx_todo/core/ui/onyx_colors.dart';
 import 'package:onyx_todo/feature/task/domain/entities/task_entity.dart';
 import 'package:onyx_todo/feature/task/presentation/widgets/task_id_badge.dart';
 import 'package:onyx_todo/feature/task/presentation/widgets/task_priority_flag.dart';
@@ -29,15 +29,15 @@ class TaskCard extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
         side: BorderSide(
-          color: isDark ? ClickUpColors.darkBorder : ClickUpColors.lightBorder,
+          color: isDark ? OnyxColors.darkBorder : OnyxColors.lightBorder,
           width: 1,
         ),
       ),
-      color: isDark ? ClickUpColors.darkCard : ClickUpColors.lightCard,
+      color: isDark ? OnyxColors.darkCard : OnyxColors.lightCard,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(8),
-        hoverColor: isDark ? ClickUpColors.darkCardHover : ClickUpColors.lightCardHover,
+        hoverColor: isDark ? OnyxColors.darkCardHover : OnyxColors.lightCardHover,
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Column(
@@ -54,7 +54,7 @@ class TaskCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
-                      color: isDark ? ClickUpColors.neutral700 : ClickUpColors.neutral200,
+                      color: isDark ? OnyxColors.neutral700 : OnyxColors.neutral200,
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
@@ -62,7 +62,7 @@ class TaskCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w600,
-                        color: isDark ? ClickUpColors.neutral300 : ClickUpColors.neutral700,
+                        color: isDark ? OnyxColors.neutral300 : OnyxColors.neutral700,
                       ),
                     ),
                   ),
@@ -88,7 +88,7 @@ class TaskCard extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
-                  color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                  color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
                   height: 1.3,
                 ),
               ),
@@ -107,11 +107,11 @@ class TaskCard extends StatelessWidget {
 
                   // Assignees avatars / chips
                   if (task.frontendDevName != null) ...[
-                    _buildAssigneeAvatar(task.frontendDevName!, ClickUpColors.info, 'FE'),
+                    _buildAssigneeAvatar(task.frontendDevName!, OnyxColors.info, 'FE'),
                     const SizedBox(width: 4),
                   ],
                   if (task.backendDevName != null) ...[
-                    _buildAssigneeAvatar(task.backendDevName!, ClickUpColors.accentPurple, 'BE'),
+                    _buildAssigneeAvatar(task.backendDevName!, OnyxColors.accentPurple, 'BE'),
                     const SizedBox(width: 4),
                   ],
 
@@ -120,17 +120,17 @@ class TaskCard extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
-                        color: ClickUpColors.primary.withValues(alpha: 0.12),
+                        color: OnyxColors.primary.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const FaIcon(FontAwesomeIcons.clock, size: 9, color: ClickUpColors.primary),
+                          const FaIcon(FontAwesomeIcons.clock, size: 9, color: OnyxColors.primary),
                           const SizedBox(width: 4),
                           Text(
                             '${task.actualHours > 0 ? task.actualHours : task.estimatedHours}h',
-                            style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: ClickUpColors.primary),
+                            style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: OnyxColors.primary),
                           ),
                         ],
                       ),

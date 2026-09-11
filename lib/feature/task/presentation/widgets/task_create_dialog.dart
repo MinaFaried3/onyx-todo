@@ -6,7 +6,7 @@ import 'package:onyx_todo/core/enum/task_enums.dart';
 import 'package:onyx_todo/core/extension/bloc_reader.dart';
 import 'package:onyx_todo/core/extension/context_extensions.dart';
 import 'package:onyx_todo/core/localization/app_strings.dart';
-import 'package:onyx_todo/core/ui/clickup_colors.dart';
+import 'package:onyx_todo/core/ui/onyx_colors.dart';
 import 'package:onyx_todo/feature/workspace/domain/entities/onyx_module.dart';
 
 class TaskCreateDialog extends HookWidget {
@@ -44,7 +44,7 @@ class TaskCreateDialog extends HookWidget {
     final modules = workspaceCubit.state.modulesState.data ?? OnyxModule.standardModules;
 
     return Dialog(
-      backgroundColor: isDark ? ClickUpColors.darkCard : ClickUpColors.lightCard,
+      backgroundColor: isDark ? OnyxColors.darkCard : OnyxColors.lightCard,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Container(
         width: 600,
@@ -56,22 +56,22 @@ class TaskCreateDialog extends HookWidget {
             // Header
             Row(
               children: [
-                const FaIcon(FontAwesomeIcons.listCheck, color: ClickUpColors.primary, size: 18),
+                const FaIcon(FontAwesomeIcons.listCheck, color: OnyxColors.primary, size: 18),
                 const SizedBox(width: 10),
                 Text(
                   AppStrings.createTask.tr(),
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                    color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
                   ),
                 ),
                 const Spacer(),
                 // Quick "General Task" Shortcut
                 OutlinedButton.icon(
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: ClickUpColors.primary,
-                    side: const BorderSide(color: ClickUpColors.primary),
+                    foregroundColor: OnyxColors.primary,
+                    side: const BorderSide(color: OnyxColors.primary),
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   ),
                   icon: const FaIcon(FontAwesomeIcons.bolt, size: 12),
@@ -89,7 +89,7 @@ class TaskCreateDialog extends HookWidget {
                   icon: FaIcon(
                     FontAwesomeIcons.xmark,
                     size: 16,
-                    color: isDark ? ClickUpColors.neutral400 : ClickUpColors.neutral600,
+                    color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral600,
                   ),
                   onPressed: () => context.safePop(),
                 ),
@@ -97,7 +97,7 @@ class TaskCreateDialog extends HookWidget {
             ),
             Divider(
               height: 24,
-              color: isDark ? ClickUpColors.darkBorder : ClickUpColors.lightBorder,
+              color: isDark ? OnyxColors.darkBorder : OnyxColors.lightBorder,
             ),
 
             // Version & Module Selectors
@@ -112,7 +112,7 @@ class TaskCreateDialog extends HookWidget {
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
-                          color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                          color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
                         ),
                       ),
                       const SizedBox(height: 6),
@@ -145,7 +145,7 @@ class TaskCreateDialog extends HookWidget {
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
-                          color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                          color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
                         ),
                       ),
                       const SizedBox(height: 6),
@@ -331,8 +331,8 @@ class TaskCreateDialog extends HookWidget {
                 const SizedBox(width: 12),
                 ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: ClickUpColors.primary,
-                    foregroundColor: ClickUpColors.lightCard,
+                    backgroundColor: OnyxColors.primary,
+                    foregroundColor: OnyxColors.lightCard,
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                   ),
                   icon: isSubmitting.value
@@ -341,7 +341,7 @@ class TaskCreateDialog extends HookWidget {
                           height: 16,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            color: ClickUpColors.lightCard,
+                            color: OnyxColors.lightCard,
                           ),
                         )
                       : const FaIcon(FontAwesomeIcons.check, size: 14),

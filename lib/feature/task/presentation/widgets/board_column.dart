@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:onyx_todo/core/enum/task_enums.dart';
 import 'package:onyx_todo/core/localization/app_strings.dart';
-import 'package:onyx_todo/core/ui/clickup_colors.dart';
+import 'package:onyx_todo/core/ui/onyx_colors.dart';
 import 'package:onyx_todo/feature/task/domain/entities/task_entity.dart';
 import 'package:onyx_todo/feature/task/presentation/widgets/task_card.dart';
 
@@ -33,10 +33,10 @@ class BoardColumn extends StatelessWidget {
       width: 290,
       margin: const EdgeInsets.only(right: 12),
       decoration: BoxDecoration(
-        color: isDark ? ClickUpColors.darkSidebar : ClickUpColors.lightSidebar,
+        color: isDark ? OnyxColors.darkSidebar : OnyxColors.lightSidebar,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-          color: isDark ? ClickUpColors.darkBorder : ClickUpColors.lightBorder,
+          color: isDark ? OnyxColors.darkBorder : OnyxColors.lightBorder,
         ),
       ),
       child: DragTarget<TaskEntity>(
@@ -72,7 +72,7 @@ class BoardColumn extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
-                          color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                          color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
                         ),
                       ),
                       const SizedBox(width: 6),
@@ -96,7 +96,7 @@ class BoardColumn extends StatelessWidget {
                         icon: FaIcon(
                           FontAwesomeIcons.plus,
                           size: 13,
-                          color: isDark ? ClickUpColors.neutral400 : ClickUpColors.neutral600,
+                          color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral600,
                         ),
                         tooltip: AppStrings.createTask.tr(),
                         onPressed: onAddTask,
@@ -108,7 +108,7 @@ class BoardColumn extends StatelessWidget {
                 ),
                 Divider(
                   height: 1,
-                  color: isDark ? ClickUpColors.darkBorder : ClickUpColors.lightBorder,
+                  color: isDark ? OnyxColors.darkBorder : OnyxColors.lightBorder,
                 ),
 
                 // Cards List

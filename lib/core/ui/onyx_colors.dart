@@ -89,6 +89,3 @@ abstract final class OnyxColors {
     Color(0xFFEAB308), // Yellow
   ];
 }
-
-/// Backward compatibility alias for OnyxColors during refactoring.
-typedef ClickUpColors = OnyxColors;

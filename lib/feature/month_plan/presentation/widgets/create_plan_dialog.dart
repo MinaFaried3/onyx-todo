@@ -5,7 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:onyx_todo/core/extension/bloc_reader.dart';
 import 'package:onyx_todo/core/extension/context_extensions.dart';
 import 'package:onyx_todo/core/localization/app_strings.dart';
-import 'package:onyx_todo/core/ui/clickup_colors.dart';
+import 'package:onyx_todo/core/ui/onyx_colors.dart';
 import 'package:onyx_todo/feature/month_plan/domain/entities/monthly_plan_entity.dart';
 
 class CreatePlanDialog extends HookWidget {
@@ -31,7 +31,7 @@ class CreatePlanDialog extends HookWidget {
     final targetHoursController = useTextEditingController(text: '160.0');
 
     return Dialog(
-      backgroundColor: isDark ? ClickUpColors.darkCard : ClickUpColors.lightCard,
+      backgroundColor: isDark ? OnyxColors.darkCard : OnyxColors.lightCard,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Container(
         width: 480,
@@ -42,14 +42,14 @@ class CreatePlanDialog extends HookWidget {
           children: [
             Row(
               children: [
-                const FaIcon(FontAwesomeIcons.calendarCheck, color: ClickUpColors.primary, size: 18),
+                const FaIcon(FontAwesomeIcons.calendarCheck, color: OnyxColors.primary, size: 18),
                 const SizedBox(width: 10),
                 Text(
                   AppStrings.createMonthPlan.tr(),
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                    color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
                   ),
                 ),
                 const Spacer(),
@@ -57,7 +57,7 @@ class CreatePlanDialog extends HookWidget {
                   icon: FaIcon(
                     FontAwesomeIcons.xmark,
                     size: 16,
-                    color: isDark ? ClickUpColors.neutral400 : ClickUpColors.neutral600,
+                    color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral600,
                   ),
                   onPressed: () => context.safePop(),
                 ),
@@ -65,21 +65,21 @@ class CreatePlanDialog extends HookWidget {
             ),
             Divider(
               height: 24,
-              color: isDark ? ClickUpColors.darkBorder : ClickUpColors.lightBorder,
+              color: isDark ? OnyxColors.darkBorder : OnyxColors.lightBorder,
             ),
             Text(
               '${AppStrings.developerLabel.tr()}: ${currentUser.name} (${currentUser.stack.label})',
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 13,
-                color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
               ),
             ),
             const SizedBox(height: 6),
             Text(
               '${AppStrings.monthLabel.tr()}: $month / $year',
               style: TextStyle(
-                color: isDark ? ClickUpColors.neutral400 : ClickUpColors.neutral500,
+                color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
                 fontSize: 12,
               ),
             ),
@@ -126,8 +126,8 @@ class CreatePlanDialog extends HookWidget {
                 const SizedBox(width: 12),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: ClickUpColors.primary,
-                    foregroundColor: ClickUpColors.lightCard,
+                    backgroundColor: OnyxColors.primary,
+                    foregroundColor: OnyxColors.lightCard,
                   ),
                   onPressed: () {
                     final days = int.tryParse(workingDaysController.text.trim()) ?? 20;

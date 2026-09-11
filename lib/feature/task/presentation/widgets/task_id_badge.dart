@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:onyx_todo/core/extension/context_extensions.dart';
 import 'package:onyx_todo/core/localization/app_strings.dart';
-import 'package:onyx_todo/core/ui/clickup_colors.dart';
+import 'package:onyx_todo/core/ui/onyx_colors.dart';
 
 class TaskIdBadge extends StatelessWidget {
   final String formattedId;
@@ -26,20 +26,20 @@ class TaskIdBadge extends StatelessWidget {
     return Tooltip(
       message: AppStrings.copyTaskId.tr(),
       child: Material(
-        color: ClickUpColors.transparent,
+        color: OnyxColors.transparent,
         child: InkWell(
           onTap: () {
             Clipboard.setData(ClipboardData(text: formattedId));
             context.safeShowSnackBar(
               SnackBar(
-                backgroundColor: ClickUpColors.darkCard,
+                backgroundColor: OnyxColors.darkCard,
                 content: Row(
                   children: [
-                    const FaIcon(FontAwesomeIcons.circleCheck, size: 14, color: ClickUpColors.success),
+                    const FaIcon(FontAwesomeIcons.circleCheck, size: 14, color: OnyxColors.success),
                     const SizedBox(width: 8),
                     Text(
                       '${AppStrings.idCopied.tr()} ($formattedId)',
-                      style: const TextStyle(color: ClickUpColors.white),
+                      style: const TextStyle(color: OnyxColors.white),
                     ),
                   ],
                 ),
@@ -48,7 +48,7 @@ class TaskIdBadge extends StatelessWidget {
             onTap?.call();
           },
           borderRadius: BorderRadius.circular(6),
-          hoverColor: ClickUpColors.primary.withValues(alpha: 0.15),
+          hoverColor: OnyxColors.primary.withValues(alpha: 0.15),
           child: Container(
             padding: EdgeInsets.symmetric(
               horizontal: isLarge ? 10 : 7,
@@ -56,11 +56,11 @@ class TaskIdBadge extends StatelessWidget {
             ),
             decoration: BoxDecoration(
               color: isDark
-                  ? ClickUpColors.primaryDark.withValues(alpha: 0.25)
-                  : ClickUpColors.primaryLight,
+                  ? OnyxColors.primaryDark.withValues(alpha: 0.25)
+                  : OnyxColors.primaryLight,
               borderRadius: BorderRadius.circular(6),
               border: Border.all(
-                color: ClickUpColors.primary.withValues(alpha: 0.4),
+                color: OnyxColors.primary.withValues(alpha: 0.4),
                 width: 1,
               ),
             ),
@@ -70,13 +70,13 @@ class TaskIdBadge extends StatelessWidget {
                 FaIcon(
                   FontAwesomeIcons.hashtag,
                   size: isLarge ? 12 : 10,
-                  color: ClickUpColors.primary,
+                  color: OnyxColors.primary,
                 ),
                 const SizedBox(width: 5),
                 Text(
                   formattedId,
                   style: TextStyle(
-                    color: ClickUpColors.primary,
+                    color: OnyxColors.primary,
                     fontSize: isLarge ? 13 : 11,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.3,
@@ -86,7 +86,7 @@ class TaskIdBadge extends StatelessWidget {
                 FaIcon(
                   FontAwesomeIcons.copy,
                   size: isLarge ? 11 : 9,
-                  color: ClickUpColors.primary.withValues(alpha: 0.7),
+                  color: OnyxColors.primary.withValues(alpha: 0.7),
                 ),
               ],
             ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:onyx_todo/core/localization/app_strings.dart';
-import 'package:onyx_todo/core/ui/clickup_colors.dart';
+import 'package:onyx_todo/core/ui/onyx_colors.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 enum TaskStatus {
@@ -25,12 +25,12 @@ enum TaskStatus {
       };
 
   Color get color => switch (this) {
-        open => ClickUpColors.statusOpen,
-        inProgress => ClickUpColors.statusInProgress,
-        backendSolved => ClickUpColors.statusBackendSolved,
-        frontendSolved => ClickUpColors.statusFrontendSolved,
-        qaTesting => ClickUpColors.statusQaTesting,
-        closed => ClickUpColors.statusClosed,
+        open => OnyxColors.statusOpen,
+        inProgress => OnyxColors.statusInProgress,
+        backendSolved => OnyxColors.statusBackendSolved,
+        frontendSolved => OnyxColors.statusFrontendSolved,
+        qaTesting => OnyxColors.statusQaTesting,
+        closed => OnyxColors.statusClosed,
       };
 
   static TaskStatus fromString(String? val) {
@@ -70,10 +70,10 @@ enum TaskPriority {
       };
 
   Color get color => switch (this) {
-        urgent => ClickUpColors.priorityUrgent,
-        high => ClickUpColors.priorityHigh,
-        medium => ClickUpColors.priorityMedium,
-        low => ClickUpColors.priorityLow,
+        urgent => OnyxColors.priorityUrgent,
+        high => OnyxColors.priorityHigh,
+        medium => OnyxColors.priorityMedium,
+        low => OnyxColors.priorityLow,
       };
 
   FaIconData get icon => switch (this) {
@@ -117,10 +117,10 @@ enum TaskType {
       };
 
   Color get color => switch (this) {
-        task => ClickUpColors.primary,
-        bug => ClickUpColors.danger,
-        feature => ClickUpColors.success,
-        urgent => ClickUpColors.warning,
+        task => OnyxColors.primary,
+        bug => OnyxColors.danger,
+        feature => OnyxColors.success,
+        urgent => OnyxColors.warning,
       };
 
   static TaskType fromString(String? val) {

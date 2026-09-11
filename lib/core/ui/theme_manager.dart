@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:onyx_todo/core/extension/context_extensions.dart';
-import 'package:onyx_todo/core/ui/clickup_colors.dart';
+import 'package:onyx_todo/core/ui/onyx_colors.dart';
 import 'package:onyx_todo/core/ui/color_manager.dart';
 import 'package:onyx_todo/core/ui/font_manager.dart';
 import 'package:onyx_todo/core/ui/styles_manager.dart';
@@ -414,5 +414,3 @@ ThemeData getOnyxTheme({bool isDark = true}) {
     ),
   );
 }
-
-ThemeData getClickUpTheme({bool isDark = true}) => getOnyxTheme(isDark: isDark);
