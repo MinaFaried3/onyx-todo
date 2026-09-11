@@ -24,6 +24,7 @@ abstract interface class TaskRepository {
     String? frontendDevName,
     String? middleDevName,
     String? qaTesterName,
+    List<String>? roleFlow,
     double estimatedHours = 0.0,
     String? devNotes,
   });

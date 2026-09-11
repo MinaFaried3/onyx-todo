@@ -172,6 +172,9 @@ class TeamTaskPoolView extends HookWidget {
                                       estimatedHours: t.estimatedHours > 0 ? t.estimatedHours : 8.0,
                                       actualHours: t.actualHours,
                                       status: t.status.value,
+                                      startDate: t.createdDate,
+                                      endDate: t.dueDate,
+                                      description: t.description,
                                     ))
                                 .toList();
 

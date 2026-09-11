@@ -39,9 +39,13 @@ class TaskCreateDialog extends HookWidget {
     final estimatedHoursController = useTextEditingController(text: '4.0');
     final frontendDevController = useTextEditingController();
     final backendDevController = useTextEditingController();
+    final middleDevController = useTextEditingController();
+    final qaTesterController = useTextEditingController();
+    final selectedRoleFlow = useState<List<String>>(['backend', 'middle', 'frontend', 'qa']);
     final isSubmitting = useState(false);
 
     final modules = workspaceCubit.state.modulesState.data ?? OnyxModule.standardModules;
+    final teams = workspaceCubit.state.teamsState.data ?? const [];
 
     return Dialog(
       backgroundColor: isDark ? OnyxColors.darkCard : OnyxColors.lightCard,
@@ -278,7 +282,116 @@ class TaskCreateDialog extends HookWidget {
             ),
             const SizedBox(height: 14),
 
-            // Assignees (FE & BE)
+            // Role Flow Selection
+            Text(
+              '${AppStrings.roleFlow.tr()}:',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Wrap(
+              spacing: 8,
+              children: [
+                ChoiceChip(
+                  label: const Text('Backend ➔ Middle ➔ Front ➔ QA', style: TextStyle(fontSize: 11)),
+                  selected: selectedRoleFlow.value.length == 4 && selectedRoleFlow.value.contains('middle'),
+                  onSelected: (_) => selectedRoleFlow.value = ['backend', 'middle', 'frontend', 'qa'],
+                ),
+                ChoiceChip(
+                  label: const Text('Backend ➔ Middle ➔ Front', style: TextStyle(fontSize: 11)),
+                  selected: selectedRoleFlow.value.length == 3 && selectedRoleFlow.value.contains('middle'),
+                  onSelected: (_) => selectedRoleFlow.value = ['backend', 'middle', 'frontend'],
+                ),
+                ChoiceChip(
+                  label: const Text('Backend ➔ Frontend', style: TextStyle(fontSize: 11)),
+                  selected: selectedRoleFlow.value.length == 2 && selectedRoleFlow.value.contains('backend'),
+                  onSelected: (_) => selectedRoleFlow.value = ['backend', 'frontend'],
+                ),
+                ChoiceChip(
+                  label: const Text('Frontend Only', style: TextStyle(fontSize: 11)),
+                  selected: selectedRoleFlow.value.length == 1 && selectedRoleFlow.value.first == 'frontend',
+                  onSelected: (_) => selectedRoleFlow.value = ['frontend'],
+                ),
+              ],
+            ),
+            const SizedBox(height: 14),
+
+            // Assignees Section with Team Auto-Assign Button
+            Row(
+              children: [
+                Text(
+                  AppStrings.assignees.tr(),
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
+                  ),
+                ),
+                const Spacer(),
+                TextButton.icon(
+                  style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                  icon: const FaIcon(FontAwesomeIcons.wandMagicSparkles, size: 11, color: OnyxColors.primary),
+                  label: Text(
+                    context.locale.languageCode == 'ar' ? 'تعيين تلقائي من الفريق' : 'Auto-Assign from Team',
+                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: OnyxColors.primary),
+                  ),
+                  onPressed: () {
+                    final assignedTeam = teams.where(
+                      (t) => t.moduleCodes.contains(selectedModule.value),
+                    ).firstOrNull ?? (teams.isNotEmpty ? teams.first : null);
+
+                    if (assignedTeam != null) {
+                      final defaults = assignedTeam.defaultRoleAssignees;
+                      if (defaults['backend'] != null) backendDevController.text = defaults['backend']!;
+                      if (defaults['middle'] != null) middleDevController.text = defaults['middle']!;
+                      if (defaults['frontend'] != null) frontendDevController.text = defaults['frontend']!;
+                      if (defaults['qa'] != null) qaTesterController.text = defaults['qa']!;
+                      context.safeShowSnackBar(
+                        SnackBar(
+                          content: Text(
+                            context.locale.languageCode == 'ar'
+                                ? 'تم التعيين التلقائي وفق إعدادات فريق ${assignedTeam.name}'
+                                : 'Auto-assigned roles from team ${assignedTeam.name}',
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: backendDevController,
+                    decoration: InputDecoration(
+                      labelText: AppStrings.backendDev.tr(),
+                      hintText: AppStrings.assigneeHint.tr(),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                      isDense: true,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: TextField(
+                    controller: middleDevController,
+                    decoration: InputDecoration(
+                      labelText: AppStrings.middleDev.tr(),
+                      hintText: AppStrings.assigneeHint.tr(),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                      isDense: true,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
             Row(
               children: [
                 Expanded(
@@ -292,12 +405,12 @@ class TaskCreateDialog extends HookWidget {
                     ),
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 10),
                 Expanded(
                   child: TextField(
-                    controller: backendDevController,
+                    controller: qaTesterController,
                     decoration: InputDecoration(
-                      labelText: AppStrings.backendDev.tr(),
+                      labelText: AppStrings.qaTester.tr(),
                       hintText: AppStrings.assigneeHint.tr(),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                       isDense: true,
@@ -360,6 +473,25 @@ class TaskCreateDialog extends HookWidget {
                             return;
                           }
 
+                          // Auto-fallback from team default assignees if fields left blank
+                          final assignedTeam = teams.where(
+                            (t) => t.moduleCodes.contains(selectedModule.value),
+                          ).firstOrNull ?? (teams.isNotEmpty ? teams.first : null);
+                          final defaults = assignedTeam?.defaultRoleAssignees ?? const {};
+
+                          final finalBe = backendDevController.text.trim().isNotEmpty
+                              ? backendDevController.text.trim()
+                              : defaults['backend'];
+                          final finalMid = middleDevController.text.trim().isNotEmpty
+                              ? middleDevController.text.trim()
+                              : defaults['middle'];
+                          final finalFe = frontendDevController.text.trim().isNotEmpty
+                              ? frontendDevController.text.trim()
+                              : defaults['frontend'];
+                          final finalQa = qaTesterController.text.trim().isNotEmpty
+                              ? qaTesterController.text.trim()
+                              : defaults['qa'];
+
                           isSubmitting.value = true;
                           final ok = await tasksCubit.createTask(
                             version: selectedVersion.value,
@@ -371,12 +503,11 @@ class TaskCreateDialog extends HookWidget {
                             description: descController.text.trim(),
                             taskType: selectedType.value.value,
                             priority: selectedPriority.value.value,
-                            frontendDevName: frontendDevController.text.trim().isNotEmpty
-                                ? frontendDevController.text.trim()
-                                : null,
-                            backendDevName: backendDevController.text.trim().isNotEmpty
-                                ? backendDevController.text.trim()
-                                : null,
+                            backendDevName: finalBe,
+                            middleDevName: finalMid,
+                            frontendDevName: finalFe,
+                            qaTesterName: finalQa,
+                            roleFlow: selectedRoleFlow.value,
                             estimatedHours:
                                 double.tryParse(estimatedHoursController.text.trim()) ?? 0.0,
                           );

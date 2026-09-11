@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:onyx_todo/core/enum/task_enums.dart';
+import 'package:onyx_todo/feature/auth/domain/entities/user_profile.dart';
 import 'package:onyx_todo/feature/task/domain/entities/task_history_item.dart';
 
 class TaskEntity extends Equatable {
@@ -20,6 +21,7 @@ class TaskEntity extends Equatable {
   final String? qaTesterName;
   final List<String> roleFlow;
   final String currentRoleStage;
+  final String roleSubStatus; // 'todo', 'in_progress', 'under_review', 'completed'
   final DateTime createdDate;
   final DateTime? dueDate;
   final DateTime? resolvedDate;
@@ -47,6 +49,7 @@ class TaskEntity extends Equatable {
     this.qaTesterName,
     this.roleFlow = const ['backend', 'middle', 'frontend', 'qa'],
     this.currentRoleStage = 'backend',
+    this.roleSubStatus = 'todo',
     required this.createdDate,
     this.dueDate,
     this.resolvedDate,
@@ -56,6 +59,34 @@ class TaskEntity extends Equatable {
     this.qaNotes,
     this.history = const [],
   });
+
+  /// Check whether it is currently this user's turn in the role sequence
+  bool isUserTurnToWork(UserProfile user) {
+    if (user.isDepartmentManager) return true;
+    final assignee = currentAssigneeName;
+    if (assignee == null || assignee.isEmpty) return true;
+    return assignee.trim().toLowerCase() == user.name.trim().toLowerCase();
+  }
+
+  /// Get developer assigned to the active role stage
+  String? get currentAssigneeName {
+    return switch (currentRoleStage) {
+      'backend' => backendDevName,
+      'middle' => middleDevName,
+      'frontend' => frontendDevName,
+      'qa' => qaTesterName,
+      _ => null,
+    };
+  }
+
+  /// Get next role stage in role flow
+  String? get nextRoleStage {
+    final idx = roleFlow.indexOf(currentRoleStage);
+    if (idx != -1 && idx + 1 < roleFlow.length) {
+      return roleFlow[idx + 1];
+    }
+    return null;
+  }
 
   /// Helper to format task ID pattern: `V<version>.<module>.<000000>`
   static String generateFormattedId({
@@ -88,6 +119,7 @@ class TaskEntity extends Equatable {
         qaTesterName,
         roleFlow,
         currentRoleStage,
+        roleSubStatus,
         createdDate,
         dueDate,
         resolvedDate,
@@ -116,6 +148,7 @@ class TaskEntity extends Equatable {
     String? qaTesterName,
     List<String>? roleFlow,
     String? currentRoleStage,
+    String? roleSubStatus,
     DateTime? createdDate,
     DateTime? dueDate,
     DateTime? resolvedDate,
@@ -143,6 +176,7 @@ class TaskEntity extends Equatable {
       qaTesterName: qaTesterName ?? this.qaTesterName,
       roleFlow: roleFlow ?? this.roleFlow,
       currentRoleStage: currentRoleStage ?? this.currentRoleStage,
+      roleSubStatus: roleSubStatus ?? this.roleSubStatus,
       createdDate: createdDate ?? this.createdDate,
       dueDate: dueDate ?? this.dueDate,
       resolvedDate: resolvedDate ?? this.resolvedDate,
@@ -173,6 +207,7 @@ class TaskEntity extends Equatable {
       'qaTesterName': qaTesterName,
       'roleFlow': roleFlow,
       'currentRoleStage': currentRoleStage,
+      'roleSubStatus': roleSubStatus,
       'createdDate': createdDate.toIso8601String(),
       'dueDate': dueDate?.toIso8601String(),
       'resolvedDate': resolvedDate?.toIso8601String(),
@@ -203,6 +238,7 @@ class TaskEntity extends Equatable {
       qaTesterName: map['qaTesterName'] as String?,
       roleFlow: List<String>.from(map['roleFlow'] as List? ?? const ['backend', 'middle', 'frontend', 'qa']),
       currentRoleStage: map['currentRoleStage'] as String? ?? 'backend',
+      roleSubStatus: map['roleSubStatus'] as String? ?? 'todo',
       createdDate: map['createdDate'] != null
           ? DateTime.tryParse(map['createdDate'] as String) ?? DateTime.now()
           : DateTime.now(),

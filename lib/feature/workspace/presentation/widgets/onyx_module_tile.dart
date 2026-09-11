@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:onyx_todo/core/ui/onyx_colors.dart';
 
 class OnyxModuleTile extends StatelessWidget {
@@ -7,6 +8,7 @@ class OnyxModuleTile extends StatelessWidget {
     required this.name,
     required this.isSelected,
     required this.onTap,
+    this.onOpenHierarchy,
     super.key,
   });
 
@@ -14,6 +16,7 @@ class OnyxModuleTile extends StatelessWidget {
   final String name;
   final bool isSelected;
   final VoidCallback onTap;
+  final VoidCallback? onOpenHierarchy;
 
   @override
   Widget build(BuildContext context) {
@@ -56,6 +59,21 @@ class OnyxModuleTile extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
+            if (onOpenHierarchy != null) ...[
+              const SizedBox(width: 4),
+              InkWell(
+                onTap: onOpenHierarchy,
+                borderRadius: BorderRadius.circular(4),
+                child: Padding(
+                  padding: const EdgeInsets.all(4),
+                  child: FaIcon(
+                    FontAwesomeIcons.sitemap,
+                    size: 11,
+                    color: isSelected ? OnyxColors.primary : OnyxColors.neutral400,
+                  ),
+                ),
+              ),
+            ],
           ],
         ),
       ),

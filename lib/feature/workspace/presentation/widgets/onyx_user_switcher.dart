@@ -123,7 +123,27 @@ class OnyxUserSwitcher extends StatelessWidget {
               }).toList(),
             )
           else
-            const FaIcon(FontAwesomeIcons.lock, size: 10, color: OnyxColors.neutral400),
+            Tooltip(
+              message: AppStrings.privateAccount.tr(),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: OnyxColors.neutral500.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const FaIcon(FontAwesomeIcons.lock, size: 9, color: OnyxColors.neutral400),
+                    const SizedBox(width: 4),
+                    Text(
+                      AppStrings.privateAccount.tr(),
+                      style: const TextStyle(fontSize: 9, color: OnyxColors.neutral400, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+              ),
+            ),
         ],
       ),
     );

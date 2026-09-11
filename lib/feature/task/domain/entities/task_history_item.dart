@@ -2,10 +2,13 @@ import 'package:equatable/equatable.dart';
 
 class TaskHistoryItem extends Equatable {
   final String id;
-  final String action; // "status_change", "reassigned", "comment", "created", "hours_logged"
+  final String action; // "status_change", "role_handoff", "reassigned", "comment", "created", "hours_logged"
   final String authorName;
   final DateTime timestamp;
   final String details;
+  final String? roleStage;
+  final String? fromStatus;
+  final String? toStatus;
 
   const TaskHistoryItem({
     required this.id,
@@ -13,10 +16,22 @@ class TaskHistoryItem extends Equatable {
     required this.authorName,
     required this.timestamp,
     required this.details,
+    this.roleStage,
+    this.fromStatus,
+    this.toStatus,
   });
 
   @override
-  List<Object?> get props => [id, action, authorName, timestamp, details];
+  List<Object?> get props => [
+        id,
+        action,
+        authorName,
+        timestamp,
+        details,
+        roleStage,
+        fromStatus,
+        toStatus,
+      ];
 
   Map<String, dynamic> toMap() {
     return {
@@ -25,6 +40,9 @@ class TaskHistoryItem extends Equatable {
       'authorName': authorName,
       'timestamp': timestamp.toIso8601String(),
       'details': details,
+      'roleStage': roleStage,
+      'fromStatus': fromStatus,
+      'toStatus': toStatus,
     };
   }
 
@@ -37,6 +55,9 @@ class TaskHistoryItem extends Equatable {
           ? DateTime.tryParse(map['timestamp'] as String) ?? DateTime.now()
           : DateTime.now(),
       details: map['details'] as String? ?? '',
+      roleStage: map['roleStage'] as String?,
+      fromStatus: map['fromStatus'] as String?,
+      toStatus: map['toStatus'] as String?,
     );
   }
 }

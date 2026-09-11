@@ -174,6 +174,7 @@ enum UserRole {
   frontend('frontend'),
   middle('middle'),
   qa('qa'),
+  ai('ai'),
   developer('developer');
 
   final String value;
@@ -187,6 +188,7 @@ enum UserRole {
         frontend => AppStrings.stackFrontend.tr(),
         middle => AppStrings.stackMiddle.tr(),
         qa => AppStrings.roleQa.tr(),
+        ai => AppStrings.roleAi.tr(),
         developer => AppStrings.roleDeveloper.tr(),
       };
 }
@@ -195,7 +197,8 @@ enum DeveloperStack {
   frontend('frontend'),
   backend('backend'),
   middle('middle'),
-  qa('qa');
+  qa('qa'),
+  ai('ai');
 
   final String value;
   const DeveloperStack(this.value);
@@ -205,6 +208,7 @@ enum DeveloperStack {
         backend => AppStrings.stackBackend.tr(),
         middle => AppStrings.stackMiddle.tr(),
         qa => AppStrings.roleQa.tr(),
+        ai => AppStrings.roleAi.tr(),
       };
 }
 
@@ -222,4 +226,49 @@ enum NotificationType {
         systemAnnouncement => AppStrings.notifSystem.tr(),
       };
 }
+
+enum ScreenType {
+  config('config'),
+  inputs('inputs'),
+  transaction('transaction'),
+  reports('reports'),
+  movements('movements');
+
+  final String value;
+  const ScreenType(this.value);
+
+  String get label => switch (this) {
+        config => AppStrings.screenTypeConfig.tr(),
+        inputs => AppStrings.screenTypeInputs.tr(),
+        transaction => AppStrings.screenTypeTransaction.tr(),
+        reports => AppStrings.screenTypeReports.tr(),
+        movements => AppStrings.screenTypeMovements.tr(),
+      };
+
+  FaIconData get icon => switch (this) {
+        config => FontAwesomeIcons.sliders,
+        inputs => FontAwesomeIcons.keyboard,
+        transaction => FontAwesomeIcons.arrowRightArrowLeft,
+        reports => FontAwesomeIcons.chartPie,
+        movements => FontAwesomeIcons.truckFast,
+      };
+
+  Color get color => switch (this) {
+        config => OnyxColors.info,
+        inputs => OnyxColors.purple,
+        transaction => OnyxColors.warning,
+        reports => OnyxColors.success,
+        movements => const Color(0xFFE67E22),
+      };
+
+  static ScreenType fromString(String? val) {
+    if (val == null) return ScreenType.inputs;
+    final clean = val.trim().toLowerCase();
+    return ScreenType.values.firstWhere(
+      (e) => e.value == clean,
+      orElse: () => ScreenType.inputs,
+    );
+  }
+}
+
 

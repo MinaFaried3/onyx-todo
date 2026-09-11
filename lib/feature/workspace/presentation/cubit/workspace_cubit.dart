@@ -7,6 +7,8 @@ import 'package:onyx_todo/feature/notification/domain/repositories/notification_
 import 'package:onyx_todo/feature/team/domain/entities/team_entity.dart';
 import 'package:onyx_todo/feature/team/domain/repositories/team_repository.dart';
 import 'package:onyx_todo/feature/workspace/domain/entities/onyx_module.dart';
+import 'package:onyx_todo/feature/workspace/domain/entities/screen_leaf.dart';
+import 'package:onyx_todo/feature/workspace/domain/entities/sub_module_entity.dart';
 import 'package:onyx_todo/feature/workspace/domain/repositories/workspace_repository.dart';
 import 'package:onyx_todo/feature/workspace/presentation/cubit/workspace_state.dart';
 
@@ -162,7 +164,87 @@ class WorkspaceCubit extends BaseCubit<WorkspaceState> {
       emit(state.copyWith(
         modulesState: state.modulesState.copyWith(data: currentModules),
       ));
+      await workspaceRepository.saveModule(module);
     }
+  }
+
+  Future<void> addSubModule(String moduleCode, SubModuleEntity subModule) async {
+    final currentModules = List<OnyxModule>.from(state.modulesState.data ?? []);
+    final modIndex = currentModules.indexWhere((m) => m.code == moduleCode);
+    if (modIndex == -1) return;
+
+    final targetMod = currentModules[modIndex];
+    final updatedSubMods = List<SubModuleEntity>.from(targetMod.subModules)..add(subModule);
+    final updatedMod = targetMod.copyWith(subModules: updatedSubMods);
+    currentModules[modIndex] = updatedMod;
+
+    emit(state.copyWith(
+      modulesState: state.modulesState.copyWith(data: currentModules),
+    ));
+
+    await workspaceRepository.saveModule(updatedMod);
+  }
+
+  Future<void> addScreen(String moduleCode, String subModuleId, ScreenLeaf screen) async {
+    final currentModules = List<OnyxModule>.from(state.modulesState.data ?? []);
+    final modIndex = currentModules.indexWhere((m) => m.code == moduleCode);
+    if (modIndex == -1) return;
+
+    final targetMod = currentModules[modIndex];
+    final updatedSubMods = targetMod.subModules.map((sm) {
+      if (sm.id == subModuleId) {
+        final updatedScreens = List<ScreenLeaf>.from(sm.screens)..add(screen);
+        return sm.copyWith(screens: updatedScreens);
+      }
+      return sm;
+    }).toList();
+
+    final updatedMod = targetMod.copyWith(subModules: updatedSubMods);
+    currentModules[modIndex] = updatedMod;
+
+    emit(state.copyWith(
+      modulesState: state.modulesState.copyWith(data: currentModules),
+    ));
+
+    await workspaceRepository.saveModule(updatedMod);
+  }
+
+  Future<void> updateScreenProgress({
+    required String moduleCode,
+    required String subModuleId,
+    required String screenId,
+    double? backendProgress,
+    double? frontendProgress,
+  }) async {
+    final currentModules = List<OnyxModule>.from(state.modulesState.data ?? []);
+    final modIndex = currentModules.indexWhere((m) => m.code == moduleCode);
+    if (modIndex == -1) return;
+
+    final targetMod = currentModules[modIndex];
+    final updatedSubMods = targetMod.subModules.map((sm) {
+      if (sm.id == subModuleId) {
+        final updatedScreens = sm.screens.map((scr) {
+          if (scr.id == screenId) {
+            return scr.copyWith(
+              backendProgress: backendProgress ?? scr.backendProgress,
+              frontendProgress: frontendProgress ?? scr.frontendProgress,
+            );
+          }
+          return scr;
+        }).toList();
+        return sm.copyWith(screens: updatedScreens);
+      }
+      return sm;
+    }).toList();
+
+    final updatedMod = targetMod.copyWith(subModules: updatedSubMods);
+    currentModules[modIndex] = updatedMod;
+
+    emit(state.copyWith(
+      modulesState: state.modulesState.copyWith(data: currentModules),
+    ));
+
+    await workspaceRepository.saveModule(updatedMod);
   }
 
   Future<void> switchUser(String userId) async {

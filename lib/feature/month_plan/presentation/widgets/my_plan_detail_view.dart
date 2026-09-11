@@ -8,6 +8,7 @@ import 'package:onyx_todo/core/localization/app_strings.dart';
 import 'package:onyx_todo/core/ui/onyx_colors.dart';
 import 'package:onyx_todo/feature/month_plan/domain/entities/monthly_plan_entity.dart';
 import 'package:onyx_todo/feature/month_plan/presentation/widgets/add_plan_task_dialog.dart';
+import 'package:onyx_todo/feature/month_plan/presentation/widgets/close_plan_dialog.dart';
 import 'package:onyx_todo/feature/month_plan/presentation/widgets/monthly_hours_counter_card.dart';
 import 'package:onyx_todo/feature/month_plan/presentation/widgets/my_plan_tasks_table.dart';
 import 'package:onyx_todo/feature/month_plan/presentation/widgets/plan_kpi_card.dart';
@@ -168,12 +169,9 @@ class MyPlanDetailView extends StatelessWidget {
                 icon: const FaIcon(FontAwesomeIcons.lock, size: 13),
                 label: Text(AppStrings.closePlan.tr()),
                 onPressed: () {
-                  monthPlanCubit.updatePlanStatus(
-                    planId: plan.id,
-                    status: PlanStatus.closed,
-                  );
-                  context.safeShowSnackBar(
-                    SnackBar(content: Text(AppStrings.planClosedToast.tr())),
+                  showDialog(
+                    context: context,
+                    builder: (ctx) => ClosePlanDialog(plan: plan),
                   );
                 },
               ),

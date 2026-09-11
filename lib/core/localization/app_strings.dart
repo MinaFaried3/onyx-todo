@@ -304,5 +304,14 @@ abstract final class AppStrings {
   static String get subModuleNameEn => 'sub_module_name_en';
   static String get screenNameAr => 'screen_name_ar';
   static String get screenNameEn => 'screen_name_en';
+  static String get roleAi => 'role_ai';
+  static String get screenTypeMovements => 'screen_type_movements';
+  static String get rolloverUnfinishedTasks => 'rollover_unfinished_tasks';
+  static String get logicDelivered => 'logic_delivered';
+  static String get privateAccount => 'private_account';
+  static String get currentStageWaiting => 'current_stage_waiting';
+  static String get advanceToNextStage => 'advance_to_next_stage';
+  static String get stageCompletedToast => 'stage_completed_toast';
+  static String get moduleStructureTitle => 'module_structure_title';
 }
 

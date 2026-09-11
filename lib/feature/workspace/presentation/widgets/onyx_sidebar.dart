@@ -10,6 +10,7 @@ import 'package:onyx_todo/feature/workspace/domain/entities/onyx_module.dart';
 import 'package:onyx_todo/feature/workspace/presentation/cubit/workspace_cubit.dart';
 import 'package:onyx_todo/feature/workspace/presentation/cubit/workspace_state.dart';
 import 'package:onyx_todo/feature/workspace/presentation/widgets/module_create_dialog.dart';
+import 'package:onyx_todo/feature/workspace/presentation/widgets/module_hierarchy_dialog.dart';
 import 'package:onyx_todo/feature/workspace/presentation/widgets/onyx_collapsed_sidebar.dart';
 import 'package:onyx_todo/feature/workspace/presentation/widgets/onyx_module_tile.dart';
 import 'package:onyx_todo/feature/workspace/presentation/widgets/onyx_sidebar_item.dart';
@@ -150,12 +151,13 @@ class OnyxSidebar extends StatelessWidget {
                       isSelected: state.activeView == WorkspaceView.monthlyPlan,
                       onTap: () => workspaceCubit.setView(WorkspaceView.monthlyPlan),
                     ),
-                    OnyxSidebarItem(
-                      icon: FontAwesomeIcons.usersGear,
-                      label: AppStrings.teamsAndUsers.tr(),
-                      isSelected: state.activeView == WorkspaceView.teamManagement,
-                      onTap: () => workspaceCubit.setView(WorkspaceView.teamManagement),
-                    ),
+                    if (currentUser.canManageTeam)
+                      OnyxSidebarItem(
+                        icon: FontAwesomeIcons.usersGear,
+                        label: AppStrings.teamsAndUsers.tr(),
+                        isSelected: state.activeView == WorkspaceView.teamManagement,
+                        onTap: () => workspaceCubit.setView(WorkspaceView.teamManagement),
+                      ),
                     OnyxSidebarItem(
                       icon: FontAwesomeIcons.fileExcel,
                       label: AppStrings.excelImport.tr(),
@@ -219,6 +221,15 @@ class OnyxSidebar extends StatelessWidget {
                         name: m.nameAr,
                         isSelected: state.selectedModuleCode == m.code,
                         onTap: () => workspaceCubit.selectModule(m.code),
+                        onOpenHierarchy: () {
+                          showDialog(
+                            context: context,
+                            builder: (ctx) => BlocProvider.value(
+                              value: workspaceCubit,
+                              child: ModuleHierarchyDialog(moduleCode: m.code),
+                            ),
+                          );
+                        },
                       );
                     }),
                   ],

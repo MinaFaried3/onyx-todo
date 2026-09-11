@@ -96,6 +96,7 @@ class TasksCubit extends BaseCubit<TasksState> {
     String? frontendDevName,
     String? middleDevName,
     String? qaTesterName,
+    List<String>? roleFlow,
     double estimatedHours = 0.0,
     String? devNotes,
   }) async {
@@ -115,6 +116,7 @@ class TasksCubit extends BaseCubit<TasksState> {
       frontendDevName: frontendDevName,
       middleDevName: middleDevName,
       qaTesterName: qaTesterName,
+      roleFlow: roleFlow,
       estimatedHours: estimatedHours,
       devNotes: devNotes,
     );
@@ -142,6 +144,84 @@ class TasksCubit extends BaseCubit<TasksState> {
         return true;
       },
     );
+  }
+
+  /// Sequential role flow transition with sub-statuses: todo -> in_progress -> under_review -> completed
+  Future<void> updateRoleSubStatus({
+    required String taskId,
+    required String subStatus, // 'todo', 'in_progress', 'under_review', 'completed'
+    required String authorName,
+    String? note,
+  }) async {
+    final currentList = List<TaskEntity>.from(state.tasksState.data ?? []);
+    final index = currentList.indexWhere((t) => t.id == taskId);
+    if (index == -1) return;
+
+    final oldTask = currentList[index];
+    TaskEntity updatedTask;
+    final updatedHistory = List<TaskHistoryItem>.from(oldTask.history);
+
+    if (subStatus == 'completed') {
+      final nextStage = oldTask.nextRoleStage;
+      if (nextStage != null) {
+        updatedHistory.add(TaskHistoryItem(
+          id: 'hist_${DateTime.now().millisecondsSinceEpoch}',
+          action: 'role_handoff',
+          authorName: authorName,
+          timestamp: DateTime.now(),
+          details: 'اكتملت مرحلة (${oldTask.currentRoleStage}) ➔ ترحيل تلقائي إلى مرحلة ($nextStage)${note != null ? ' ($note)' : ''}',
+          roleStage: nextStage,
+          fromStatus: oldTask.currentRoleStage,
+          toStatus: nextStage,
+        ));
+        updatedTask = oldTask.copyWith(
+          currentRoleStage: nextStage,
+          roleSubStatus: 'todo',
+          history: updatedHistory,
+        );
+      } else {
+        updatedHistory.add(TaskHistoryItem(
+          id: 'hist_${DateTime.now().millisecondsSinceEpoch}',
+          action: 'status_change',
+          authorName: authorName,
+          timestamp: DateTime.now(),
+          details: 'اكتملت كافة مراحل العمل ➔ إغلاق المهمة${note != null ? ' ($note)' : ''}',
+          roleStage: oldTask.currentRoleStage,
+          toStatus: 'closed',
+        ));
+        updatedTask = oldTask.copyWith(
+          status: TaskStatus.closed,
+          roleSubStatus: 'completed',
+          resolvedDate: DateTime.now(),
+          history: updatedHistory,
+        );
+      }
+    } else {
+      final taskStatus = subStatus == 'in_progress' ? TaskStatus.inProgress : oldTask.status;
+      updatedHistory.add(TaskHistoryItem(
+        id: 'hist_${DateTime.now().millisecondsSinceEpoch}',
+        action: 'status_change',
+        authorName: authorName,
+        timestamp: DateTime.now(),
+        details: 'تغيير حالة مرحلة (${oldTask.currentRoleStage}) إلى $subStatus${note != null ? ' ($note)' : ''}',
+        roleStage: oldTask.currentRoleStage,
+        fromStatus: oldTask.roleSubStatus,
+        toStatus: subStatus,
+      ));
+      updatedTask = oldTask.copyWith(
+        status: taskStatus,
+        roleSubStatus: subStatus,
+        history: updatedHistory,
+      );
+    }
+
+    currentList[index] = updatedTask;
+    emit(state.copyWith(
+      tasksState: state.tasksState.copyWith(data: currentList),
+      selectedTask: state.selectedTask?.id == taskId ? () => updatedTask : null,
+    ));
+
+    await taskRepository.updateTask(updatedTask);
   }
 
   Future<void> updateTaskStatus({
@@ -177,6 +257,9 @@ class TasksCubit extends BaseCubit<TasksState> {
         authorName: authorName,
         timestamp: DateTime.now(),
         details: '${oldTask.status.label} ➔ ${newStatus.label}${note != null ? ' ($note)' : ''}',
+        roleStage: nextRoleStage,
+        fromStatus: oldTask.status.value,
+        toStatus: newStatus.value,
       ));
 
       final updatedTask = oldTask.copyWith(

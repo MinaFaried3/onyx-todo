@@ -125,4 +125,112 @@ class MonthPlanCubit extends BaseCubit<MonthPlanState> {
 
     saveOrUpdatePlan(updatedPlan);
   }
+
+  void updateTaskInPlan(MonthlyPlanTaskItem item) {
+    final currentPlan = state.activePlanState.data;
+    if (currentPlan == null) return;
+
+    final updatedTasks = currentPlan.plannedTasks.map((t) => t.taskId == item.taskId ? item : t).toList();
+    final totalEst = updatedTasks.fold<double>(0.0, (sum, t) => sum + t.estimatedHours);
+    final updatedPlan = currentPlan.copyWith(
+      plannedTasks: updatedTasks,
+      totalEstimatedHours: totalEst,
+      updatedAt: DateTime.now(),
+    );
+
+    saveOrUpdatePlan(updatedPlan);
+  }
+
+  void removeTaskFromPlan(String taskId) {
+    final currentPlan = state.activePlanState.data;
+    if (currentPlan == null) return;
+
+    final updatedTasks = currentPlan.plannedTasks.where((t) => t.taskId != taskId).toList();
+    final totalEst = updatedTasks.fold<double>(0.0, (sum, t) => sum + t.estimatedHours);
+    final updatedPlan = currentPlan.copyWith(
+      plannedTasks: updatedTasks,
+      totalEstimatedHours: totalEst,
+      updatedAt: DateTime.now(),
+    );
+
+    saveOrUpdatePlan(updatedPlan);
+  }
+
+  Future<void> closePlanWithRollover({
+    required MonthlyPlanEntity plan,
+    required List<MonthlyPlanTaskItem> tasksWithActuals,
+    required bool rolloverUnfinished,
+  }) async {
+    final totalActual = tasksWithActuals.fold<double>(0.0, (sum, t) => sum + t.actualHours);
+    final closedPlan = plan.copyWith(
+      status: PlanStatus.closed,
+      plannedTasks: tasksWithActuals,
+      totalActualHours: totalActual,
+      updatedAt: DateTime.now(),
+    );
+
+    await saveOrUpdatePlan(closedPlan);
+
+    if (rolloverUnfinished) {
+      final unfinished = tasksWithActuals
+          .where((t) => t.status != 'completed' || t.actualHours < t.estimatedHours)
+          .toList();
+
+      if (unfinished.isNotEmpty) {
+        final nextMonth = plan.month == 12 ? 1 : plan.month + 1;
+        final nextYear = plan.month == 12 ? plan.year + 1 : plan.year;
+
+        final nextPlansRes = await monthPlanRepository.getPlans(
+          month: nextMonth,
+          year: nextYear,
+          developerName: plan.developerName,
+        );
+
+        final existingNextPlan = nextPlansRes.fold(
+          (_) => null,
+          (plans) => plans.where((p) => p.developerName == plan.developerName).firstOrNull,
+        );
+
+        final rolledTasks = unfinished.map((t) {
+          final remainingHours = (t.estimatedHours - t.actualHours).clamp(1.0, t.estimatedHours);
+          return t.copyWith(
+            actualHours: 0.0,
+            estimatedHours: remainingHours,
+            estimatedDays: (remainingHours / 8.0).clamp(0.5, 30.0),
+            isRolledOver: true,
+          );
+        }).toList();
+
+        if (existingNextPlan != null) {
+          final mergedTasks = [...existingNextPlan.plannedTasks, ...rolledTasks];
+          final totalEst = mergedTasks.fold<double>(0.0, (sum, t) => sum + t.estimatedHours);
+          final updatedNextPlan = existingNextPlan.copyWith(
+            plannedTasks: mergedTasks,
+            totalEstimatedHours: totalEst,
+            updatedAt: DateTime.now(),
+          );
+          await monthPlanRepository.savePlan(updatedNextPlan);
+        } else {
+          final workingDays = MonthlyPlanEntity.calculateWorkingDays(nextYear, nextMonth);
+          final totalEst = rolledTasks.fold<double>(0.0, (sum, t) => sum + t.estimatedHours);
+          final newNextPlan = MonthlyPlanEntity(
+            id: 'plan_${plan.developerName}_${nextYear}_$nextMonth',
+            developerName: plan.developerName,
+            developerStack: plan.developerStack,
+            month: nextMonth,
+            year: nextYear,
+            workingDays: workingDays,
+            targetHours: workingDays * 8.0,
+            totalEstimatedHours: totalEst,
+            totalActualHours: 0.0,
+            status: PlanStatus.draft,
+            plannedTasks: rolledTasks,
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now(),
+          );
+          await monthPlanRepository.savePlan(newNextPlan);
+        }
+      }
+    }
+  }
 }

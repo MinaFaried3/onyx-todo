@@ -6,7 +6,7 @@ import 'package:onyx_todo/core/extension/bloc_reader.dart';
 import 'package:onyx_todo/core/localization/app_strings.dart';
 import 'package:onyx_todo/core/ui/onyx_colors.dart';
 import 'package:onyx_todo/feature/month_plan/domain/entities/monthly_plan_entity.dart';
-import 'package:onyx_todo/feature/month_plan/domain/entities/monthly_plan_task_item.dart';
+import 'package:onyx_todo/feature/month_plan/presentation/widgets/edit_plan_task_dialog.dart';
 import 'package:onyx_todo/feature/task/presentation/widgets/task_id_badge.dart';
 
 class MyPlanTasksTable extends StatelessWidget {
@@ -50,7 +50,7 @@ class MyPlanTasksTable extends StatelessWidget {
                 SizedBox(width: 90, child: Text(AppStrings.estDaysCol.tr(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
                 SizedBox(width: 90, child: Text(AppStrings.estHoursCol.tr(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
                 SizedBox(width: 90, child: Text(AppStrings.actHoursCol.tr(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
-                if (canEdit) const SizedBox(width: 40),
+                if (canEdit) const SizedBox(width: 64),
               ],
             ),
           ),
@@ -112,25 +112,31 @@ class MyPlanTasksTable extends StatelessWidget {
                     ),
                     if (canEdit)
                       SizedBox(
-                        width: 40,
-                        child: IconButton(
-                          icon: const FaIcon(FontAwesomeIcons.trashCan, size: 13, color: OnyxColors.danger),
-                          onPressed: () {
-                            final updatedTasks = List<MonthlyPlanTaskItem>.from(plan.plannedTasks)
-                              ..removeWhere((item) => item.taskId == t.taskId);
-
-                            final newTotalHours = updatedTasks.fold<double>(
-                              0.0,
-                              (sum, item) => sum + item.estimatedHours,
-                            );
-
-                            final updatedPlan = plan.copyWith(
-                              plannedTasks: updatedTasks,
-                              totalEstimatedHours: newTotalHours,
-                            );
-
-                            monthPlanCubit.saveOrUpdatePlan(updatedPlan);
-                          },
+                        width: 64,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: const FaIcon(FontAwesomeIcons.penToSquare, size: 12, color: OnyxColors.primary),
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (ctx) => EditPlanTaskDialog(item: t),
+                                );
+                              },
+                            ),
+                            const SizedBox(width: 8),
+                            IconButton(
+                              icon: const FaIcon(FontAwesomeIcons.trashCan, size: 12, color: OnyxColors.danger),
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                              onPressed: () {
+                                monthPlanCubit.removeTaskFromPlan(t.taskId);
+                              },
+                            ),
+                          ],
                         ),
                       ),
                   ],

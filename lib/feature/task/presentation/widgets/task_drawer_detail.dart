@@ -8,6 +8,7 @@ import 'package:onyx_todo/core/localization/app_strings.dart';
 import 'package:onyx_todo/core/ui/onyx_colors.dart';
 import 'package:onyx_todo/feature/task/domain/entities/task_entity.dart';
 import 'package:onyx_todo/feature/task/presentation/widgets/assignee_avatar_badge.dart';
+import 'package:onyx_todo/feature/task/presentation/widgets/role_pipeline_card.dart';
 import 'package:onyx_todo/feature/task/presentation/widgets/task_history_tile.dart';
 
 class TaskDrawerDetail extends HookWidget {
@@ -23,6 +24,8 @@ class TaskDrawerDetail extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final tasksCubit = context.tasksCubit;
+    final workspaceCubit = context.workspaceCubit;
+    final currentUser = workspaceCubit.state.currentUser;
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
@@ -221,7 +224,27 @@ class TaskDrawerDetail extends HookWidget {
                           ),
                         ),
                       ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 16),
+
+                // Sequential Role Pipeline & Execution Card
+                RolePipelineCard(
+                  task: task,
+                  currentUser: currentUser,
+                  isDark: isDark,
+                  onUpdateSubStatus: (subStatus) {
+                    tasksCubit.updateRoleSubStatus(
+                      taskId: task.id,
+                      subStatus: subStatus,
+                      authorName: currentUser.name,
+                    );
+                  },
+                  onManualStageChange: (newStage) {
+                    tasksCubit.updateTask(task.copyWith(
+                      currentRoleStage: newStage,
+                      roleSubStatus: 'todo',
+                    ));
+                  },
+                ),
 
                 // ─── 2-Column ClickUp Properties Grid ────────────────────────
                 _buildPropertyRow(

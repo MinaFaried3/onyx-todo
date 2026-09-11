@@ -48,6 +48,7 @@ class TaskRepositoryImpl implements TaskRepository {
     String? frontendDevName,
     String? middleDevName,
     String? qaTesterName,
+    List<String>? roleFlow,
     double estimatedHours = 0.0,
     String? devNotes,
   }) async {
@@ -71,6 +72,9 @@ class TaskRepositoryImpl implements TaskRepository {
         details: 'Task created with ID $formattedId',
       );
 
+      final flow = roleFlow ?? const ['backend', 'middle', 'frontend', 'qa'];
+      final initialStage = flow.isNotEmpty ? flow.first : 'backend';
+
       final newTask = TaskEntity(
         id: formattedId,
         formattedId: formattedId,
@@ -87,6 +91,9 @@ class TaskRepositoryImpl implements TaskRepository {
         frontendDevName: frontendDevName,
         middleDevName: middleDevName,
         qaTesterName: qaTesterName,
+        roleFlow: flow,
+        currentRoleStage: initialStage,
+        roleSubStatus: 'todo',
         createdDate: DateTime.now(),
         estimatedHours: estimatedHours,
         devNotes: devNotes,

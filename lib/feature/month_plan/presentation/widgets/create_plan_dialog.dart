@@ -27,8 +27,10 @@ class CreatePlanDialog extends HookWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    final workingDaysController = useTextEditingController(text: '20');
-    final targetHoursController = useTextEditingController(text: '160.0');
+    final initialDays = MonthlyPlanEntity.calculateWorkingDays(year, month);
+    final initialHours = (initialDays * 8.0).toStringAsFixed(1);
+    final workingDaysController = useTextEditingController(text: '$initialDays');
+    final targetHoursController = useTextEditingController(text: initialHours);
 
     return Dialog(
       backgroundColor: isDark ? OnyxColors.darkCard : OnyxColors.lightCard,

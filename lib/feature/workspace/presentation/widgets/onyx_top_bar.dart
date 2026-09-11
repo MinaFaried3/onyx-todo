@@ -8,6 +8,7 @@ import 'package:onyx_todo/core/ui/onyx_colors.dart';
 import 'package:onyx_todo/feature/notification/presentation/widgets/notification_dropdown_overlay.dart';
 import 'package:onyx_todo/feature/task/presentation/widgets/task_create_dialog.dart';
 import 'package:onyx_todo/feature/workspace/presentation/cubit/workspace_state.dart';
+import 'package:onyx_todo/feature/workspace/presentation/widgets/module_hierarchy_dialog.dart';
 import 'package:onyx_todo/feature/workspace/presentation/widgets/onyx_view_tab.dart';
 
 class OnyxTopBar extends StatelessWidget {
@@ -62,6 +63,47 @@ class OnyxTopBar extends StatelessWidget {
                   color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
                 ),
               ),
+              if (state.selectedModuleCode != 'ALL') ...[
+                const SizedBox(width: 8),
+                InkWell(
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (ctx) => BlocProvider.value(
+                        value: workspaceCubit,
+                        child: ModuleHierarchyDialog(moduleCode: state.selectedModuleCode),
+                      ),
+                    );
+                  },
+                  borderRadius: BorderRadius.circular(4),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: OnyxColors.primary.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        FaIcon(
+                          FontAwesomeIcons.sitemap,
+                          size: 11,
+                          color: isDark ? OnyxColors.primaryLight : OnyxColors.primary,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          AppStrings.moduleHierarchy.tr(),
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: isDark ? OnyxColors.primaryLight : OnyxColors.primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ],
           ),
 

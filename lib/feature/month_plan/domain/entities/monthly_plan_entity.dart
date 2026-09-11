@@ -35,6 +35,24 @@ class MonthlyPlanEntity extends Equatable {
     required this.updatedAt,
   });
 
+  /// Calculates working days in a given month excluding Friday and Saturday (Egyptian / Middle Eastern standard)
+  static int calculateWorkingDays(int year, int month) {
+    final daysInMonth = DateTime(year, month + 1, 0).day;
+    var count = 0;
+    for (var day = 1; day <= daysInMonth; day++) {
+      final date = DateTime(year, month, day);
+      if (date.weekday != DateTime.friday && date.weekday != DateTime.saturday) {
+        count++;
+      }
+    }
+    return count;
+  }
+
+  /// Calculates target hours based on 8 hours per working day
+  static double calculateTargetHours(int year, int month) {
+    return calculateWorkingDays(year, month) * 8.0;
+  }
+
   @override
   List<Object?> get props => [
         id,
@@ -118,14 +136,19 @@ class MonthlyPlanEntity extends Equatable {
       orElse: () => PlanStatus.draft,
     );
 
+    final m = (map['month'] as num?)?.toInt() ?? DateTime.now().month;
+    final y = (map['year'] as num?)?.toInt() ?? DateTime.now().year;
+    final computedWorkingDays = MonthlyPlanEntity.calculateWorkingDays(y, m);
+    final computedTargetHours = computedWorkingDays * 8.0;
+
     return MonthlyPlanEntity(
       id: docId ?? (map['id'] as String? ?? ''),
       developerName: map['developerName'] as String? ?? '',
       developerStack: stack,
-      month: (map['month'] as num?)?.toInt() ?? DateTime.now().month,
-      year: (map['year'] as num?)?.toInt() ?? DateTime.now().year,
-      workingDays: (map['workingDays'] as num?)?.toInt() ?? 20,
-      targetHours: (map['targetHours'] as num?)?.toDouble() ?? 160.0,
+      month: m,
+      year: y,
+      workingDays: (map['workingDays'] as num?)?.toInt() ?? computedWorkingDays,
+      targetHours: (map['targetHours'] as num?)?.toDouble() ?? computedTargetHours,
       totalEstimatedHours: (map['totalEstimatedHours'] as num?)?.toDouble() ?? 0.0,
       totalActualHours: (map['totalActualHours'] as num?)?.toDouble() ?? 0.0,
       status: planStatus,

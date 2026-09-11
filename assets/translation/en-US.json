@@ -293,5 +293,14 @@
   "sub_module_name_ar": "Sub-Module Name (Arabic)",
   "sub_module_name_en": "Sub-Module Name (English)",
   "screen_name_ar": "Screen Name (Arabic)",
-  "screen_name_en": "Screen Name (English)"
+  "screen_name_en": "Screen Name (English)",
+  "role_ai": "Artificial Intelligence (AI)",
+  "screen_type_movements": "Movements",
+  "rollover_unfinished_tasks": "Rollover Unfinished Tasks to Next Month's Plan",
+  "logic_delivered": "Logic & Deliverables Completed",
+  "private_account": "Private Account",
+  "current_stage_waiting": "Waiting for previous role stage completion",
+  "advance_to_next_stage": "Advance to Next Stage",
+  "stage_completed_toast": "Stage completed and task automatically handed off!",
+  "module_structure_title": "Module Screens Hierarchy & Progress"
 }

@@ -293,5 +293,14 @@
   "sub_module_name_ar": "اسم النظام الفرعي (بالعربي)",
   "sub_module_name_en": "اسم النظام الفرعي (بالإنجليزي)",
   "screen_name_ar": "اسم الشاشة (بالعربي)",
-  "screen_name_en": "اسم الشاشة (بالإنجليزي)"
+  "screen_name_en": "اسم الشاشة (بالإنجليزي)",
+  "role_ai": "ذكاء اصطناعي (AI)",
+  "screen_type_movements": "الحركات",
+  "rollover_unfinished_tasks": "ترحيل المهام غير المكتملة لخطة الشهر القادم",
+  "logic_delivered": "المنطق البرمجي والأعمال المنجزة",
+  "private_account": "حساب شخصي (خاص)",
+  "current_stage_waiting": "في انتظار اكتمال مرحلة سابقة",
+  "advance_to_next_stage": "ترحيل للمرحلة التالية",
+  "stage_completed_toast": "تم إنجاز المرحلة الحالية وترحيل المهمة تلقائياً!",
+  "module_structure_title": "هيكل شاشات الموديول ونسب الإنجاز"
 }

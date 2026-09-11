@@ -9,6 +9,7 @@ import 'package:onyx_todo/core/ui/onyx_colors.dart';
 import 'package:onyx_todo/feature/achievement/presentation/cubit/achievement_cubit.dart';
 import 'package:onyx_todo/feature/achievement/presentation/cubit/achievement_state.dart';
 import 'package:onyx_todo/feature/achievement/presentation/widgets/achievement_card.dart';
+import 'package:onyx_todo/feature/achievement/presentation/widgets/achievement_empty_state.dart';
 import 'package:onyx_todo/feature/achievement/presentation/widgets/achievement_kpi_card.dart';
 import 'package:onyx_todo/feature/achievement/presentation/widgets/log_achievement_dialog.dart';
 
@@ -23,6 +24,7 @@ class AchievementScreen extends HookWidget {
 
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final selectedTeamId = useState<String?>(null);
 
     useEffect(() {
       achievementCubit.fetchAchievements(
@@ -37,16 +39,36 @@ class AchievementScreen extends HookWidget {
       {'key': 'this_week', 'label': AppStrings.filterThisWeek.tr()},
       {'key': 'last_week', 'label': AppStrings.filterLastWeek.tr()},
       {'key': 'this_month', 'label': AppStrings.filterThisMonth.tr()},
+      {'key': 'custom', 'label': AppStrings.filterCustom.tr()},
     ];
 
     return BlocBuilder<AchievementCubit, AchievementState>(
       builder: (context, state) {
-        final achievements = state.achievementsState.data ?? [];
-        final totalHours = state.totalLoggedHours;
+        final allAchievements = state.achievementsState.data ?? [];
+        final teams = workspaceCubit.state.teamsState.data ?? [];
+
+        // Filter achievements by team if selected
+        final achievements = selectedTeamId.value == null
+            ? allAchievements
+            : allAchievements.where((a) {
+                final team = teams.where((t) => t.id == selectedTeamId.value).firstOrNull;
+                if (team == null) return true;
+                final dev = workspaceCubit.state.availableUsers.where((u) => u.name == a.developerName).firstOrNull;
+                return dev != null && team.memberIds.contains(dev.id);
+              }).toList();
+
+        final totalHours = achievements.fold<double>(0.0, (sum, a) => sum + a.totalHours);
         final totalTasks = achievements.fold<int>(
           0,
           (sum, a) => sum + a.tasksWorked.length,
         );
+
+        final availableDevs = selectedTeamId.value == null
+            ? workspaceCubit.state.availableUsers
+            : workspaceCubit.state.availableUsers.where((u) {
+                final team = teams.where((t) => t.id == selectedTeamId.value).firstOrNull;
+                return team != null && team.memberIds.contains(u.id);
+              }).toList();
 
         return Scaffold(
           backgroundColor: Colors.transparent,
@@ -105,25 +127,89 @@ class AchievementScreen extends HookWidget {
                 ),
                 const SizedBox(height: 16),
 
-                // Period Filter Pills + Developer Filter
+                // Period Filter Pills + Team & Developer Filter
                 Row(
                   children: [
                     ...filters.map((f) {
                       final isSelected = state.selectedFilter == f['key'];
+                      String label = f['label']!;
+                      if (f['key'] == 'custom' && state.customStartDate != null && state.customEndDate != null) {
+                        label = '${DateFormat('MM/dd').format(state.customStartDate!)} - ${DateFormat('MM/dd').format(state.customEndDate!)}';
+                      }
+
                       return Padding(
                         padding: const EdgeInsets.only(right: 8),
                         child: ChoiceChip(
-                          label: Text(f['label']!),
+                          label: Text(label),
                           selected: isSelected,
                           selectedColor: OnyxColors.primary.withValues(alpha: 0.2),
-                          onSelected: (_) => achievementCubit.setFilter(f['key']!),
+                          onSelected: (_) async {
+                            if (f['key'] == 'custom') {
+                              final picked = await showDateRangePicker(
+                                context: context,
+                                firstDate: DateTime(2020),
+                                lastDate: DateTime(2030),
+                                initialDateRange: state.customStartDate != null && state.customEndDate != null
+                                    ? DateTimeRange(start: state.customStartDate!, end: state.customEndDate!)
+                                    : null,
+                              );
+                              if (picked != null) {
+                                achievementCubit.setFilter('custom', customStart: picked.start, customEnd: picked.end);
+                              }
+                            } else {
+                              achievementCubit.setFilter(f['key']!);
+                            }
+                          },
                         ),
                       );
                     }),
                     const Spacer(),
 
-                    // If Department Manager, can filter by developer
+                    // If Department Manager, can filter by Team and Developer
                     if (currentUser.isDepartmentManager) ...[
+                      // Team Filter Dropdown
+                      Text(
+                        '${AppStrings.assignedTeam.tr()}: ',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
+                        ),
+                      ),
+                      DropdownButton<String?>(
+                        value: selectedTeamId.value,
+                        hint: Text(
+                          AppStrings.all.tr(),
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                        underline: const SizedBox(),
+                        items: [
+                          DropdownMenuItem(
+                            value: null,
+                            child: Text(AppStrings.all.tr(), style: const TextStyle(fontSize: 12)),
+                          ),
+                          ...teams.map((t) {
+                            return DropdownMenuItem(
+                              value: t.id,
+                              child: Text(t.name, style: const TextStyle(fontSize: 12)),
+                            );
+                          }),
+                        ],
+                        onChanged: (tId) {
+                          selectedTeamId.value = tId;
+                          if (tId != null) {
+                            final team = teams.where((t) => t.id == tId).firstOrNull;
+                            if (team != null && state.developerFilter != null) {
+                              final dev = workspaceCubit.state.availableUsers.where((u) => u.name == state.developerFilter).firstOrNull;
+                              if (dev != null && !team.memberIds.contains(dev.id)) {
+                                achievementCubit.setDeveloperFilter(null);
+                              }
+                            }
+                          }
+                        },
+                      ),
+                      const SizedBox(width: 14),
+
+                      // Developer Filter Dropdown
                       Text(
                         '${AppStrings.filterByDeveloper.tr()}: ',
                         style: TextStyle(
@@ -146,7 +232,7 @@ class AchievementScreen extends HookWidget {
                               style: const TextStyle(fontSize: 12),
                             ),
                           ),
-                          ...workspaceCubit.state.availableUsers.map((u) {
+                          ...availableDevs.map((u) {
                             return DropdownMenuItem(
                               value: u.name,
                               child: Text(u.name, style: const TextStyle(fontSize: 12)),
@@ -198,7 +284,7 @@ class AchievementScreen extends HookWidget {
                   child: state.achievementsState.isLoading
                       ? const Center(child: CircularProgressIndicator())
                       : achievements.isEmpty
-                          ? _buildEmptyState(isDark)
+                          ? AchievementEmptyState(isDark: isDark)
                           : ListView.builder(
                               itemCount: achievements.length,
                               itemBuilder: (context, index) {
@@ -214,28 +300,5 @@ class AchievementScreen extends HookWidget {
       },
     );
   }
-
-  Widget _buildEmptyState(bool isDark) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          FaIcon(
-            FontAwesomeIcons.newspaper,
-            size: 48,
-            color: isDark ? OnyxColors.neutral600 : OnyxColors.neutral400,
-          ),
-          const SizedBox(height: 12),
-          Text(
-            AppStrings.noAchievementsFound.tr(),
-            style: TextStyle(
-              fontSize: 14,
-              color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
+
