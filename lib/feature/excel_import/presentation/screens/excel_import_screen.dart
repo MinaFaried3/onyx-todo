@@ -1,5 +1,4 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -10,7 +9,9 @@ import 'package:onyx_todo/core/localization/app_strings.dart';
 import 'package:onyx_todo/core/ui/onyx_colors.dart';
 import 'package:onyx_todo/feature/excel_import/presentation/cubit/excel_import_cubit.dart';
 import 'package:onyx_todo/feature/excel_import/presentation/cubit/excel_import_state.dart';
-import 'package:onyx_todo/feature/task/presentation/widgets/task_id_badge.dart';
+import 'package:onyx_todo/feature/excel_import/presentation/widgets/excel_preview_table.dart';
+import 'package:onyx_todo/feature/excel_import/presentation/widgets/excel_staged_action_bar.dart';
+import 'package:onyx_todo/feature/excel_import/presentation/widgets/excel_upload_dropzone.dart';
 import 'package:onyx_todo/feature/workspace/presentation/cubit/workspace_state.dart';
 
 class ExcelImportScreen extends HookWidget {
@@ -27,7 +28,8 @@ class ExcelImportScreen extends HookWidget {
     return BlocConsumer<ExcelImportCubit, ExcelImportState>(
       listenWhen: (prev, curr) =>
           (!prev.importState.isSucceed && curr.importState.isSucceed) ||
-          (!prev.importState.isFailed && curr.importState.isFailed),
+          (!prev.importState.isFailed && curr.importState.isFailed) ||
+          (!prev.parseState.isFailed && curr.parseState.isFailed),
       listener: (context, state) {
         if (state.importState.isSucceed) {
           tasksCubit.fetchTasks();
@@ -66,16 +68,36 @@ class ExcelImportScreen extends HookWidget {
               ),
             ),
           );
+        } else if (state.parseState.isFailed) {
+          context.safeShowSnackBar(
+            SnackBar(
+              backgroundColor: OnyxColors.statusClosed,
+              content: Row(
+                children: [
+                  const FaIcon(FontAwesomeIcons.triangleExclamation, color: OnyxColors.white, size: 16),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      state.parseState.message ?? AppStrings.error.tr(),
+                      style: const TextStyle(fontWeight: FontWeight.bold, color: OnyxColors.white),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
         }
       },
       builder: (context, state) {
-        final isLoading = state.importState.isLoading;
+        final isParsing = state.parseState.isLoading;
+        final isUploading = state.importState.isLoading;
         final isSuccess = state.importState.isSucceed;
-        final isFailed = state.importState.isFailed;
+        final isStaged = state.isStaged;
         final previewTasks = state.previewTasks;
+        final filteredTasks = state.filteredPreviewTasks;
         final sheetsFound = state.sheetsFound;
 
-        // Group preview tasks by version for quick inspection
+        // Group preview tasks by version
         final versionCounts = <String, int>{};
         for (final t in previewTasks) {
           versionCounts[t.version] = (versionCounts[t.version] ?? 0) + 1;
@@ -117,81 +139,8 @@ class ExcelImportScreen extends HookWidget {
                 ),
                 const SizedBox(height: 20),
 
-                // Upload Card / Dropzone
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(32),
-                  decoration: BoxDecoration(
-                    color: isDark ? OnyxColors.darkCard : OnyxColors.lightCard,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: OnyxColors.primary.withValues(alpha: 0.3),
-                      width: 1.5,
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      FaIcon(
-                        FontAwesomeIcons.cloudArrowUp,
-                        size: 48,
-                        color: OnyxColors.primary.withValues(alpha: 0.8),
-                      ),
-                      const SizedBox(height: 14),
-                      Text(
-                        AppStrings.uploadExcelPrompt.tr(),
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 16),
-                      ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: OnyxColors.primary,
-                          foregroundColor: OnyxColors.lightCard,
-                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                        ),
-                        icon: isLoading
-                            ? SizedBox(
-                                width: 16,
-                                height: 16,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: OnyxColors.lightCard,
-                                ),
-                              )
-                            : const FaIcon(FontAwesomeIcons.folderOpen, size: 14),
-                        label: Text(
-                          isLoading ? AppStrings.importingTasks.tr() : AppStrings.selectExcelFile.tr(),
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        onPressed: isLoading
-                            ? null
-                            : () async {
-                                final result = await FilePicker.platform.pickFiles(
-                                  type: FileType.custom,
-                                  allowedExtensions: ['xlsx', 'xls'],
-                                  withData: true,
-                                );
-
-                                if (result != null && result.files.isNotEmpty) {
-                                  final file = result.files.first;
-                                  final bytes = file.bytes;
-                                  if (bytes != null) {
-                                    excelImportCubit.processExcelBytes(bytes, file.name);
-                                  }
-                                }
-                              },
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),
-
-                // Error notification banner
-                if (isFailed) ...[
+                // Error Notification Banner
+                if (state.importState.isFailed || state.parseState.isFailed) ...[
                   Container(
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
@@ -205,7 +154,7 @@ class ExcelImportScreen extends HookWidget {
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(
-                            state.importState.message ?? AppStrings.error.tr(),
+                            state.importState.message ?? state.parseState.message ?? AppStrings.error.tr(),
                             style: const TextStyle(fontWeight: FontWeight.bold, color: OnyxColors.statusClosed),
                           ),
                         ),
@@ -219,76 +168,51 @@ class ExcelImportScreen extends HookWidget {
                   const SizedBox(height: 16),
                 ],
 
-                // Success notification banner
-                if (isSuccess) ...[
+                // STAGE 1: Upload Dropzone (When not staged and not yet confirmed)
+                if (!isStaged && !isSuccess) ...[
+                  ExcelUploadDropzone(
+                    isLoading: isParsing,
+                    onFileSelected: (bytes, fileName) {
+                      excelImportCubit.processExcelBytes(bytes, fileName);
+                    },
+                  ),
+                ],
+
+                // STAGE 2: Staged Review & Module Inspection (In-Memory Preview Only)
+                if (isStaged) ...[
+                  // Summary Banner
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: OnyxColors.success.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: OnyxColors.success),
+                      color: isDark ? OnyxColors.darkCard : OnyxColors.lightCard,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: isDark ? OnyxColors.darkBorder : OnyxColors.lightBorder,
+                      ),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
                           children: [
-                            const FaIcon(FontAwesomeIcons.circleCheck, color: OnyxColors.success, size: 20),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: Text(
-                                '${AppStrings.tasksImportedSuccess.tr()}: ${previewTasks.length} ${AppStrings.tasks.tr()}',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15,
-                                  color: OnyxColors.success,
-                                ),
+                            const FaIcon(FontAwesomeIcons.tableList, size: 16, color: OnyxColors.primary),
+                            const SizedBox(width: 8),
+                            Text(
+                              '${AppStrings.tasksImported.tr()}: ${previewTasks.length} ${AppStrings.tasks.tr()}',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                                color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
                               ),
                             ),
-                            Wrap(
-                              spacing: 8,
-                              children: [
-                                ElevatedButton.icon(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: OnyxColors.primary,
-                                    foregroundColor: OnyxColors.white,
-                                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-                                  ),
-                                  icon: const FaIcon(FontAwesomeIcons.listCheck, size: 12),
-                                  label: Text(
-                                    AppStrings.listView.tr(),
-                                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-                                  ),
-                                  onPressed: () {
-                                    workspaceCubit.setView(WorkspaceView.list);
-                                    tasksCubit.fetchTasks();
-                                    context.safeShowSnackBar(
-                                      SnackBar(content: Text(AppStrings.tasksUpdatedSuccess.tr())),
-                                    );
-                                  },
-                                ),
-                                ElevatedButton.icon(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: OnyxColors.success,
-                                    foregroundColor: OnyxColors.white,
-                                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-                                  ),
-                                  icon: const FaIcon(FontAwesomeIcons.tableColumns, size: 12),
-                                  label: Text(
-                                    AppStrings.boardView.tr(),
-                                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-                                  ),
-                                  onPressed: () {
-                                    workspaceCubit.setView(WorkspaceView.board);
-                                    tasksCubit.fetchTasks();
-                                    context.safeShowSnackBar(
-                                      SnackBar(content: Text(AppStrings.tasksUpdatedSuccess.tr())),
-                                    );
-                                  },
-                                ),
-                              ],
+                            const Spacer(),
+                            Text(
+                              '${AppStrings.modules.tr()}: ${sheetsFound.length}',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
+                              ),
                             ),
                           ],
                         ),
@@ -297,16 +221,13 @@ class ExcelImportScreen extends HookWidget {
                           Wrap(
                             spacing: 8,
                             children: versionCounts.entries.map((e) {
-                              return ActionChip(
+                              return Chip(
                                 label: Text(
                                   '${e.key} (${e.value} ${AppStrings.tasks.tr()})',
                                   style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
                                 ),
-                                onPressed: () {
-                                  workspaceCubit.selectVersion(e.key);
-                                  workspaceCubit.setView(WorkspaceView.list);
-                                  tasksCubit.fetchTasks(version: e.key);
-                                },
+                                backgroundColor: isDark ? OnyxColors.neutral700 : OnyxColors.neutral200,
+                                side: BorderSide.none,
                               );
                             }).toList(),
                           ),
@@ -314,138 +235,152 @@ class ExcelImportScreen extends HookWidget {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 16),
-                ],
+                  const SizedBox(height: 14),
 
-                // Discovered Sheets Chips
-                if (sheetsFound.isNotEmpty) ...[
-                  Text(
-                    '${AppStrings.sheetsFound.tr()} (${sheetsFound.length}):',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13,
-                      color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 6,
-                    runSpacing: 6,
-                    children: sheetsFound.map((code) {
-                      return Chip(
-                        label: Text(code, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
-                        backgroundColor: isDark ? OnyxColors.darkCard : OnyxColors.lightCard,
-                        side: BorderSide(color: OnyxColors.primary.withValues(alpha: 0.3)),
-                      );
-                    }).toList(),
-                  ),
-                  const SizedBox(height: 16),
-                ],
-
-                // Preview Table
-                if (previewTasks.isNotEmpty) ...[
-                  Text(
-                    '${AppStrings.tasksImported.tr()} (${previewTasks.length}):',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                      color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: isDark ? OnyxColors.darkCard : OnyxColors.lightCard,
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: isDark ? OnyxColors.darkBorder : OnyxColors.lightBorder,
-                        ),
+                  // Module Filter Chips (Allows user to inspect each sheet)
+                  if (sheetsFound.isNotEmpty) ...[
+                    Text(
+                      '${AppStrings.filter.tr()}:',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                        color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
                       ),
-                      child: ListView.builder(
-                        itemCount: previewTasks.length > 50 ? 50 : previewTasks.length,
-                        itemBuilder: (context, index) {
-                          final t = previewTasks[index];
-                          return Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                            decoration: BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: isDark ? OnyxColors.darkBorder : OnyxColors.lightBorder,
-                                  width: 0.5,
-                                ),
+                    ),
+                    const SizedBox(height: 6),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          ChoiceChip(
+                            label: Text('${AppStrings.all.tr()} (${previewTasks.length})', style: const TextStyle(fontSize: 11)),
+                            selected: state.selectedPreviewModule == 'ALL',
+                            onSelected: (_) => excelImportCubit.filterPreviewByModule('ALL'),
+                          ),
+                          const SizedBox(width: 6),
+                          ...sheetsFound.map((mod) {
+                            final count = previewTasks.where((t) => t.moduleCode == mod).length;
+                            final isSelected = state.selectedPreviewModule == mod;
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 6),
+                              child: ChoiceChip(
+                                label: Text('$mod ($count)', style: const TextStyle(fontSize: 11)),
+                                selected: isSelected,
+                                onSelected: (_) => excelImportCubit.filterPreviewByModule(mod),
                               ),
-                            ),
-                            child: Row(
-                              children: [
-                                TaskIdBadge(formattedId: t.formattedId),
-                                const SizedBox(width: 8),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                  decoration: BoxDecoration(
-                                    color: isDark ? OnyxColors.neutral700 : OnyxColors.neutral200,
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  child: Text(
-                                    t.moduleCode,
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.bold,
-                                      color: isDark ? OnyxColors.neutral300 : OnyxColors.neutral700,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                  decoration: BoxDecoration(
-                                    color: OnyxColors.primary.withValues(alpha: 0.1),
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  child: Text(
-                                    t.screenName,
-                                    style: const TextStyle(fontSize: 10, color: OnyxColors.primary),
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    t.title,
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                if (t.frontendDevName != null) ...[
-                                  Text(
-                                    t.frontendDevName!,
-                                    style: const TextStyle(fontSize: 10, color: OnyxColors.teal),
-                                  ),
-                                  const SizedBox(width: 6),
-                                ],
-                                if (t.backendDevName != null) ...[
-                                  Text(
-                                    t.backendDevName!,
-                                    style: const TextStyle(fontSize: 10, color: OnyxColors.purple),
-                                  ),
-                                  const SizedBox(width: 6),
-                                ],
-                                Text(
-                                  t.status.label,
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    color: t.status.color,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
+                            );
+                          }),
+                        ],
                       ),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
+
+                  // Interactive Staged Preview Table
+                  Expanded(
+                    child: ExcelPreviewTable(
+                      tasks: filteredTasks,
+                      isDark: isDark,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Staged Action Bar (Confirm Upload / Discard)
+                  ExcelStagedActionBar(
+                    isUploading: isUploading,
+                    uploadProgress: state.uploadProgress,
+                    uploadedCount: state.uploadedCount,
+                    totalCount: state.totalToUpload,
+                    onConfirm: () => excelImportCubit.confirmImport(),
+                    onDiscard: () => excelImportCubit.discardStagedImport(),
+                  ),
+                ],
+
+                // STAGE 3: Confirmed Success View
+                if (isSuccess) ...[
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: OnyxColors.success.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: OnyxColors.success),
+                    ),
+                    child: Column(
+                      children: [
+                        const FaIcon(FontAwesomeIcons.circleCheck, color: OnyxColors.success, size: 48),
+                        const SizedBox(height: 14),
+                        Text(
+                          '${AppStrings.tasksImportedSuccess.tr()} (${previewTasks.length} ${AppStrings.tasks.tr()})',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: OnyxColors.success,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          'تم رفع وتحديث كافة المهام في قاعدة بيانات Cloud Firestore بنجاح.',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: isDark ? OnyxColors.neutral300 : OnyxColors.neutral600,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 20),
+                        Wrap(
+                          spacing: 12,
+                          runSpacing: 10,
+                          alignment: WrapAlignment.center,
+                          children: [
+                            ElevatedButton.icon(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: OnyxColors.primary,
+                                foregroundColor: OnyxColors.white,
+                                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                              ),
+                              icon: const FaIcon(FontAwesomeIcons.listCheck, size: 14),
+                              label: Text(
+                                AppStrings.listView.tr(),
+                                style: const TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              onPressed: () {
+                                workspaceCubit.setView(WorkspaceView.list);
+                                tasksCubit.fetchTasks();
+                              },
+                            ),
+                            ElevatedButton.icon(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: OnyxColors.success,
+                                foregroundColor: OnyxColors.white,
+                                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                              ),
+                              icon: const FaIcon(FontAwesomeIcons.tableColumns, size: 14),
+                              label: Text(
+                                AppStrings.boardView.tr(),
+                                style: const TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              onPressed: () {
+                                workspaceCubit.setView(WorkspaceView.board);
+                                tasksCubit.fetchTasks();
+                              },
+                            ),
+                            OutlinedButton.icon(
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: isDark ? OnyxColors.neutral300 : OnyxColors.neutral700,
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                              ),
+                              icon: const FaIcon(FontAwesomeIcons.arrowRotateLeft, size: 13),
+                              label: Text(AppStrings.selectExcelFile.tr()),
+                              onPressed: () => excelImportCubit.reset(),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                 ],

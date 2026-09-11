@@ -222,5 +222,12 @@
   "work_hours_unit": "ساعة عمل",
   "working_days_count": "أيام عمل",
   "workload_view": "عبء العمل",
-  "workspace": "مساحة العمل"
+  "workspace": "مساحة العمل",
+  "confirm_import": "تأكيد استيراد المهام إلى السحابة",
+  "discard_import": "إلغاء الاستيراد",
+  "uploading_to_cloud": "جاري الرفع إلى السحابة",
+  "load_more_tasks": "تحميل المزيد من المهام",
+  "all_tasks_loaded": "تم تحميل كافة المهام",
+  "staged_preview_notice": "معاينة المهام قبل التأكيد (لم يتم الحفظ في السحابة بعد)",
+  "upload_progress_label": "جاري رفع المهام إلى Cloud Firestore..."
 }

@@ -134,6 +134,13 @@ abstract final class AppStrings {
   static String get sheetsFound => 'sheets_found';
   static String get tasksImported => 'tasks_imported';
   static String get uploadExcelPrompt => 'upload_excel_prompt';
+  static String get confirmImport => 'confirm_import';
+  static String get discardImport => 'discard_import';
+  static String get uploadingToCloud => 'uploading_to_cloud';
+  static String get loadMoreTasks => 'load_more_tasks';
+  static String get allTasksLoaded => 'all_tasks_loaded';
+  static String get stagedPreviewNotice => 'staged_preview_notice';
+  static String get uploadProgressLabel => 'upload_progress_label';
 
   // ─── Roles & Stacks ──────────────────────────────────────────────────────────
   static String get roleManager => 'role_manager';

@@ -222,5 +222,12 @@
   "work_hours_unit": "Work Hours",
   "working_days_count": "Working Days",
   "workload_view": "Workload",
-  "workspace": "Workspace"
+  "workspace": "Workspace",
+  "confirm_import": "Confirm Import Tasks to Cloud",
+  "discard_import": "Discard Import",
+  "uploading_to_cloud": "Uploading to Cloud",
+  "load_more_tasks": "Load More Tasks",
+  "all_tasks_loaded": "All Tasks Loaded",
+  "staged_preview_notice": "Preview staged tasks before confirming (not saved to cloud yet)",
+  "upload_progress_label": "Uploading tasks to Cloud Firestore..."
 }

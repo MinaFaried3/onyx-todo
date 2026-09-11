@@ -8,6 +8,8 @@ abstract interface class TaskRepository {
     String? version,
     String? status,
     String? assigneeName,
+    int page = 1,
+    int limit = 25,
   });
 
   Future<Either<Failure, TaskEntity>> createTask({
@@ -35,5 +37,8 @@ abstract interface class TaskRepository {
 
   Future<Either<Failure, Unit>> updateTask(TaskEntity task);
 
-  Future<Either<Failure, int>> importTasks(List<TaskEntity> tasks);
+  Future<Either<Failure, int>> importTasks(
+    List<TaskEntity> tasks, {
+    void Function(int uploaded, int total)? onProgress,
+  });
 }

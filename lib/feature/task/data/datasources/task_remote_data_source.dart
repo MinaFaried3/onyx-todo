@@ -9,7 +9,8 @@ abstract interface class TaskRemoteDataSource {
     String? version,
     String? status,
     String? assigneeName,
-    int limit = 200,
+    int page = 1,
+    int limit = 25,
   });
 
   Future<TaskEntity> createTask(TaskEntity task);
@@ -28,7 +29,10 @@ abstract interface class TaskRemoteDataSource {
     required String moduleCode,
   });
 
-  Future<int> batchImportTasks(List<TaskEntity> tasks);
+  Future<int> batchImportTasks(
+    List<TaskEntity> tasks, {
+    void Function(int uploaded, int total)? onProgress,
+  });
 }
 
 class TaskRemoteDataSourceImpl implements TaskRemoteDataSource {
@@ -61,8 +65,10 @@ class TaskRemoteDataSourceImpl implements TaskRemoteDataSource {
     String? version,
     String? status,
     String? assigneeName,
-    int limit = 1000,
+    int page = 1,
+    int limit = 25,
   }) async {
+    final fetchLimit = page * limit;
     try {
       if (_tasksCollection != null) {
         Query<Map<String, dynamic>> query = _tasksCollection!;
@@ -77,7 +83,7 @@ class TaskRemoteDataSourceImpl implements TaskRemoteDataSource {
           query = query.where('status', isEqualTo: status);
         }
 
-        query = query.limit(limit);
+        query = query.limit(fetchLimit);
 
         final snapshot = await query
             .get(const GetOptions(source: Source.serverAndCache))
@@ -118,7 +124,13 @@ class TaskRemoteDataSourceImpl implements TaskRemoteDataSource {
           t.frontendDevName == assigneeName ||
           t.middleDevName == assigneeName).toList();
     }
-    return filtered;
+
+    // Sort by sequence number descending so latest tasks appear first
+    filtered.sort((a, b) => b.sequenceNumber.compareTo(a.sequenceNumber));
+
+    // Return paginated slice up to current page boundary
+    final maxIndex = fetchLimit.clamp(0, filtered.length);
+    return filtered.sublist(0, maxIndex);
   }
 
   @override
@@ -234,8 +246,11 @@ class TaskRemoteDataSourceImpl implements TaskRemoteDataSource {
   }
 
   @override
-  Future<int> batchImportTasks(List<TaskEntity> tasks) async {
-    // 1. Immediately store into local memory cache using O(N) Map indexing
+  Future<int> batchImportTasks(
+    List<TaskEntity> tasks, {
+    void Function(int uploaded, int total)? onProgress,
+  }) async {
+    // 1. Store into local memory cache
     final map = {for (final t in _localMemoryTasks) t.formattedId: t};
     for (final t in tasks) {
       map[t.formattedId] = t;
@@ -244,10 +259,11 @@ class TaskRemoteDataSourceImpl implements TaskRemoteDataSource {
       ..clear()
       ..addAll(map.values);
 
-    // 2. Try Firestore batch write if configured, guarded with a 4s timeout
+    // 2. Try Firestore progressive batch write if configured
     try {
       if (_tasksCollection != null) {
-        const batchSize = 400; // Under Firestore 500 limit
+        const batchSize = 50; // Optimized chunks for live feedback and fast commits
+        int uploadedCount = 0;
         for (var i = 0; i < tasks.length; i += batchSize) {
           final chunk = tasks.sublist(
             i,
@@ -259,15 +275,22 @@ class TaskRemoteDataSourceImpl implements TaskRemoteDataSource {
             batch.set(docRef, task.toMap(), SetOptions(merge: true));
           }
           try {
-            await batch.commit().timeout(const Duration(seconds: 3));
+            await batch.commit().timeout(const Duration(seconds: 4));
+            uploadedCount += chunk.length;
+            onProgress?.call(uploadedCount, tasks.length);
+            Printer.log('Firestore upload progress: $uploadedCount / ${tasks.length} tasks');
           } catch (e) {
             Printer.logger('Firestore batch write notice on chunk $i ($e). Falling back to memory storage.');
+            onProgress?.call(tasks.length, tasks.length);
             break;
           }
         }
+      } else {
+        onProgress?.call(tasks.length, tasks.length);
       }
     } catch (e) {
       Printer.logger('Firestore batchImportTasks notice (storing in memory): $e');
+      onProgress?.call(tasks.length, tasks.length);
     }
 
     return tasks.length;

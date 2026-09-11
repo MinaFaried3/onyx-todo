@@ -17,6 +17,8 @@ class TaskRepositoryImpl implements TaskRepository {
     String? version,
     String? status,
     String? assigneeName,
+    int page = 1,
+    int limit = 25,
   }) async {
     try {
       final tasks = await remoteDataSource.getTasks(
@@ -24,6 +26,8 @@ class TaskRepositoryImpl implements TaskRepository {
         version: version,
         status: status,
         assigneeName: assigneeName,
+        page: page,
+        limit: limit,
       );
       return Right(tasks);
     } catch (e) {
@@ -127,9 +131,15 @@ class TaskRepositoryImpl implements TaskRepository {
   }
 
   @override
-  Future<Either<Failure, int>> importTasks(List<TaskEntity> tasks) async {
+  Future<Either<Failure, int>> importTasks(
+    List<TaskEntity> tasks, {
+    void Function(int uploaded, int total)? onProgress,
+  }) async {
     try {
-      final count = await remoteDataSource.batchImportTasks(tasks);
+      final count = await remoteDataSource.batchImportTasks(
+        tasks,
+        onProgress: onProgress,
+      );
       return Right(count);
     } catch (e) {
       return Left(ServerFailure(code: -1, message: e.toString()));

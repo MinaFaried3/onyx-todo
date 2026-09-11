@@ -13,6 +13,11 @@ final class TasksState extends BaseState {
   final TaskStatus? statusFilter;
   final String? assigneeFilter;
   final TaskEntity? selectedTask;
+  final int currentPage;
+  final bool hasMore;
+  final bool isLoadingMore;
+  final String? activeModuleCode;
+  final String? activeVersionCode;
 
   const TasksState({
     super.uiState,
@@ -24,6 +29,11 @@ final class TasksState extends BaseState {
     this.statusFilter,
     this.assigneeFilter,
     this.selectedTask,
+    this.currentPage = 1,
+    this.hasMore = true,
+    this.isLoadingMore = false,
+    this.activeModuleCode,
+    this.activeVersionCode,
   });
 
   List<TaskEntity> get filteredTasks {
@@ -64,6 +74,11 @@ final class TasksState extends BaseState {
         statusFilter,
         assigneeFilter,
         selectedTask,
+        currentPage,
+        hasMore,
+        isLoadingMore,
+        activeModuleCode,
+        activeVersionCode,
       ];
 
   @override
@@ -77,6 +92,11 @@ final class TasksState extends BaseState {
     TaskStatus? Function()? statusFilter,
     String? Function()? assigneeFilter,
     TaskEntity? Function()? selectedTask,
+    int? currentPage,
+    bool? hasMore,
+    bool? isLoadingMore,
+    String? Function()? activeModuleCode,
+    String? Function()? activeVersionCode,
   }) {
     return TasksState(
       uiState: uiState ?? this.uiState,
@@ -88,6 +108,11 @@ final class TasksState extends BaseState {
       statusFilter: statusFilter != null ? statusFilter() : this.statusFilter,
       assigneeFilter: assigneeFilter != null ? assigneeFilter() : this.assigneeFilter,
       selectedTask: selectedTask != null ? selectedTask() : this.selectedTask,
+      currentPage: currentPage ?? this.currentPage,
+      hasMore: hasMore ?? this.hasMore,
+      isLoadingMore: isLoadingMore ?? this.isLoadingMore,
+      activeModuleCode: activeModuleCode != null ? activeModuleCode() : this.activeModuleCode,
+      activeVersionCode: activeVersionCode != null ? activeVersionCode() : this.activeVersionCode,
     );
   }
 }

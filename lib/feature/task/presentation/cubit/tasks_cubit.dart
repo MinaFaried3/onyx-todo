@@ -15,15 +15,22 @@ class TasksCubit extends BaseCubit<TasksState> {
     String? moduleCode,
     String? version,
     String? status,
+    bool refresh = true,
   }) async {
     emit(state.copyWith(
       tasksState: state.tasksState.copyWith(state: UiState.loading),
+      currentPage: 1,
+      hasMore: true,
+      activeModuleCode: () => moduleCode,
+      activeVersionCode: () => version,
     ));
 
     final res = await taskRepository.getTasks(
       moduleCode: moduleCode,
       version: version,
       status: status,
+      page: 1,
+      limit: 25,
     );
 
     res.fold(
@@ -38,7 +45,41 @@ class TasksCubit extends BaseCubit<TasksState> {
           state: UiState.succeed,
           data: tasks,
         ),
+        hasMore: tasks.length >= 25,
+        currentPage: 1,
       )),
+    );
+  }
+
+  Future<void> loadMoreTasks() async {
+    if (state.isLoadingMore || !state.hasMore) return;
+
+    emit(state.copyWith(isLoadingMore: true));
+    final nextPage = state.currentPage + 1;
+
+    final res = await taskRepository.getTasks(
+      moduleCode: state.activeModuleCode,
+      version: state.activeVersionCode,
+      status: state.statusFilter?.value,
+      page: nextPage,
+      limit: 25,
+    );
+
+    res.fold(
+      (failure) => emit(state.copyWith(isLoadingMore: false)),
+      (tasks) {
+        final currentCount = state.tasksState.data?.length ?? 0;
+        final hasMore = tasks.length > currentCount && (tasks.length % 25 == 0);
+        emit(state.copyWith(
+          tasksState: state.tasksState.copyWith(
+            state: UiState.succeed,
+            data: tasks,
+          ),
+          currentPage: nextPage,
+          hasMore: hasMore,
+          isLoadingMore: false,
+        ));
+      },
     );
   }
 
