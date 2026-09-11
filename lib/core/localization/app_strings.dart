@@ -220,4 +220,8 @@ abstract final class AppStrings {
   static const String actHoursMetric = 'act_hours_metric';
   static const String completionRateMetric = 'completion_rate_metric';
   static const String taskCountLabel = 'task_count_label';
+  static const String activeDevelopers = 'active_developers';
+  static const String teamAchievementSubtitle = 'team_achievement_subtitle';
+  static const String filterByDeveloper = 'filter_by_developer';
+  static const String allDevelopers = 'all_developers';
 }

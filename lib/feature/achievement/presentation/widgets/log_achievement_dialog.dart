@@ -2,12 +2,14 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:onyx_todo/core/extension/bloc_reader.dart';
 import 'package:onyx_todo/core/extension/context_extensions.dart';
 import 'package:onyx_todo/core/localization/app_strings.dart';
 import 'package:onyx_todo/core/ui/clickup_colors.dart';
 import 'package:onyx_todo/feature/achievement/domain/entities/achievement_task_item.dart';
 import 'package:onyx_todo/feature/achievement/domain/entities/daily_achievement_entity.dart';
+import 'package:onyx_todo/feature/task/presentation/widgets/task_id_badge.dart';
 
 class LogAchievementDialog extends HookWidget {
   const LogAchievementDialog({super.key});
@@ -44,25 +46,40 @@ class LogAchievementDialog extends HookWidget {
             // Header
             Row(
               children: [
-                const Icon(Icons.verified_rounded, color: Colors.green, size: 24),
-                const SizedBox(width: 8),
+                const FaIcon(FontAwesomeIcons.circleCheck, color: ClickUpColors.success, size: 20),
+                const SizedBox(width: 10),
                 Text(
                   AppStrings.logDailyAchievement.tr(),
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                  ),
                 ),
                 const Spacer(),
                 IconButton(
-                  icon: const Icon(Icons.close_rounded),
+                  icon: FaIcon(
+                    FontAwesomeIcons.xmark,
+                    size: 16,
+                    color: isDark ? ClickUpColors.neutral400 : ClickUpColors.neutral600,
+                  ),
                   onPressed: () => context.safePop(),
                 ),
               ],
             ),
-            const Divider(height: 20),
+            Divider(
+              height: 20,
+              color: isDark ? ClickUpColors.darkBorder : ClickUpColors.lightBorder,
+            ),
 
             // Developer Info
             Text(
-              'المطور: ${currentUser.name} (${currentUser.stack.label})',
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+              '${AppStrings.developerLabel.tr()}: ${currentUser.name} (${currentUser.stack.label})',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
+                color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+              ),
             ),
             const SizedBox(height: 14),
 
@@ -70,7 +87,7 @@ class LogAchievementDialog extends HookWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: isDark ? Colors.white.withValues(alpha: 0.04) : Colors.black.withValues(alpha: 0.03),
+                color: isDark ? ClickUpColors.neutral800 : ClickUpColors.neutral100,
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
                   color: isDark ? ClickUpColors.darkBorder : ClickUpColors.lightBorder,
@@ -79,7 +96,14 @@ class LogAchievementDialog extends HookWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('إضافة مهمة تم العمل عليها اليوم:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                  Text(
+                    AppStrings.tasksWorked.tr(),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                      color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                    ),
+                  ),
                   const SizedBox(height: 8),
                   Row(
                     children: [
@@ -87,11 +111,11 @@ class LogAchievementDialog extends HookWidget {
                         flex: 2,
                         child: TextField(
                           controller: taskIdController,
-                          decoration: const InputDecoration(
-                            labelText: 'كود المهمة',
+                          decoration: InputDecoration(
+                            labelText: AppStrings.taskIdCol.tr(),
                             hintText: 'V5.1.8.GLS.000001',
                             isDense: true,
-                            border: OutlineInputBorder(),
+                            border: const OutlineInputBorder(),
                           ),
                         ),
                       ),
@@ -100,10 +124,10 @@ class LogAchievementDialog extends HookWidget {
                         flex: 3,
                         child: TextField(
                           controller: taskTitleController,
-                          decoration: const InputDecoration(
-                            labelText: 'وصف ما تم إنجازه',
+                          decoration: InputDecoration(
+                            labelText: AppStrings.description.tr(),
                             isDense: true,
-                            border: OutlineInputBorder(),
+                            border: const OutlineInputBorder(),
                           ),
                         ),
                       ),
@@ -113,17 +137,20 @@ class LogAchievementDialog extends HookWidget {
                         child: TextField(
                           controller: hoursController,
                           keyboardType: TextInputType.number,
-                          decoration: const InputDecoration(
-                            labelText: 'الساعات',
+                          decoration: InputDecoration(
+                            labelText: AppStrings.hoursSpent.tr(),
                             suffixText: 'h',
                             isDense: true,
-                            border: OutlineInputBorder(),
+                            border: const OutlineInputBorder(),
                           ),
                         ),
                       ),
                       const SizedBox(width: 8),
                       ElevatedButton(
-                        style: ElevatedButton.styleFrom(backgroundColor: ClickUpColors.primary, foregroundColor: Colors.white),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: ClickUpColors.primary,
+                          foregroundColor: ClickUpColors.lightCard,
+                        ),
                         onPressed: () {
                           if (taskTitleController.text.trim().isNotEmpty) {
                             final code = taskIdController.text.trim().isEmpty
@@ -143,7 +170,7 @@ class LogAchievementDialog extends HookWidget {
                             taskIdController.clear();
                           }
                         },
-                        child: const Icon(Icons.add, size: 18),
+                        child: const FaIcon(FontAwesomeIcons.plus, size: 14),
                       ),
                     ],
                   ),
@@ -155,8 +182,12 @@ class LogAchievementDialog extends HookWidget {
             // Added Tasks List
             if (tasksList.value.isNotEmpty) ...[
               Text(
-                'المهام المسجلة (${tasksList.value.length}):',
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                '${AppStrings.tasksWorked.tr()} (${tasksList.value.length}):',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                  color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                ),
               ),
               const SizedBox(height: 6),
               ...tasksList.value.map((t) {
@@ -164,17 +195,35 @@ class LogAchievementDialog extends HookWidget {
                   margin: const EdgeInsets.only(bottom: 6),
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   decoration: BoxDecoration(
-                    color: Colors.green.withValues(alpha: 0.08),
+                    color: ClickUpColors.success.withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(6),
+                    border: Border.all(
+                      color: ClickUpColors.success.withValues(alpha: 0.2),
+                    ),
                   ),
                   child: Row(
                     children: [
-                      Text(t.formattedId, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: Colors.green)),
+                      TaskIdBadge(formattedId: t.formattedId),
                       const SizedBox(width: 8),
-                      Expanded(child: Text(t.title, style: const TextStyle(fontSize: 12))),
-                      Text('${t.hoursSpent}h', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                      Expanded(
+                        child: Text(
+                          t.title,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        '${t.hoursSpent}h',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                          color: ClickUpColors.success,
+                        ),
+                      ),
                       IconButton(
-                        icon: const Icon(Icons.delete_outline, size: 16, color: Colors.red),
+                        icon: const FaIcon(FontAwesomeIcons.trashCan, size: 14, color: ClickUpColors.danger),
                         onPressed: () {
                           tasksList.value = tasksList.value.where((item) => item != t).toList();
                         },
@@ -194,7 +243,7 @@ class LogAchievementDialog extends HookWidget {
                     controller: blockersController,
                     decoration: InputDecoration(
                       labelText: AppStrings.blockers.tr(),
-                      hintText: 'أي تحديات أو عوائق واجهتك...',
+                      hintText: AppStrings.blockers.tr(),
                       isDense: true,
                       border: const OutlineInputBorder(),
                     ),
@@ -206,7 +255,7 @@ class LogAchievementDialog extends HookWidget {
                     controller: nextDayPlanController,
                     decoration: InputDecoration(
                       labelText: AppStrings.nextDayPlan.tr(),
-                      hintText: 'ما تخطط لإنجازه غداً...',
+                      hintText: AppStrings.nextDayPlan.tr(),
                       isDense: true,
                       border: const OutlineInputBorder(),
                     ),
@@ -220,7 +269,7 @@ class LogAchievementDialog extends HookWidget {
             Row(
               children: [
                 OutlinedButton.icon(
-                  icon: const Icon(Icons.share_rounded, size: 16),
+                  icon: const FaIcon(FontAwesomeIcons.shareNodes, size: 14),
                   label: Text(AppStrings.copyWhatsappSummary.tr()),
                   onPressed: () {
                     final totalHours = tasksList.value.fold<double>(0.0, (s, t) => s + t.hoursSpent);
@@ -246,7 +295,10 @@ class LogAchievementDialog extends HookWidget {
                 ),
                 const SizedBox(width: 10),
                 ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: ClickUpColors.success,
+                    foregroundColor: ClickUpColors.lightCard,
+                  ),
                   onPressed: () async {
                     final totalHours = tasksList.value.fold<double>(0.0, (s, t) => s + t.hoursSpent);
                     final achievement = DailyAchievementEntity(

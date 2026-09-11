@@ -5,4 +5,7 @@
 5- make ci cd like dash dashboard upload directly when merge with main i have one flavor now
 6- retrive every point at main plan and my prompt is following nad make sure the current is a clickable with is
 7- make a design syetem colors and get desgin system colors form modern and use it not use current Colors.red like
-8- mkae charts and statistcs view using sync vioson charts view 
+8- mkae charts and statistcs view using sync vioson charts view
+9- remove clcikup from any naimng at project rename with onyx
+10- make app string is getters not static const
+11- remove unused name from localization add only what is used at project

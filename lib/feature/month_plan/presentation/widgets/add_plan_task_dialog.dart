@@ -44,7 +44,7 @@ class AddPlanTaskDialog extends HookWidget {
                 labelText: AppStrings.taskTitle.tr(),
                 prefixIcon: const Center(
                   widthFactor: 1.0,
-                  child: FaIcon(FontAwesomeIcons.heading, size: 14, color: Colors.grey),
+                  child: FaIcon(FontAwesomeIcons.heading, size: 14, color: ClickUpColors.neutral500),
                 ),
               ),
             ),
@@ -58,7 +58,7 @@ class AddPlanTaskDialog extends HookWidget {
                       labelText: AppStrings.moduleCodeHint.tr(),
                       prefixIcon: const Center(
                         widthFactor: 1.0,
-                        child: FaIcon(FontAwesomeIcons.cubes, size: 14, color: Colors.grey),
+                        child: FaIcon(FontAwesomeIcons.cubes, size: 14, color: ClickUpColors.neutral500),
                       ),
                     ),
                   ),
@@ -71,7 +71,7 @@ class AddPlanTaskDialog extends HookWidget {
                       labelText: AppStrings.screenName.tr(),
                       prefixIcon: const Center(
                         widthFactor: 1.0,
-                        child: FaIcon(FontAwesomeIcons.desktop, size: 14, color: Colors.grey),
+                        child: FaIcon(FontAwesomeIcons.desktop, size: 14, color: ClickUpColors.neutral500),
                       ),
                     ),
                   ),
@@ -89,7 +89,7 @@ class AddPlanTaskDialog extends HookWidget {
                       labelText: AppStrings.estDaysCol.tr(),
                       prefixIcon: const Center(
                         widthFactor: 1.0,
-                        child: FaIcon(FontAwesomeIcons.calendarDay, size: 14, color: Colors.grey),
+                        child: FaIcon(FontAwesomeIcons.calendarDay, size: 14, color: ClickUpColors.neutral500),
                       ),
                     ),
                   ),
@@ -103,7 +103,7 @@ class AddPlanTaskDialog extends HookWidget {
                       labelText: AppStrings.estHoursCol.tr(),
                       prefixIcon: const Center(
                         widthFactor: 1.0,
-                        child: FaIcon(FontAwesomeIcons.clock, size: 14, color: Colors.grey),
+                        child: FaIcon(FontAwesomeIcons.clock, size: 14, color: ClickUpColors.neutral500),
                       ),
                     ),
                   ),
@@ -122,7 +122,7 @@ class AddPlanTaskDialog extends HookWidget {
         ElevatedButton.icon(
           style: ElevatedButton.styleFrom(
             backgroundColor: ClickUpColors.primary,
-            foregroundColor: Colors.white,
+            foregroundColor: ClickUpColors.lightCard,
           ),
           onPressed: () {
             if (titleController.text.trim().isNotEmpty) {

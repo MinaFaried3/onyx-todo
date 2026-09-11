@@ -1076,5 +1076,9 @@
   "est_hours_metric": "إجمالي الساعات المقدرة",
   "act_hours_metric": "إجمالي الساعات الفعلية",
   "completion_rate_metric": "نسبة الإنجاز الكلية",
-  "task_count_label": "مهمة"
+  "task_count_label": "مهمة",
+  "active_developers": "المطورون النشطون",
+  "team_achievement_subtitle": "متابعة إنجاز الفريق يومياً وأسبوعياً وشهرياً (بديل رسائل الواتساب)",
+  "filter_by_developer": "تصفية حسب المطور",
+  "all_developers": "كافة المطورين"
 }

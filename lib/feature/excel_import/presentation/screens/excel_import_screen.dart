@@ -3,6 +3,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:onyx_todo/core/extension/bloc_reader.dart';
 import 'package:onyx_todo/core/extension/context_extensions.dart';
 import 'package:onyx_todo/core/localization/app_strings.dart';
@@ -37,18 +38,25 @@ class ExcelImportScreen extends HookWidget {
                 // Header
                 Row(
                   children: [
-                    const Icon(Icons.table_view_rounded, color: Colors.green, size: 28),
-                    const SizedBox(width: 10),
+                    const FaIcon(FontAwesomeIcons.fileExcel, color: ClickUpColors.success, size: 24),
+                    const SizedBox(width: 12),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           AppStrings.excelImport.tr(),
-                          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                          ),
                         ),
                         Text(
                           AppStrings.uploadExcelPrompt.tr(),
-                          style: const TextStyle(fontSize: 12, color: Colors.grey),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: isDark ? ClickUpColors.neutral400 : ClickUpColors.neutral500,
+                          ),
                         ),
                       ],
                     ),
@@ -65,42 +73,43 @@ class ExcelImportScreen extends HookWidget {
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
                       color: ClickUpColors.primary.withValues(alpha: 0.3),
-                      style: BorderStyle.solid,
                       width: 1.5,
                     ),
                   ),
                   child: Column(
                     children: [
-                      Icon(
-                        Icons.cloud_upload_outlined,
+                      FaIcon(
+                        FontAwesomeIcons.cloudArrowUp,
                         size: 48,
                         color: ClickUpColors.primary.withValues(alpha: 0.8),
                       ),
-                      const SizedBox(height: 12),
-                      const Text(
-                        'رفع ملف مهام أونكس ERP (To-do list.xlsx)',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 6),
-                      const Text(
-                        'يقوم النظام تلقائياً بقراءة كافة الأنظمة الـ 20 وترحيل المهام وأكواد المشاكل والمطورين إلى قاعدة البيانات',
-                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                      const SizedBox(height: 14),
+                      Text(
+                        AppStrings.uploadExcelPrompt.tr(),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                        ),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 16),
                       ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: ClickUpColors.primary,
-                          foregroundColor: Colors.white,
+                          foregroundColor: ClickUpColors.lightCard,
                           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                         ),
                         icon: isLoading
-                            ? const SizedBox(
+                            ? SizedBox(
                                 width: 16,
                                 height: 16,
-                                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: ClickUpColors.lightCard,
+                                ),
                               )
-                            : const Icon(Icons.folder_open_rounded),
+                            : const FaIcon(FontAwesomeIcons.folderOpen, size: 14),
                         label: Text(
                           isLoading ? AppStrings.importingTasks.tr() : AppStrings.selectExcelFile.tr(),
                           style: const TextStyle(fontWeight: FontWeight.bold),
@@ -133,26 +142,26 @@ class ExcelImportScreen extends HookWidget {
                   Container(
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      color: Colors.green.withValues(alpha: 0.1),
+                      color: ClickUpColors.success.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.green),
+                      border: Border.all(color: ClickUpColors.success),
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.check_circle_rounded, color: Colors.green),
+                        const FaIcon(FontAwesomeIcons.circleCheck, color: ClickUpColors.success, size: 18),
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(
-                            'تم استيراد ${state.importState.data ?? previewTasks.length} مهمة بنجاح عبر ${sheetsFound.length} أنظمة فرعية!',
-                            style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.green),
+                            AppStrings.tasksImportedSuccess.tr(),
+                            style: const TextStyle(fontWeight: FontWeight.bold, color: ClickUpColors.success),
                           ),
                         ),
                         TextButton(
                           onPressed: () {
                             context.tasksCubit.fetchTasks();
-                            context.safeShowSnackBar(SnackBar(content: Text(AppStrings.success.tr())));
+                            context.safeShowSnackBar(SnackBar(content: Text(AppStrings.tasksUpdatedSuccess.tr())));
                           },
-                          child: const Text('عرض المهام في لوحة كانبان'),
+                          child: Text(AppStrings.viewTasksBoard.tr()),
                         ),
                       ],
                     ),
@@ -164,7 +173,11 @@ class ExcelImportScreen extends HookWidget {
                 if (sheetsFound.isNotEmpty) ...[
                   Text(
                     '${AppStrings.sheetsFound.tr()} (${sheetsFound.length}):',
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                      color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Wrap(
@@ -184,8 +197,12 @@ class ExcelImportScreen extends HookWidget {
                 // Preview Table
                 if (previewTasks.isNotEmpty) ...[
                   Text(
-                    'معاينة المهام المستوردة (${previewTasks.length}):',
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                    '${AppStrings.tasksImported.tr()} (${previewTasks.length}):',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                      color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Expanded(
@@ -218,31 +235,64 @@ class ExcelImportScreen extends HookWidget {
                                 Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                   decoration: BoxDecoration(
-                                    color: isDark ? Colors.white10 : Colors.black12,
+                                    color: isDark ? ClickUpColors.neutral700 : ClickUpColors.neutral200,
                                     borderRadius: BorderRadius.circular(4),
                                   ),
-                                  child: Text(t.moduleCode, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+                                  child: Text(
+                                    t.moduleCode,
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                      color: isDark ? ClickUpColors.neutral300 : ClickUpColors.neutral700,
+                                    ),
+                                  ),
                                 ),
                                 const SizedBox(width: 8),
                                 Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                   decoration: BoxDecoration(
-                                    color: Colors.blue.withValues(alpha: 0.1),
+                                    color: ClickUpColors.primary.withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(4),
                                   ),
-                                  child: Text(t.screenName, style: const TextStyle(fontSize: 10, color: Colors.blue)),
+                                  child: Text(
+                                    t.screenName,
+                                    style: const TextStyle(fontSize: 10, color: ClickUpColors.primary),
+                                  ),
                                 ),
                                 const SizedBox(width: 8),
-                                Expanded(child: Text(t.title, style: const TextStyle(fontSize: 12), maxLines: 1, overflow: TextOverflow.ellipsis)),
+                                Expanded(
+                                  child: Text(
+                                    t.title,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
                                 if (t.frontendDevName != null) ...[
-                                  Text(t.frontendDevName!, style: const TextStyle(fontSize: 10, color: Colors.teal)),
+                                  Text(
+                                    t.frontendDevName!,
+                                    style: const TextStyle(fontSize: 10, color: ClickUpColors.teal),
+                                  ),
                                   const SizedBox(width: 6),
                                 ],
                                 if (t.backendDevName != null) ...[
-                                  Text(t.backendDevName!, style: const TextStyle(fontSize: 10, color: Colors.deepPurple)),
+                                  Text(
+                                    t.backendDevName!,
+                                    style: const TextStyle(fontSize: 10, color: ClickUpColors.purple),
+                                  ),
                                   const SizedBox(width: 6),
                                 ],
-                                Text(t.status.label, style: TextStyle(fontSize: 10, color: t.status.color, fontWeight: FontWeight.bold)),
+                                Text(
+                                  t.status.label,
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: t.status.color,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                               ],
                             ),
                           );

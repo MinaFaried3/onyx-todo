@@ -1,17 +1,16 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:onyx_todo/core/extension/bloc_reader.dart';
-import 'package:onyx_todo/core/extension/context_extensions.dart';
 import 'package:onyx_todo/core/localization/app_strings.dart';
 import 'package:onyx_todo/core/ui/clickup_colors.dart';
-import 'package:onyx_todo/feature/achievement/domain/entities/daily_achievement_entity.dart';
 import 'package:onyx_todo/feature/achievement/presentation/cubit/achievement_cubit.dart';
 import 'package:onyx_todo/feature/achievement/presentation/cubit/achievement_state.dart';
+import 'package:onyx_todo/feature/achievement/presentation/widgets/achievement_card.dart';
+import 'package:onyx_todo/feature/achievement/presentation/widgets/achievement_kpi_card.dart';
 import 'package:onyx_todo/feature/achievement/presentation/widgets/log_achievement_dialog.dart';
-import 'package:onyx_todo/feature/task/presentation/widgets/task_id_badge.dart';
 
 class AchievementScreen extends HookWidget {
   const AchievementScreen({super.key});
@@ -59,18 +58,25 @@ class AchievementScreen extends HookWidget {
                 // Top Header Bar
                 Row(
                   children: [
-                    const Icon(Icons.insights_rounded, color: ClickUpColors.primary, size: 28),
-                    const SizedBox(width: 10),
+                    const FaIcon(FontAwesomeIcons.chartLine, color: ClickUpColors.primary, size: 24),
+                    const SizedBox(width: 12),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           AppStrings.dailyAchievements.tr(),
-                          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                          ),
                         ),
-                        const Text(
-                          'متابعة إنجاز الفريق يومياً وأسبوعياً وشهرياً (بديل رسائل الواتساب)',
-                          style: TextStyle(fontSize: 12, color: Colors.grey),
+                        Text(
+                          AppStrings.teamAchievementSubtitle.tr(),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: isDark ? ClickUpColors.neutral400 : ClickUpColors.neutral500,
+                          ),
                         ),
                       ],
                     ),
@@ -79,11 +85,11 @@ class AchievementScreen extends HookWidget {
                     // Log Daily Achievement Button (for Developers)
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                        foregroundColor: Colors.white,
+                        backgroundColor: ClickUpColors.success,
+                        foregroundColor: ClickUpColors.lightCard,
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                       ),
-                      icon: const Icon(Icons.playlist_add_check_circle_rounded, size: 18),
+                      icon: const FaIcon(FontAwesomeIcons.circleCheck, size: 14),
                       label: Text(
                         AppStrings.logDailyAchievement.tr(),
                         style: const TextStyle(fontWeight: FontWeight.bold),
@@ -118,13 +124,28 @@ class AchievementScreen extends HookWidget {
 
                     // If Department Manager, can filter by developer
                     if (currentUser.isDepartmentManager) ...[
-                      const Text('تصفية حسب المطور: ', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                      Text(
+                        '${AppStrings.filterByDeveloper.tr()}: ',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: isDark ? ClickUpColors.neutral400 : ClickUpColors.neutral500,
+                        ),
+                      ),
                       DropdownButton<String?>(
                         value: state.developerFilter,
-                        hint: const Text('كافة المطورين', style: TextStyle(fontSize: 12)),
+                        hint: Text(
+                          AppStrings.allDevelopers.tr(),
+                          style: const TextStyle(fontSize: 12),
+                        ),
                         underline: const SizedBox(),
                         items: [
-                          const DropdownMenuItem(value: null, child: Text('كافة المطورين', style: TextStyle(fontSize: 12))),
+                          DropdownMenuItem(
+                            value: null,
+                            child: Text(
+                              AppStrings.allDevelopers.tr(),
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                          ),
                           ...workspaceCubit.state.availableUsers.map((u) {
                             return DropdownMenuItem(
                               value: u.name,
@@ -142,31 +163,31 @@ class AchievementScreen extends HookWidget {
                 // Summary KPIs
                 Row(
                   children: [
-                    _buildKpiCard(
-                      AppStrings.totalLoggedHours.tr(),
-                      '${totalHours.toStringAsFixed(1)}h',
-                      'إجمالي ساعات العمل المسجلة',
-                      Icons.schedule_rounded,
-                      Colors.blue,
-                      isDark,
+                    AchievementKpiCard(
+                      title: AppStrings.totalLoggedHours.tr(),
+                      value: '${totalHours.toStringAsFixed(1)}h',
+                      subtitle: AppStrings.workHoursUnit.tr(),
+                      icon: FontAwesomeIcons.clock,
+                      color: ClickUpColors.info,
+                      isDark: isDark,
                     ),
                     const SizedBox(width: 14),
-                    _buildKpiCard(
-                      'المهام المنجزة',
-                      '$totalTasks',
-                      'في الفترة المحددة',
-                      Icons.task_alt_rounded,
-                      Colors.green,
-                      isDark,
+                    AchievementKpiCard(
+                      title: AppStrings.completedTasksMetric.tr(),
+                      value: '$totalTasks',
+                      subtitle: AppStrings.taskCountLabel.tr(),
+                      icon: FontAwesomeIcons.circleCheck,
+                      color: ClickUpColors.success,
+                      isDark: isDark,
                     ),
                     const SizedBox(width: 14),
-                    _buildKpiCard(
-                      'المطورون النشطون',
-                      '${achievements.map((a) => a.developerName).toSet().length}',
-                      'قاموا بتسجيل إنجازاتهم',
-                      Icons.groups_rounded,
-                      Colors.purple,
-                      isDark,
+                    AchievementKpiCard(
+                      title: AppStrings.activeDevelopers.tr(),
+                      value: '${achievements.map((a) => a.developerName).toSet().length}',
+                      subtitle: AppStrings.activeDevelopers.tr(),
+                      icon: FontAwesomeIcons.users,
+                      color: ClickUpColors.purple,
+                      isDark: isDark,
                     ),
                   ],
                 ),
@@ -177,12 +198,12 @@ class AchievementScreen extends HookWidget {
                   child: state.achievementsState.isLoading
                       ? const Center(child: CircularProgressIndicator())
                       : achievements.isEmpty
-                          ? _buildEmptyState()
+                          ? _buildEmptyState(isDark)
                           : ListView.builder(
                               itemCount: achievements.length,
                               itemBuilder: (context, index) {
                                 final item = achievements[index];
-                                return _buildAchievementCard(context, item, isDark);
+                                return AchievementCard(item: item, isDark: isDark);
                               },
                             ),
                 ),
@@ -194,216 +215,26 @@ class AchievementScreen extends HookWidget {
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(bool isDark) {
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.feed_outlined, size: 54, color: Colors.grey.withValues(alpha: 0.4)),
+          FaIcon(
+            FontAwesomeIcons.newspaper,
+            size: 48,
+            color: isDark ? ClickUpColors.neutral600 : ClickUpColors.neutral400,
+          ),
           const SizedBox(height: 12),
-          const Text(
-            'لا توجد سجلات إنجاز في هذه الفترة',
-            style: TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.bold),
+          Text(
+            AppStrings.noAchievementsFound.tr(),
+            style: TextStyle(
+              fontSize: 14,
+              color: isDark ? ClickUpColors.neutral400 : ClickUpColors.neutral500,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildAchievementCard(
-    BuildContext context,
-    DailyAchievementEntity item,
-    bool isDark,
-  ) {
-    final dateStr = DateFormat('yyyy/MM/dd').format(item.date);
-
-    return Card(
-      elevation: 0,
-      margin: const EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-        side: BorderSide(
-          color: isDark ? ClickUpColors.darkBorder : ClickUpColors.lightBorder,
-        ),
-      ),
-      color: isDark ? ClickUpColors.darkCard : ClickUpColors.lightCard,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Top: Dev Name + Stack + Date + Total Hours + WhatsApp Copy
-            Row(
-              children: [
-                CircleAvatar(
-                  radius: 18,
-                  backgroundColor: ClickUpColors.primary.withValues(alpha: 0.2),
-                  child: Text(
-                    item.developerName.substring(0, item.developerName.length >= 2 ? 2 : 1).toUpperCase(),
-                    style: const TextStyle(color: ClickUpColors.primary, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          item.developerName,
-                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: Colors.blue.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text(
-                            item.developerStack.label,
-                            style: const TextStyle(fontSize: 10, color: Colors.blue, fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Text(dateStr, style: const TextStyle(fontSize: 11, color: Colors.grey)),
-                  ],
-                ),
-                const Spacer(),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.green.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    '${item.totalHours} ساعة عمل',
-                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.green),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                IconButton(
-                  icon: const Icon(Icons.share_rounded, size: 18, color: Colors.teal),
-                  tooltip: AppStrings.copyWhatsappSummary.tr(),
-                  onPressed: () {
-                    Clipboard.setData(ClipboardData(text: item.toWhatsAppSummary()));
-                    context.safeShowSnackBar(SnackBar(content: Text(AppStrings.whatsappSummaryCopied.tr())));
-                  },
-                ),
-              ],
-            ),
-            const Divider(height: 20),
-
-            // Tasks List
-            ...item.tasksWorked.map((t) {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Row(
-                  children: [
-                    TaskIdBadge(formattedId: t.formattedId),
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: isDark ? Colors.white10 : Colors.black12,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(t.moduleCode, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(child: Text(t.title, style: const TextStyle(fontSize: 13))),
-                    Text(
-                      '${t.hoursSpent}h',
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-                    ),
-                  ],
-                ),
-              );
-            }),
-
-            // Blockers & Next Day Plan
-            if (item.blockers != null && item.blockers!.isNotEmpty) ...[
-              const SizedBox(height: 6),
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.red.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.warning_amber_rounded, size: 16, color: Colors.red),
-                    const SizedBox(width: 6),
-                    Expanded(
-                      child: Text('العوائق: ${item.blockers}', style: const TextStyle(fontSize: 11, color: Colors.red)),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-            if (item.nextDayPlan != null && item.nextDayPlan!.isNotEmpty) ...[
-              const SizedBox(height: 6),
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.blue.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.trending_up_rounded, size: 16, color: Colors.blue),
-                    const SizedBox(width: 6),
-                    Expanded(
-                      child: Text('خطة الغد: ${item.nextDayPlan}', style: const TextStyle(fontSize: 11, color: Colors.blue)),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildKpiCard(
-    String title,
-    String value,
-    String subtitle,
-    IconData icon,
-    Color color,
-    bool isDark,
-  ) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: isDark ? ClickUpColors.darkCard : ClickUpColors.lightCard,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: isDark ? ClickUpColors.darkBorder : ClickUpColors.lightBorder,
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(icon, size: 20, color: color),
-                const SizedBox(width: 8),
-                Text(title, style: const TextStyle(fontSize: 12, color: Colors.grey)),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Text(
-              value,
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: color),
-            ),
-            const SizedBox(height: 4),
-            Text(subtitle, style: const TextStyle(fontSize: 11, color: Colors.grey)),
-          ],
-        ),
       ),
     );
   }

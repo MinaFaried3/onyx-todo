@@ -1073,6 +1073,10 @@
   "est_hours_metric": "Total Est. Hours",
   "act_hours_metric": "Total Act. Hours",
   "completion_rate_metric": "Completion Rate",
-  "task_count_label": "Tasks"
+  "task_count_label": "Tasks",
+  "active_developers": "Active Developers",
+  "team_achievement_subtitle": "Monitor team progress daily, weekly, and monthly (replaces WhatsApp updates)",
+  "filter_by_developer": "Filter by Developer",
+  "all_developers": "All Developers"
 }
 

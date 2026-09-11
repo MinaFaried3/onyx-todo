@@ -7,6 +7,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:onyx_todo/core/extension/context_extensions.dart';
 import 'package:onyx_todo/core/ui/clickup_colors.dart';
 import 'package:onyx_todo/core/ui/color_manager.dart';
@@ -91,7 +92,7 @@ class ThemeManger {
 
   static ActionIconThemeData actionIconThemeData = ActionIconThemeData(
     backButtonIconBuilder: (BuildContext context) => IconButton(
-      icon: Icon(Icons.arrow_back_ios_new_rounded),
+      icon: const FaIcon(FontAwesomeIcons.chevronLeft, size: 16),
       onPressed: () => context.safePop(),
       color: ColorsManager.darkTextColor,
     ),
