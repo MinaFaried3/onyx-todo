@@ -17,6 +17,7 @@ import 'package:onyx_todo/feature/month_plan/domain/repositories/month_plan_repo
 import 'package:onyx_todo/feature/month_plan/presentation/cubit/month_plan_cubit.dart';
 import 'package:onyx_todo/feature/notification/domain/repositories/notification_repository.dart';
 import 'package:onyx_todo/feature/task/domain/repositories/task_repository.dart';
+import 'package:onyx_todo/feature/auth/presentation/screens/login_screen.dart';
 import 'package:onyx_todo/feature/task/presentation/cubit/tasks_cubit.dart';
 import 'package:onyx_todo/feature/team/domain/repositories/team_repository.dart';
 import 'package:onyx_todo/feature/workspace/domain/repositories/workspace_repository.dart';
@@ -44,16 +45,39 @@ void main() async {
 
   await runOnyxApp(
     config: config,
+    onInit: () async {
+      await getIt<AuthRepository>().init();
+    },
     routerBuilder: ({
       required String initialLocation,
       required GlobalKey<NavigatorState> navigatorKey,
       required List<NavigatorObserver> observers,
     }) {
       return buildCoreRouter(
-        initialLocation: '/',
+        initialLocation: initialLocation,
         navigatorKey: navigatorKey,
         observers: observers,
+        redirect: (context, state) {
+          final authRepo = getIt<AuthRepository>();
+          final isLoggingIn = state.matchedLocation == '/login';
+          final isAuthenticated = authRepo.isAuthenticated;
+
+          if (!isAuthenticated && !isLoggingIn) {
+            return '/login';
+          }
+          if (isAuthenticated && isLoggingIn) {
+            return '/';
+          }
+          return null;
+        },
         routes: [
+          GoRoute(
+            path: '/login',
+            pageBuilder: (context, state) => RouteBuilderHelper.buildPage(
+              state: state,
+              child: const LoginScreen(),
+            ),
+          ),
           GoRoute(
             path: '/',
             pageBuilder: (context, state) => RouteBuilderHelper.buildPage(

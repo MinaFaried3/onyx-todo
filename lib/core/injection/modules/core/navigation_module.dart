@@ -3,7 +3,6 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:onyx_todo/core/helper/printer_manager.dart';
-import 'package:onyx_todo/core/injection/extensions/get_it_extensions.dart';
 import 'package:onyx_todo/core/navigation/observer/navigation_observer.dart';
 import 'package:onyx_todo/core/navigation/observer/request_route_observer.dart';
 import 'package:onyx_todo/core/navigation/overlay/overlay_manager.dart';
@@ -28,7 +27,6 @@ abstract final class NavigationModule {
     getIt.lazySingletonOnce<GlobalKey<NavigatorState>>(
       () => GlobalKey<NavigatorState>(),
     );
-    final navigatorKey = getIt<GlobalKey<NavigatorState>>();
 
     final appPreferences = getIt<AppPreferences>();
 

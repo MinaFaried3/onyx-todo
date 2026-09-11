@@ -28,6 +28,7 @@ abstract final class AppStrings {
   static String get error => 'error';
   static String get success => 'success';
   static String get add => 'add';
+  static String get delete => 'delete';
   static String get addTask => 'add_task';
 
   // ─── Views ───────────────────────────────────────────────────────────────────
@@ -311,7 +312,28 @@ abstract final class AppStrings {
   static String get privateAccount => 'private_account';
   static String get currentStageWaiting => 'current_stage_waiting';
   static String get advanceToNextStage => 'advance_to_next_stage';
-  static String get stageCompletedToast => 'stage_completed_toast';
   static String get moduleStructureTitle => 'module_structure_title';
+
+  // ─── Authentication & Production Readiness ─────────────────────────────────
+  static String get login => 'login';
+  static String get signUp => 'sign_up';
+  static String get password => 'password';
+  static String get fullName => 'full_name';
+  static String get loginSubtitle => 'login_subtitle';
+  static String get registerSubtitle => 'register_subtitle';
+  static String get noAccountPrompt => 'no_account_prompt';
+  static String get haveAccountPrompt => 'have_account_prompt';
+  static String get selectRole => 'select_role';
+  static String get selectStack => 'select_stack';
+  static String get invalidCredentials => 'invalid_credentials';
+  static String get userNotFound => 'user_not_found';
+  static String get emailAlreadyExists => 'email_already_exists';
+  static String get fillAllFields => 'fill_all_fields';
+  static String get noUsersRegistered => 'no_users_registered';
+  static String get noTeamsRegistered => 'no_teams_registered';
+  static String get subtasks => 'subtasks';
+  static String get addSubtask => 'add_subtask';
+  static String get subtaskTitle => 'subtask_title';
+  static String get noSubtasks => 'no_subtasks';
 }
 

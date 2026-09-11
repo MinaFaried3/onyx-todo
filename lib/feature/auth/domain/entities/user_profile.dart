@@ -36,6 +36,17 @@ class UserProfile extends Equatable {
   bool get isLeader => isDepartmentManager || isTeamLead;
   bool get canManageTeam => isDepartmentManager;
 
+  static final UserProfile empty = UserProfile(
+    id: '',
+    name: '',
+    email: '',
+    role: UserRole.developer,
+    stack: DeveloperStack.frontend,
+  );
+
+  bool get isEmpty => id.isEmpty;
+  bool get isNotEmpty => id.isNotEmpty;
+
   @override
   List<Object?> get props => [
         id,
@@ -129,71 +140,4 @@ class UserProfile extends Equatable {
       createdAt: parseDate(map['createdAt']),
     );
   }
-
-  /// Default demo / sample users matching the Onyx ERP team structure
-  static final List<UserProfile> demoUsers = [
-    UserProfile(
-      id: 'dm_1',
-      name: 'مدير الإدارة (Department Manager)',
-      email: 'manager@onyx.com',
-      role: UserRole.departmentManager,
-      stack: DeveloperStack.backend,
-      assignedModules: const ['*'],
-      teamId: 'team_core',
-    ),
-    UserProfile(
-      id: 'fl_1',
-      name: 'علي بن جحلان (Frontend Lead)',
-      email: 'ali@onyx.com',
-      role: UserRole.teamLead,
-      stack: DeveloperStack.frontend,
-      assignedModules: const ['ADM', 'GNR', 'GLS', 'CRM', 'INV'],
-      teamId: 'team_core',
-    ),
-    UserProfile(
-      id: 'be_1',
-      name: 'Alkholi (Backend Senior)',
-      email: 'alkholi@onyx.com',
-      role: UserRole.backend,
-      stack: DeveloperStack.backend,
-      assignedModules: const ['ADM', 'GNR'],
-      teamId: 'team_core',
-    ),
-    UserProfile(
-      id: 'be_2',
-      name: 'Mahmoud Salah (Backend)',
-      email: 'mahmoud@onyx.com',
-      role: UserRole.backend,
-      stack: DeveloperStack.backend,
-      assignedModules: const ['ADM', 'GLS', 'APS'],
-      teamId: 'team_sales',
-    ),
-    UserProfile(
-      id: 'fe_1',
-      name: 'nader (Frontend)',
-      email: 'nader@onyx.com',
-      role: UserRole.frontend,
-      stack: DeveloperStack.frontend,
-      assignedModules: const ['ADM', 'GLS'],
-      teamId: 'team_inventory',
-    ),
-    UserProfile(
-      id: 'fe_2',
-      name: 'حسين (Frontend)',
-      email: 'hussein@onyx.com',
-      role: UserRole.frontend,
-      stack: DeveloperStack.frontend,
-      assignedModules: const ['ADM', 'CRM', 'POS'],
-      teamId: 'team_sales',
-    ),
-    UserProfile(
-      id: 'be_3',
-      name: 'Shrouk (Backend)',
-      email: 'shrouk@onyx.com',
-      role: UserRole.backend,
-      stack: DeveloperStack.backend,
-      assignedModules: const ['ADM', 'CRM'],
-      teamId: 'team_inventory',
-    ),
-  ];
 }

@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:onyx_todo/core/extension/context_extensions.dart';
 import 'package:onyx_todo/core/localization/app_strings.dart';
 import 'package:onyx_todo/core/ui/onyx_colors.dart';
 import 'package:onyx_todo/feature/auth/domain/entities/user_profile.dart';
@@ -85,64 +86,116 @@ class OnyxUserSwitcher extends StatelessWidget {
               icon: const FaIcon(FontAwesomeIcons.chevronDown, size: 10, color: OnyxColors.neutral400),
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(),
-              onSelected: (uid) => cubit.switchUser(uid),
-              itemBuilder: (ctx) => users.map((u) {
-                return PopupMenuItem(
-                  value: u.id,
-                  child: Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 12,
-                        backgroundColor: OnyxColors.getAvatarColor(u.name),
-                        child: Text(
-                          u.name.isNotEmpty ? u.name.substring(0, 1).toUpperCase() : 'U',
-                          style: const TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                            color: OnyxColors.white,
+              onSelected: (action) async {
+                if (action == '__logout__') {
+                  await cubit.signOut();
+                  if (context.mounted) {
+                    context.safeGo('/login');
+                  }
+                } else {
+                  await cubit.switchUser(action);
+                }
+              },
+              itemBuilder: (ctx) => [
+                ...users.where((u) => u.id != currentUser.id).map((u) {
+                  return PopupMenuItem(
+                    value: u.id,
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 12,
+                          backgroundColor: OnyxColors.getAvatarColor(u.name),
+                          child: Text(
+                            u.name.isNotEmpty ? u.name.substring(0, 1).toUpperCase() : 'U',
+                            style: const TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              color: OnyxColors.white,
+                            ),
                           ),
                         ),
+                        const SizedBox(width: 8),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              u.name,
+                              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              u.role.label,
+                              style: const TextStyle(fontSize: 10, color: OnyxColors.neutral400),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+                if (users.where((u) => u.id != currentUser.id).isNotEmpty)
+                  const PopupMenuDivider(),
+                PopupMenuItem(
+                  value: '__logout__',
+                  child: Row(
+                    children: [
+                      const FaIcon(
+                        FontAwesomeIcons.arrowRightFromBracket,
+                        size: 13,
+                        color: OnyxColors.danger,
                       ),
                       const SizedBox(width: 8),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            u.name,
-                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            u.role.label,
-                            style: const TextStyle(fontSize: 10, color: OnyxColors.neutral400),
-                          ),
-                        ],
+                      Text(
+                        AppStrings.logout.tr(),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: OnyxColors.danger,
+                        ),
                       ),
                     ],
                   ),
-                );
-              }).toList(),
+                ),
+              ],
             )
           else
-            Tooltip(
-              message: AppStrings.privateAccount.tr(),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: OnyxColors.neutral500.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const FaIcon(FontAwesomeIcons.lock, size: 9, color: OnyxColors.neutral400),
-                    const SizedBox(width: 4),
-                    Text(
-                      AppStrings.privateAccount.tr(),
-                      style: const TextStyle(fontSize: 9, color: OnyxColors.neutral400, fontWeight: FontWeight.bold),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Tooltip(
+                  message: AppStrings.privateAccount.tr(),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: OnyxColors.neutral500.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(4),
                     ),
-                  ],
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const FaIcon(FontAwesomeIcons.lock, size: 9, color: OnyxColors.neutral400),
+                        const SizedBox(width: 4),
+                        Text(
+                          AppStrings.privateAccount.tr(),
+                          style: const TextStyle(fontSize: 9, color: OnyxColors.neutral400, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
+                const SizedBox(width: 6),
+                IconButton(
+                  icon: const FaIcon(FontAwesomeIcons.arrowRightFromBracket, size: 12, color: OnyxColors.danger),
+                  tooltip: AppStrings.logout.tr(),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  onPressed: () async {
+                    await cubit.signOut();
+                    if (context.mounted) {
+                      context.safeGo('/login');
+                    }
+                  },
+                ),
+              ],
             ),
         ],
       ),

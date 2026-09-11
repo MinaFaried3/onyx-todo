@@ -3,6 +3,7 @@ import 'package:onyx_todo/core/enum/task_enums.dart';
 import 'package:onyx_todo/core/enum/ui_state.dart';
 import 'package:onyx_todo/feature/task/domain/entities/task_entity.dart';
 import 'package:onyx_todo/feature/task/domain/entities/task_history_item.dart';
+import 'package:onyx_todo/feature/task/domain/entities/task_subtask.dart';
 import 'package:onyx_todo/feature/task/domain/repositories/task_repository.dart';
 import 'package:onyx_todo/feature/task/presentation/cubit/tasks_state.dart';
 
@@ -308,23 +309,161 @@ class TasksCubit extends BaseCubit<TasksState> {
     );
   }
 
+  Future<void> addSubtask({
+    required String taskId,
+    required String title,
+    String? assignedTo,
+    double estimatedHours = 0.0,
+    required String authorName,
+  }) async {
+    final currentList = List<TaskEntity>.from(state.tasksState.data ?? []);
+    final index = currentList.indexWhere((t) => t.id == taskId);
+    if (index == -1) return;
+
+    final oldTask = currentList[index];
+    final newSubtask = TaskSubtask(
+      id: 'sub_${DateTime.now().millisecondsSinceEpoch}',
+      title: title.trim(),
+      assignedTo: assignedTo,
+      estimatedHours: estimatedHours,
+      createdAt: DateTime.now(),
+    );
+
+    final updatedSubtasks = List<TaskSubtask>.from(oldTask.subtasks)..add(newSubtask);
+    final updatedHistory = List<TaskHistoryItem>.from(oldTask.history)..add(
+      TaskHistoryItem(
+        id: 'hist_${DateTime.now().millisecondsSinceEpoch}',
+        action: 'add_subtask',
+        authorName: authorName,
+        timestamp: DateTime.now(),
+        details: 'إضافة مهمة فرعية: $title',
+      ),
+    );
+
+    final updatedTask = oldTask.copyWith(
+      subtasks: updatedSubtasks,
+      history: updatedHistory,
+    );
+
+    currentList[index] = updatedTask;
+    emit(state.copyWith(
+      tasksState: state.tasksState.copyWith(data: currentList),
+      selectedTask: state.selectedTask?.id == taskId ? () => updatedTask : null,
+    ));
+
+    await taskRepository.updateTask(updatedTask);
+  }
+
+  Future<void> toggleSubtask({
+    required String taskId,
+    required String subtaskId,
+    required String authorName,
+  }) async {
+    final currentList = List<TaskEntity>.from(state.tasksState.data ?? []);
+    final index = currentList.indexWhere((t) => t.id == taskId);
+    if (index == -1) return;
+
+    final oldTask = currentList[index];
+    String subtaskTitle = '';
+    bool newCompletionStatus = false;
+
+    final updatedSubtasks = oldTask.subtasks.map((s) {
+      if (s.id == subtaskId) {
+        subtaskTitle = s.title;
+        newCompletionStatus = !s.isCompleted;
+        return s.copyWith(
+          isCompleted: newCompletionStatus,
+          completedAt: newCompletionStatus ? DateTime.now() : null,
+        );
+      }
+      return s;
+    }).toList();
+
+    final updatedHistory = List<TaskHistoryItem>.from(oldTask.history)..add(
+      TaskHistoryItem(
+        id: 'hist_${DateTime.now().millisecondsSinceEpoch}',
+        action: 'toggle_subtask',
+        authorName: authorName,
+        timestamp: DateTime.now(),
+        details: newCompletionStatus
+            ? 'إنجاز المهمة الفرعية: $subtaskTitle'
+            : 'إعادة فتح المهمة الفرعية: $subtaskTitle',
+      ),
+    );
+
+    final updatedTask = oldTask.copyWith(
+      subtasks: updatedSubtasks,
+      history: updatedHistory,
+    );
+
+    currentList[index] = updatedTask;
+    emit(state.copyWith(
+      tasksState: state.tasksState.copyWith(data: currentList),
+      selectedTask: state.selectedTask?.id == taskId ? () => updatedTask : null,
+    ));
+
+    await taskRepository.updateTask(updatedTask);
+  }
+
+  Future<void> deleteSubtask({
+    required String taskId,
+    required String subtaskId,
+    required String authorName,
+  }) async {
+    final currentList = List<TaskEntity>.from(state.tasksState.data ?? []);
+    final index = currentList.indexWhere((t) => t.id == taskId);
+    if (index == -1) return;
+
+    final oldTask = currentList[index];
+    final subtask = oldTask.subtasks.where((s) => s.id == subtaskId).firstOrNull;
+    final updatedSubtasks = oldTask.subtasks.where((s) => s.id != subtaskId).toList();
+
+    final updatedHistory = List<TaskHistoryItem>.from(oldTask.history)..add(
+      TaskHistoryItem(
+        id: 'hist_${DateTime.now().millisecondsSinceEpoch}',
+        action: 'delete_subtask',
+        authorName: authorName,
+        timestamp: DateTime.now(),
+        details: 'حذف المهمة الفرعية: ${subtask?.title ?? subtaskId}',
+      ),
+    );
+
+    final updatedTask = oldTask.copyWith(
+      subtasks: updatedSubtasks,
+      history: updatedHistory,
+    );
+
+    currentList[index] = updatedTask;
+    emit(state.copyWith(
+      tasksState: state.tasksState.copyWith(data: currentList),
+      selectedTask: state.selectedTask?.id == taskId ? () => updatedTask : null,
+    ));
+
+    await taskRepository.updateTask(updatedTask);
+  }
+
   void selectTask(TaskEntity? task) {
+    if (state.selectedTask == task) return;
     emit(state.copyWith(selectedTask: () => task));
   }
 
   void setSearchQuery(String query) {
+    if (state.searchQuery == query) return;
     emit(state.copyWith(searchQuery: query));
   }
 
   void setPriorityFilter(TaskPriority? priority) {
+    if (state.priorityFilter == priority) return;
     emit(state.copyWith(priorityFilter: () => priority));
   }
 
   void setStatusFilter(TaskStatus? status) {
+    if (state.statusFilter == status) return;
     emit(state.copyWith(statusFilter: () => status));
   }
 
   void setAssigneeFilter(String? assignee) {
+    if (state.assigneeFilter == assignee) return;
     emit(state.copyWith(assigneeFilter: () => assignee));
   }
 

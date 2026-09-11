@@ -41,110 +41,115 @@ class OnyxTopBar extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // Breadcrumb / Active Space Title
-          Row(
-            children: [
-              const FaIcon(FontAwesomeIcons.solidFolder, size: 14, color: OnyxColors.primary),
-              const SizedBox(width: 8),
-              Text(
-                '${AppStrings.appName.tr()} / ',
-                style: TextStyle(
-                  fontSize: 13,
-                  color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
-                ),
-              ),
-              Text(
-                state.selectedModuleCode == 'ALL'
-                    ? AppStrings.allModules.tr()
-                    : state.selectedModuleCode,
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                  color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
-                ),
-              ),
-              if (state.selectedModuleCode != 'ALL') ...[
-                const SizedBox(width: 8),
-                InkWell(
-                  onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (ctx) => BlocProvider.value(
-                        value: workspaceCubit,
-                        child: ModuleHierarchyDialog(moduleCode: state.selectedModuleCode),
-                      ),
-                    );
-                  },
-                  borderRadius: BorderRadius.circular(4),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-                    decoration: BoxDecoration(
-                      color: OnyxColors.primary.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        FaIcon(
-                          FontAwesomeIcons.sitemap,
-                          size: 11,
-                          color: isDark ? OnyxColors.primaryLight : OnyxColors.primary,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          AppStrings.moduleHierarchy.tr(),
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                            color: isDark ? OnyxColors.primaryLight : OnyxColors.primary,
-                          ),
-                        ),
-                      ],
+          // Breadcrumb / Active Space Title & View Tabs (Scrollable when constrained)
+          Expanded(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              physics: const BouncingScrollPhysics(),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const FaIcon(FontAwesomeIcons.solidFolder, size: 14, color: OnyxColors.primary),
+                  const SizedBox(width: 8),
+                  Text(
+                    '${AppStrings.appName.tr()} / ',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
                     ),
                   ),
-                ),
-              ],
-            ],
+                  Text(
+                    state.selectedModuleCode == 'ALL'
+                        ? AppStrings.allModules.tr()
+                        : state.selectedModuleCode,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
+                    ),
+                  ),
+                  if (state.selectedModuleCode != 'ALL') ...[
+                    const SizedBox(width: 8),
+                    InkWell(
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (ctx) => BlocProvider.value(
+                            value: workspaceCubit,
+                            child: ModuleHierarchyDialog(moduleCode: state.selectedModuleCode),
+                          ),
+                        );
+                      },
+                      borderRadius: BorderRadius.circular(4),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: OnyxColors.primary.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            FaIcon(
+                              FontAwesomeIcons.sitemap,
+                              size: 11,
+                              color: isDark ? OnyxColors.primaryLight : OnyxColors.primary,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              AppStrings.moduleHierarchy.tr(),
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color: isDark ? OnyxColors.primaryLight : OnyxColors.primary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+
+                  if (isTaskView) ...[
+                    const SizedBox(width: 20),
+                    OnyxViewTab(
+                      icon: FontAwesomeIcons.listCheck,
+                      label: AppStrings.listView.tr(),
+                      isSelected: activeView == WorkspaceView.list,
+                      onTap: () => workspaceCubit.setView(WorkspaceView.list),
+                      isDark: isDark,
+                    ),
+                    const SizedBox(width: 4),
+                    OnyxViewTab(
+                      icon: FontAwesomeIcons.tableColumns,
+                      label: AppStrings.boardView.tr(),
+                      isSelected: activeView == WorkspaceView.board,
+                      onTap: () => workspaceCubit.setView(WorkspaceView.board),
+                      isDark: isDark,
+                    ),
+                    const SizedBox(width: 4),
+                    OnyxViewTab(
+                      icon: FontAwesomeIcons.chartLine,
+                      label: AppStrings.workloadView.tr(),
+                      isSelected: activeView == WorkspaceView.workload,
+                      onTap: () => workspaceCubit.setView(WorkspaceView.workload),
+                      isDark: isDark,
+                    ),
+                    const SizedBox(width: 4),
+                    OnyxViewTab(
+                      icon: FontAwesomeIcons.chartPie,
+                      label: AppStrings.analyticsView.tr(),
+                      isSelected: activeView == WorkspaceView.analytics,
+                      onTap: () => workspaceCubit.setView(WorkspaceView.analytics),
+                      isDark: isDark,
+                    ),
+                  ],
+                ],
+              ),
+            ),
           ),
 
-          const SizedBox(width: 24),
-
-          // View Tabs (List, Board, Workload, Analytics) when in Tasks view
-          if (isTaskView) ...[
-            OnyxViewTab(
-              icon: FontAwesomeIcons.listCheck,
-              label: AppStrings.listView.tr(),
-              isSelected: activeView == WorkspaceView.list,
-              onTap: () => workspaceCubit.setView(WorkspaceView.list),
-              isDark: isDark,
-            ),
-            const SizedBox(width: 4),
-            OnyxViewTab(
-              icon: FontAwesomeIcons.tableColumns,
-              label: AppStrings.boardView.tr(),
-              isSelected: activeView == WorkspaceView.board,
-              onTap: () => workspaceCubit.setView(WorkspaceView.board),
-              isDark: isDark,
-            ),
-            const SizedBox(width: 4),
-            OnyxViewTab(
-              icon: FontAwesomeIcons.chartLine,
-              label: AppStrings.workloadView.tr(),
-              isSelected: activeView == WorkspaceView.workload,
-              onTap: () => workspaceCubit.setView(WorkspaceView.workload),
-              isDark: isDark,
-            ),
-            const SizedBox(width: 4),
-            OnyxViewTab(
-              icon: FontAwesomeIcons.chartPie,
-              label: AppStrings.analyticsView.tr(),
-              isSelected: activeView == WorkspaceView.analytics,
-              onTap: () => workspaceCubit.setView(WorkspaceView.analytics),
-              isDark: isDark,
-            ),
-          ],
-
-          const Spacer(),
+          const SizedBox(width: 12),
 
           // Notification Bell
           IconButton(

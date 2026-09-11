@@ -10,6 +10,7 @@ import 'package:onyx_todo/feature/task/domain/entities/task_entity.dart';
 import 'package:onyx_todo/feature/task/presentation/widgets/assignee_avatar_badge.dart';
 import 'package:onyx_todo/feature/task/presentation/widgets/role_pipeline_card.dart';
 import 'package:onyx_todo/feature/task/presentation/widgets/task_history_tile.dart';
+import 'package:onyx_todo/feature/task/presentation/widgets/task_subtasks_section.dart';
 
 class TaskDrawerDetail extends HookWidget {
   final TaskEntity task;
@@ -550,29 +551,11 @@ class TaskDrawerDetail extends HookWidget {
 
                 const SizedBox(height: 16),
 
-                // ─── ClickUp Bottom Actions Row ──────────────────────────────
-                Row(
-                  children: [
-                    TextButton.icon(
-                      style: TextButton.styleFrom(
-                        foregroundColor: isDark ? OnyxColors.neutral300 : OnyxColors.neutral700,
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                      ),
-                      icon: const FaIcon(FontAwesomeIcons.plus, size: 11),
-                      label: const Text('Add fields', style: TextStyle(fontSize: 12)),
-                      onPressed: () {},
-                    ),
-                    const SizedBox(width: 8),
-                    TextButton.icon(
-                      style: TextButton.styleFrom(
-                        foregroundColor: isDark ? OnyxColors.neutral300 : OnyxColors.neutral700,
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                      ),
-                      icon: const FaIcon(FontAwesomeIcons.diagramProject, size: 11),
-                      label: const Text('Add subtask', style: TextStyle(fontSize: 12)),
-                      onPressed: () {},
-                    ),
-                  ],
+                // ─── Subtasks Section ─────────────────────────────────────────
+                TaskSubtasksSection(
+                  task: task,
+                  isDark: isDark,
+                  authorName: currentUser.name.isNotEmpty ? currentUser.name : 'User',
                 ),
 
                 const SizedBox(height: 20),

@@ -1,6 +1,7 @@
 import 'package:onyx_todo/core/controller/cubit/base_cubit.dart';
 import 'package:onyx_todo/core/enum/task_enums.dart';
 import 'package:onyx_todo/core/enum/ui_state.dart';
+import 'package:onyx_todo/feature/auth/domain/entities/user_profile.dart';
 import 'package:onyx_todo/feature/auth/domain/repositories/auth_repository.dart';
 import 'package:onyx_todo/feature/notification/domain/entities/system_notification_entity.dart';
 import 'package:onyx_todo/feature/notification/domain/repositories/notification_repository.dart';
@@ -28,6 +29,20 @@ class WorkspaceCubit extends BaseCubit<WorkspaceState> {
           availableUsers: authRepository.getAllUsers(),
         ));
 
+  void setAuthenticatedUser(UserProfile user) {
+    emit(state.copyWith(currentUser: user));
+    init();
+  }
+
+  Future<void> signOut() async {
+    await authRepository.signOut();
+    emit(state.copyWith(
+      currentUser: UserProfile.empty,
+      availableUsers: const [],
+      activeView: WorkspaceView.list,
+    ));
+  }
+
   Future<void> init() async {
     emit(state.copyWith(
       modulesState: state.modulesState.copyWith(state: UiState.loading),
@@ -42,7 +57,9 @@ class WorkspaceCubit extends BaseCubit<WorkspaceState> {
     final versionsFuture = workspaceRepository.getVersions();
     final usersFuture = authRepository.fetchUsers();
     final teamsFuture = teamRepository.getTeams();
-    final notifsFuture = notificationRepository.getNotifications(state.currentUser.id);
+    final notifsFuture = state.currentUser.isNotEmpty
+        ? notificationRepository.getNotifications(state.currentUser.id)
+        : notificationRepository.getNotifications('');
 
     final modulesRes = await modulesFuture;
     final versionsRes = await versionsFuture;

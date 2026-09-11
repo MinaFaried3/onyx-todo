@@ -78,25 +78,13 @@ class AppPreferences extends Equatable {
   }
 
   Future<String> getOpeningRoutePath() async {
-    final [tokenResult, isLoggedIn, isDoneOnboarding] = await Future.wait([
-      token,
-      getBool(PrefKeys.isLoggedIn),
-      getBool(PrefKeys.isDoneOnboardingScreen),
-    ]);
+    final isLoggedIn = await getBool(PrefKeys.isLoggedIn);
+    final userId = getString(PrefKeys.userId);
 
-    final String tokenString = tokenResult as String;
-
-    if ((isLoggedIn as bool) && tokenString.isNotEmpty) {
+    if (isLoggedIn && userId.isNotEmpty) {
       return '/';
     }
-
-    // Check if the user has completed the onboarding process
-    // if (isDoneOnboarding == false) {
-    //   return '/onboarding';
-    // }
-
-    // If onboarding is done, but the token is missing, navigate to home
-    return '/';
+    return '/login';
   }
 
   Future<String> get token async => (await _tokenService.accessToken).orEmpty();

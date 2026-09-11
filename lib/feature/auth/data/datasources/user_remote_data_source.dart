@@ -17,8 +17,8 @@ abstract interface class UserRemoteDataSource {
 class UserRemoteDataSourceImpl implements UserRemoteDataSource {
   final FirebaseFirestore? firestore;
 
-  // In-memory persistent cache seeded with initial demo users
-  static final List<UserProfile> _usersCache = List.of(UserProfile.demoUsers);
+  // In-memory persistent cache (no dummy data)
+  static final List<UserProfile> _usersCache = [];
 
   UserRemoteDataSourceImpl({this.firestore});
 
@@ -37,19 +37,18 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
         final snapshot = await _usersCollection!.get().timeout(const Duration(seconds: 4));
         if (snapshot.docs.isNotEmpty) {
           final dbUsers = snapshot.docs.map((doc) => UserProfile.fromMap(doc.data(), doc.id)).toList();
-          // Merge with cache
-          final map = {for (final u in _usersCache) u.id: u};
-          for (final u in dbUsers) {
-            map[u.id] = u;
-          }
           _usersCache
             ..clear()
-            ..addAll(map.values);
+            ..addAll(dbUsers);
           return List.unmodifiable(_usersCache);
+        } else {
+          // Database has no users
+          _usersCache.clear();
+          return const [];
         }
       }
     } catch (e) {
-      Printer.logger('UserRemoteDataSourceImpl.getUsers fallback: $e');
+      Printer.logger('UserRemoteDataSourceImpl.getUsers error: $e');
     }
     return List.unmodifiable(_usersCache);
   }

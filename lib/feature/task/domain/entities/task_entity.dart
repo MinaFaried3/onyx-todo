@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:onyx_todo/core/enum/task_enums.dart';
 import 'package:onyx_todo/feature/auth/domain/entities/user_profile.dart';
 import 'package:onyx_todo/feature/task/domain/entities/task_history_item.dart';
+import 'package:onyx_todo/feature/task/domain/entities/task_subtask.dart';
 
 class TaskEntity extends Equatable {
   final String id;
@@ -30,6 +31,7 @@ class TaskEntity extends Equatable {
   final String? devNotes;
   final String? qaNotes;
   final List<TaskHistoryItem> history;
+  final List<TaskSubtask> subtasks;
 
   const TaskEntity({
     required this.id,
@@ -58,6 +60,7 @@ class TaskEntity extends Equatable {
     this.devNotes,
     this.qaNotes,
     this.history = const [],
+    this.subtasks = const [],
   });
 
   /// Check whether it is currently this user's turn in the role sequence
@@ -87,6 +90,11 @@ class TaskEntity extends Equatable {
     }
     return null;
   }
+
+  /// Get subtask statistics
+  int get totalSubtasks => subtasks.length;
+  int get completedSubtasks => subtasks.where((s) => s.isCompleted).length;
+  double get subtaskProgress => subtasks.isEmpty ? 0.0 : completedSubtasks / totalSubtasks;
 
   /// Helper to format task ID pattern: `V<version>.<module>.<000000>`
   static String generateFormattedId({
@@ -128,6 +136,7 @@ class TaskEntity extends Equatable {
         devNotes,
         qaNotes,
         history,
+        subtasks,
       ];
 
   TaskEntity copyWith({
@@ -157,6 +166,7 @@ class TaskEntity extends Equatable {
     String? devNotes,
     String? qaNotes,
     List<TaskHistoryItem>? history,
+    List<TaskSubtask>? subtasks,
   }) {
     return TaskEntity(
       id: id ?? this.id,
@@ -185,6 +195,7 @@ class TaskEntity extends Equatable {
       devNotes: devNotes ?? this.devNotes,
       qaNotes: qaNotes ?? this.qaNotes,
       history: history ?? this.history,
+      subtasks: subtasks ?? this.subtasks,
     );
   }
 
@@ -216,6 +227,7 @@ class TaskEntity extends Equatable {
       'devNotes': devNotes,
       'qaNotes': qaNotes,
       'history': history.map((e) => e.toMap()).toList(),
+      'subtasks': subtasks.map((e) => e.toMap()).toList(),
     };
   }
 
@@ -254,6 +266,9 @@ class TaskEntity extends Equatable {
       qaNotes: map['qaNotes'] as String?,
       history: (map['history'] as List? ?? [])
           .map((e) => TaskHistoryItem.fromMap(Map<String, dynamic>.from(e as Map)))
+          .toList(),
+      subtasks: (map['subtasks'] as List? ?? [])
+          .map((e) => TaskSubtask.fromMap(Map<String, dynamic>.from(e as Map)))
           .toList(),
     );
   }

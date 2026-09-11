@@ -308,6 +308,47 @@ class StatusGroupSection extends HookWidget {
                                 ),
                               ),
                             ],
+                            if (task.totalSubtasks > 0) ...[
+                              const SizedBox(width: 6),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
+                                decoration: BoxDecoration(
+                                  color: task.completedSubtasks == task.totalSubtasks
+                                      ? OnyxColors.success.withValues(alpha: 0.12)
+                                      : (isDark ? OnyxColors.neutral800 : OnyxColors.neutral100),
+                                  borderRadius: BorderRadius.circular(3),
+                                  border: Border.all(
+                                    color: task.completedSubtasks == task.totalSubtasks
+                                        ? OnyxColors.success.withValues(alpha: 0.4)
+                                        : (isDark ? OnyxColors.neutral700 : OnyxColors.neutral200),
+                                    width: 0.5,
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    FaIcon(
+                                      FontAwesomeIcons.diagramProject,
+                                      size: 9,
+                                      color: task.completedSubtasks == task.totalSubtasks
+                                          ? OnyxColors.success
+                                          : (isDark ? OnyxColors.neutral400 : OnyxColors.neutral600),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      '${task.completedSubtasks}/${task.totalSubtasks}',
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w600,
+                                        color: task.completedSubtasks == task.totalSubtasks
+                                            ? OnyxColors.success
+                                            : (isDark ? OnyxColors.neutral300 : OnyxColors.neutral600),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                             const SizedBox(width: 6),
                             FaIcon(
                               FontAwesomeIcons.paperclip,

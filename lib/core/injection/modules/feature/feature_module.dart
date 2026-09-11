@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:onyx_todo/core/injection/injection_container.dart';
+import 'package:onyx_todo/core/storage/shared_preferences/app_preferences.dart';
 import 'package:onyx_todo/feature/achievement/data/datasources/achievement_remote_data_source.dart';
 import 'package:onyx_todo/feature/achievement/domain/repositories/achievement_repository.dart';
 import 'package:onyx_todo/feature/auth/data/datasources/user_remote_data_source.dart';
@@ -30,7 +31,10 @@ abstract final class FeatureModule {
       () => UserRemoteDataSourceImpl(firestore: firestore),
     );
     getIt.lazySingletonOnce<AuthRepository>(
-      () => AuthRepositoryImpl(userRemoteDataSource: getIt<UserRemoteDataSource>()),
+      () => AuthRepositoryImpl(
+        userRemoteDataSource: getIt<UserRemoteDataSource>(),
+        appPreferences: getIt<AppPreferences>(),
+      ),
     );
 
     // Teams

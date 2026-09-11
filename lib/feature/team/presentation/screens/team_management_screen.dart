@@ -29,8 +29,8 @@ class TeamManagementScreen extends HookWidget {
 
     return BlocBuilder<WorkspaceCubit, WorkspaceState>(
       builder: (context, state) {
-        final teams = state.teamsState.data ?? TeamEntity.defaultTeams;
-        final users = state.usersState.data ?? state.availableUsers;
+        final teams = state.teamsState.data ?? [];
+        final users = state.usersState.data ?? [];
 
         return Scaffold(
           backgroundColor: isDark ? OnyxColors.darkBackground : OnyxColors.lightBackground,

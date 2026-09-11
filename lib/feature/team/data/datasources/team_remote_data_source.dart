@@ -14,8 +14,8 @@ abstract interface class TeamRemoteDataSource {
 class TeamRemoteDataSourceImpl implements TeamRemoteDataSource {
   final FirebaseFirestore? firestore;
 
-  // In-memory persistent cache seeded with default teams
-  static final List<TeamEntity> _teamsCache = List.of(TeamEntity.defaultTeams);
+  // In-memory persistent cache (no dummy data)
+  static final List<TeamEntity> _teamsCache = [];
 
   TeamRemoteDataSourceImpl({this.firestore});
 
@@ -34,18 +34,18 @@ class TeamRemoteDataSourceImpl implements TeamRemoteDataSource {
         final snapshot = await _teamsCollection!.get().timeout(const Duration(seconds: 4));
         if (snapshot.docs.isNotEmpty) {
           final dbTeams = snapshot.docs.map((doc) => TeamEntity.fromMap(doc.data(), doc.id)).toList();
-          final map = {for (final t in _teamsCache) t.id: t};
-          for (final t in dbTeams) {
-            map[t.id] = t;
-          }
           _teamsCache
             ..clear()
-            ..addAll(map.values);
+            ..addAll(dbTeams);
           return List.unmodifiable(_teamsCache);
+        } else {
+          // Database has no teams
+          _teamsCache.clear();
+          return const [];
         }
       }
     } catch (e) {
-      Printer.logger('TeamRemoteDataSourceImpl.getTeams fallback: $e');
+      Printer.logger('TeamRemoteDataSourceImpl.getTeams error: $e');
     }
     return List.unmodifiable(_teamsCache);
   }
