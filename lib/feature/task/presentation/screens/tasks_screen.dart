@@ -6,13 +6,13 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:onyx_todo/core/enum/task_enums.dart';
 import 'package:onyx_todo/core/extension/bloc_reader.dart';
 import 'package:onyx_todo/core/localization/app_strings.dart';
-import 'package:onyx_todo/core/ui/clickup_colors.dart';
+import 'package:onyx_todo/core/ui/onyx_colors.dart';
 import 'package:onyx_todo/feature/task/presentation/cubit/tasks_cubit.dart';
 import 'package:onyx_todo/feature/task/presentation/cubit/tasks_state.dart';
-import 'package:onyx_todo/feature/task/presentation/views/clickup_analytics_view.dart';
-import 'package:onyx_todo/feature/task/presentation/views/clickup_board_view.dart';
-import 'package:onyx_todo/feature/task/presentation/views/clickup_list_view.dart';
-import 'package:onyx_todo/feature/task/presentation/views/clickup_workload_view.dart';
+import 'package:onyx_todo/feature/task/presentation/views/onyx_analytics_view.dart';
+import 'package:onyx_todo/feature/task/presentation/views/onyx_board_view.dart';
+import 'package:onyx_todo/feature/task/presentation/views/onyx_list_view.dart';
+import 'package:onyx_todo/feature/task/presentation/views/onyx_workload_view.dart';
 import 'package:onyx_todo/feature/task/presentation/widgets/task_create_dialog.dart';
 import 'package:onyx_todo/feature/task/presentation/widgets/task_drawer_detail.dart';
 import 'package:onyx_todo/feature/workspace/presentation/cubit/workspace_cubit.dart';
@@ -64,10 +64,10 @@ class TasksScreen extends HookWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                     decoration: BoxDecoration(
-                      color: isDark ? ClickUpColors.darkCard : ClickUpColors.lightCard,
+                      color: isDark ? OnyxColors.darkCard : OnyxColors.lightCard,
                       border: Border(
                         bottom: BorderSide(
-                          color: isDark ? ClickUpColors.darkBorder : ClickUpColors.lightBorder,
+                          color: isDark ? OnyxColors.darkBorder : OnyxColors.lightBorder,
                         ),
                       ),
                     ),
@@ -85,7 +85,7 @@ class TasksScreen extends HookWidget {
                               hintText: AppStrings.search.tr(),
                               prefixIcon: const Center(
                                 widthFactor: 1.0,
-                                child: FaIcon(FontAwesomeIcons.magnifyingGlass, size: 13, color: ClickUpColors.neutral400),
+                                child: FaIcon(FontAwesomeIcons.magnifyingGlass, size: 13, color: OnyxColors.neutral400),
                               ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(6),
@@ -148,8 +148,8 @@ class TasksScreen extends HookWidget {
                         // Create Task Button
                         ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: ClickUpColors.primary,
-                            foregroundColor: ClickUpColors.white,
+                            backgroundColor: OnyxColors.primary,
+                            foregroundColor: OnyxColors.white,
                             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
                           ),
@@ -177,10 +177,10 @@ class TasksScreen extends HookWidget {
                     child: state.tasksState.isLoading
                         ? const Center(child: CircularProgressIndicator())
                         : switch (activeView) {
-                            WorkspaceView.board => ClickUpBoardView(tasks: filteredTasks),
-                            WorkspaceView.workload => ClickUpWorkloadView(tasks: filteredTasks),
-                            WorkspaceView.analytics => ClickUpAnalyticsView(tasks: filteredTasks),
-                            _ => ClickUpListView(tasks: filteredTasks),
+                            WorkspaceView.board => OnyxBoardView(tasks: filteredTasks),
+                            WorkspaceView.workload => OnyxWorkloadView(tasks: filteredTasks),
+                            WorkspaceView.analytics => OnyxAnalyticsView(tasks: filteredTasks),
+                            _ => OnyxListView(tasks: filteredTasks),
                           },
                   ),
                 ],

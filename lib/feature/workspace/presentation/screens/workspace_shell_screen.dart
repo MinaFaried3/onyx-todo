@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:onyx_todo/core/extension/bloc_reader.dart';
-import 'package:onyx_todo/core/ui/clickup_colors.dart';
+import 'package:onyx_todo/core/ui/onyx_colors.dart';
 import 'package:onyx_todo/feature/achievement/presentation/screens/achievement_screen.dart';
 import 'package:onyx_todo/feature/excel_import/presentation/screens/excel_import_screen.dart';
 import 'package:onyx_todo/feature/month_plan/presentation/screens/month_plan_screen.dart';
 import 'package:onyx_todo/feature/task/presentation/screens/tasks_screen.dart';
 import 'package:onyx_todo/feature/workspace/presentation/cubit/workspace_cubit.dart';
 import 'package:onyx_todo/feature/workspace/presentation/cubit/workspace_state.dart';
-import 'package:onyx_todo/feature/workspace/presentation/widgets/clickup_sidebar.dart';
-import 'package:onyx_todo/feature/workspace/presentation/widgets/clickup_top_bar.dart';
+import 'package:onyx_todo/feature/workspace/presentation/widgets/onyx_sidebar.dart';
+import 'package:onyx_todo/feature/workspace/presentation/widgets/onyx_top_bar.dart';
 
 class WorkspaceShellScreen extends HookWidget {
   const WorkspaceShellScreen({super.key});
@@ -27,18 +27,18 @@ class WorkspaceShellScreen extends HookWidget {
     }, const []);
 
     return Scaffold(
-      backgroundColor: isDark ? ClickUpColors.darkBackground : ClickUpColors.lightBackground,
+      backgroundColor: isDark ? OnyxColors.darkBackground : OnyxColors.lightBackground,
       body: Row(
         children: [
-          // Collapsible ClickUp Navigation Sidebar
-          const ClickUpSidebar(),
+          // Collapsible Onyx Navigation Sidebar
+          const OnyxSidebar(),
 
           // Main App Canvas
           Expanded(
             child: Column(
               children: [
                 // Top Navigation and Actions Bar
-                const ClickUpTopBar(),
+                const OnyxTopBar(),
 
                 // Active Workspace Body Content
                 Expanded(
