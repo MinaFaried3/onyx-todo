@@ -8,6 +8,7 @@ import 'package:onyx_todo/core/ui/onyx_colors.dart';
 import 'package:onyx_todo/feature/task/domain/entities/task_entity.dart';
 import 'package:onyx_todo/feature/task/presentation/widgets/assignee_avatar_badge.dart';
 import 'package:onyx_todo/feature/task/presentation/widgets/clickup_status_ring.dart';
+import 'package:onyx_todo/feature/task/presentation/widgets/task_id_badge.dart';
 import 'package:onyx_todo/feature/task/presentation/widgets/task_priority_flag.dart';
 
 class StatusGroupSection extends HookWidget {
@@ -180,10 +181,21 @@ class StatusGroupSection extends HookWidget {
               child: Row(
                 children: [
                   const SizedBox(width: 28), // space for status ring
+                  SizedBox(
+                    width: 100,
+                    child: Text(
+                      AppStrings.taskId.tr(),
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
+                      ),
+                    ),
+                  ),
                   Expanded(
                     flex: 5,
                     child: Text(
-                      'Name',
+                      AppStrings.taskTitle.tr(),
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
@@ -194,7 +206,7 @@ class StatusGroupSection extends HookWidget {
                   SizedBox(
                     width: 90,
                     child: Text(
-                      'Assignee',
+                      AppStrings.assignees.tr(),
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
@@ -205,7 +217,7 @@ class StatusGroupSection extends HookWidget {
                   SizedBox(
                     width: 85,
                     child: Text(
-                      'Due date',
+                      AppStrings.dueDate.tr(),
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
@@ -216,7 +228,7 @@ class StatusGroupSection extends HookWidget {
                   SizedBox(
                     width: 75,
                     child: Text(
-                      'Priority',
+                      AppStrings.priority.tr(),
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
@@ -264,7 +276,20 @@ class StatusGroupSection extends HookWidget {
                           onStatusChanged(task, nextStatus);
                         },
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: 10),
+
+                      // Task ID Badge Column
+                      SizedBox(
+                        width: 100,
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: TaskIdBadge(
+                            formattedId: task.displayId,
+                            onTap: () => onTaskTap(task),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
 
                       // Task Title & Tags
                       Expanded(

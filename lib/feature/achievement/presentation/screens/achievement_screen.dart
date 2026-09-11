@@ -82,27 +82,29 @@ class AchievementScreen extends HookWidget {
                   children: [
                     const FaIcon(FontAwesomeIcons.chartLine, color: OnyxColors.primary, size: 24),
                     const SizedBox(width: 12),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          AppStrings.dailyAchievements.tr(),
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            AppStrings.dailyAchievements.tr(),
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
+                            ),
                           ),
-                        ),
-                        Text(
-                          AppStrings.teamAchievementSubtitle.tr(),
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
+                          Text(
+                            AppStrings.teamAchievementSubtitle.tr(),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                    const Spacer(),
+                    const SizedBox(width: 12),
 
                     // Log Daily Achievement Button (for Developers)
                     ElevatedButton.icon(
@@ -127,123 +129,168 @@ class AchievementScreen extends HookWidget {
                 ),
                 const SizedBox(height: 16),
 
-                // Period Filter Pills + Team & Developer Filter
-                Row(
-                  children: [
-                    ...filters.map((f) {
+                // Period Filter Pills (Horizontal Scrollable)
+                SizedBox(
+                  height: 38,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: filters.length,
+                    separatorBuilder: (_, _) => const SizedBox(width: 8),
+                    itemBuilder: (context, index) {
+                      final f = filters[index];
                       final isSelected = state.selectedFilter == f['key'];
                       String label = f['label']!;
                       if (f['key'] == 'custom' && state.customStartDate != null && state.customEndDate != null) {
                         label = '${DateFormat('MM/dd').format(state.customStartDate!)} - ${DateFormat('MM/dd').format(state.customEndDate!)}';
                       }
 
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: ChoiceChip(
-                          label: Text(label),
-                          selected: isSelected,
-                          selectedColor: OnyxColors.primary.withValues(alpha: 0.2),
-                          onSelected: (_) async {
-                            if (f['key'] == 'custom') {
-                              final picked = await showDateRangePicker(
-                                context: context,
-                                firstDate: DateTime(2020),
-                                lastDate: DateTime(2030),
-                                initialDateRange: state.customStartDate != null && state.customEndDate != null
-                                    ? DateTimeRange(start: state.customStartDate!, end: state.customEndDate!)
-                                    : null,
-                              );
-                              if (picked != null) {
-                                achievementCubit.setFilter('custom', customStart: picked.start, customEnd: picked.end);
-                              }
-                            } else {
-                              achievementCubit.setFilter(f['key']!);
-                            }
-                          },
-                        ),
-                      );
-                    }),
-                    const Spacer(),
-
-                    // If Department Manager, can filter by Team and Developer
-                    if (currentUser.isDepartmentManager) ...[
-                      // Team Filter Dropdown
-                      Text(
-                        '${AppStrings.assignedTeam.tr()}: ',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
-                        ),
-                      ),
-                      DropdownButton<String?>(
-                        value: selectedTeamId.value,
-                        hint: Text(
-                          AppStrings.all.tr(),
-                          style: const TextStyle(fontSize: 12),
-                        ),
-                        underline: const SizedBox(),
-                        items: [
-                          DropdownMenuItem(
-                            value: null,
-                            child: Text(AppStrings.all.tr(), style: const TextStyle(fontSize: 12)),
-                          ),
-                          ...teams.map((t) {
-                            return DropdownMenuItem(
-                              value: t.id,
-                              child: Text(t.name, style: const TextStyle(fontSize: 12)),
+                      return ChoiceChip(
+                        label: Text(label),
+                        selected: isSelected,
+                        selectedColor: OnyxColors.primary.withValues(alpha: 0.2),
+                        onSelected: (_) async {
+                          if (f['key'] == 'custom') {
+                            final picked = await showDateRangePicker(
+                              context: context,
+                              firstDate: DateTime(2020),
+                              lastDate: DateTime(2030),
+                              initialDateRange: state.customStartDate != null && state.customEndDate != null
+                                  ? DateTimeRange(start: state.customStartDate!, end: state.customEndDate!)
+                                  : null,
                             );
-                          }),
-                        ],
-                        onChanged: (tId) {
-                          selectedTeamId.value = tId;
-                          if (tId != null) {
-                            final team = teams.where((t) => t.id == tId).firstOrNull;
-                            if (team != null && state.developerFilter != null) {
-                              final dev = workspaceCubit.state.availableUsers.where((u) => u.name == state.developerFilter).firstOrNull;
-                              if (dev != null && !team.memberIds.contains(dev.id)) {
-                                achievementCubit.setDeveloperFilter(null);
-                              }
+                            if (picked != null) {
+                              achievementCubit.setFilter('custom', customStart: picked.start, customEnd: picked.end);
                             }
+                          } else {
+                            achievementCubit.setFilter(f['key']!);
                           }
                         },
-                      ),
-                      const SizedBox(width: 14),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 12),
 
-                      // Developer Filter Dropdown
-                      Text(
-                        '${AppStrings.filterByDeveloper.tr()}: ',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
+                // If Department Manager, can filter by Team and Developer (Responsive Wrap)
+                if (currentUser.isDepartmentManager) ...[
+                  Wrap(
+                    spacing: 12,
+                    runSpacing: 10,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      // Team Filter Dropdown Container
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: isDark ? OnyxColors.darkCard : OnyxColors.lightCard,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: isDark ? OnyxColors.darkBorder : OnyxColors.lightBorder,
+                            width: 0.5,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              '${AppStrings.assignedTeam.tr()}: ',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
+                              ),
+                            ),
+                            DropdownButtonHideUnderline(
+                              child: DropdownButton<String?>(
+                                value: selectedTeamId.value,
+                                hint: Text(
+                                  AppStrings.all.tr(),
+                                  style: const TextStyle(fontSize: 12),
+                                ),
+                                items: [
+                                  DropdownMenuItem(
+                                    value: null,
+                                    child: Text(AppStrings.all.tr(), style: const TextStyle(fontSize: 12)),
+                                  ),
+                                  ...teams.map((t) {
+                                    return DropdownMenuItem(
+                                      value: t.id,
+                                      child: Text(t.name, style: const TextStyle(fontSize: 12)),
+                                    );
+                                  }),
+                                ],
+                                onChanged: (tId) {
+                                  selectedTeamId.value = tId;
+                                  if (tId != null) {
+                                    final team = teams.where((t) => t.id == tId).firstOrNull;
+                                    if (team != null && state.developerFilter != null) {
+                                      final dev = workspaceCubit.state.availableUsers.where((u) => u.name == state.developerFilter).firstOrNull;
+                                      if (dev != null && !team.memberIds.contains(dev.id)) {
+                                        achievementCubit.setDeveloperFilter(null);
+                                      }
+                                    }
+                                  }
+                                },
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      DropdownButton<String?>(
-                        value: state.developerFilter,
-                        hint: Text(
-                          AppStrings.allDevelopers.tr(),
-                          style: const TextStyle(fontSize: 12),
-                        ),
-                        underline: const SizedBox(),
-                        items: [
-                          DropdownMenuItem(
-                            value: null,
-                            child: Text(
-                              AppStrings.allDevelopers.tr(),
-                              style: const TextStyle(fontSize: 12),
-                            ),
+
+                      // Developer Filter Dropdown Container
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: isDark ? OnyxColors.darkCard : OnyxColors.lightCard,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: isDark ? OnyxColors.darkBorder : OnyxColors.lightBorder,
+                            width: 0.5,
                           ),
-                          ...availableDevs.map((u) {
-                            return DropdownMenuItem(
-                              value: u.name,
-                              child: Text(u.name, style: const TextStyle(fontSize: 12)),
-                            );
-                          }),
-                        ],
-                        onChanged: (dev) => achievementCubit.setDeveloperFilter(dev),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              '${AppStrings.filterByDeveloper.tr()}: ',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
+                              ),
+                            ),
+                            DropdownButtonHideUnderline(
+                              child: DropdownButton<String?>(
+                                value: state.developerFilter,
+                                hint: Text(
+                                  AppStrings.allDevelopers.tr(),
+                                  style: const TextStyle(fontSize: 12),
+                                ),
+                                items: [
+                                  DropdownMenuItem(
+                                    value: null,
+                                    child: Text(
+                                      AppStrings.allDevelopers.tr(),
+                                      style: const TextStyle(fontSize: 12),
+                                    ),
+                                  ),
+                                  ...availableDevs.map((u) {
+                                    return DropdownMenuItem(
+                                      value: u.name,
+                                      child: Text(u.name, style: const TextStyle(fontSize: 12)),
+                                    );
+                                  }),
+                                ],
+                                onChanged: (dev) => achievementCubit.setDeveloperFilter(dev),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
                 const SizedBox(height: 16),
 
                 // Summary KPIs

@@ -96,6 +96,9 @@ class TaskEntity extends Equatable {
   int get completedSubtasks => subtasks.where((s) => s.isCompleted).length;
   double get subtaskProgress => subtasks.isEmpty ? 0.0 : completedSubtasks / totalSubtasks;
 
+  /// Display identifier (falls back to id if formattedId is empty)
+  String get displayId => formattedId.isNotEmpty ? formattedId : id;
+
   /// Helper to format task ID pattern: `V<version>.<module>.<000000>`
   static String generateFormattedId({
     required String version,

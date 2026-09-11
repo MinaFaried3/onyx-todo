@@ -10,6 +10,7 @@ import 'package:onyx_todo/feature/task/domain/entities/task_entity.dart';
 import 'package:onyx_todo/feature/task/presentation/widgets/assignee_avatar_badge.dart';
 import 'package:onyx_todo/feature/task/presentation/widgets/role_pipeline_card.dart';
 import 'package:onyx_todo/feature/task/presentation/widgets/task_history_tile.dart';
+import 'package:onyx_todo/feature/task/presentation/widgets/task_id_badge.dart';
 import 'package:onyx_todo/feature/task/presentation/widgets/task_subtasks_section.dart';
 
 class TaskDrawerDetail extends HookWidget {
@@ -115,6 +116,10 @@ class TaskDrawerDetail extends HookWidget {
                     color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
                   ),
                 ),
+                const SizedBox(width: 8),
+                TaskIdBadge(
+                  formattedId: task.displayId,
+                ),
                 const SizedBox(width: 6),
                 const FaIcon(FontAwesomeIcons.plus, size: 10, color: OnyxColors.neutral400),
 
@@ -154,9 +159,14 @@ class TaskDrawerDetail extends HookWidget {
             child: ListView(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
               children: [
-                // Top Task Sub-Pill
+                // Top Task Sub-Pill & Task ID Badge
                 Row(
                   children: [
+                    TaskIdBadge(
+                      formattedId: task.displayId,
+                      isLarge: true,
+                    ),
+                    const SizedBox(width: 8),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
@@ -173,7 +183,7 @@ class TaskDrawerDetail extends HookWidget {
                           const FaIcon(FontAwesomeIcons.circleDot, size: 11, color: OnyxColors.neutral400),
                           const SizedBox(width: 6),
                           Text(
-                            'Task',
+                            task.taskType.label,
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,

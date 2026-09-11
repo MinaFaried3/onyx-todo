@@ -51,27 +51,29 @@ class MonthPlanScreen extends HookWidget {
                   children: [
                     const FaIcon(FontAwesomeIcons.calendarCheck, color: OnyxColors.primary, size: 24),
                     const SizedBox(width: 12),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          AppStrings.monthlyPlan.tr(),
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            AppStrings.monthlyPlan.tr(),
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
+                            ),
                           ),
-                        ),
-                        Text(
-                          AppStrings.crmSystemTitle.tr(),
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
+                          Text(
+                            AppStrings.crmSystemTitle.tr(),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                    const Spacer(),
+                    const SizedBox(width: 12),
 
                     // Month & Year Selector
                     Container(
