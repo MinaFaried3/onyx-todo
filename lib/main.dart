@@ -2,7 +2,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:onyx_todo/core/config/environments/core_config.dart';
 import 'package:onyx_todo/core/config/environments/security_config.dart';
 import 'package:onyx_todo/core/injection/injection_container.dart';
 import 'package:onyx_todo/core/navigation/routes/app_router.dart';
@@ -35,8 +34,8 @@ void main() async {
       performance: false,
     ),
     security: const SecurityConfig(
-      enableSslPinning: false,
-      checkSafeDevice: false,
+      sslPinning: false,
+      safeDevice: false,
     ),
   );
 

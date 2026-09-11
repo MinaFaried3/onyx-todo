@@ -12,7 +12,6 @@ import 'package:onyx_todo/feature/achievement/presentation/cubit/achievement_cub
 import 'package:onyx_todo/feature/achievement/presentation/cubit/achievement_state.dart';
 import 'package:onyx_todo/feature/achievement/presentation/widgets/log_achievement_dialog.dart';
 import 'package:onyx_todo/feature/task/presentation/widgets/task_id_badge.dart';
-import 'package:onyx_todo/feature/workspace/presentation/cubit/workspace_cubit.dart';
 
 class AchievementScreen extends HookWidget {
   const AchievementScreen({super.key});
@@ -289,7 +288,7 @@ class AchievementScreen extends HookWidget {
                   tooltip: AppStrings.copyWhatsappSummary.tr(),
                   onPressed: () {
                     Clipboard.setData(ClipboardData(text: item.toWhatsAppSummary()));
-                    context.safeShowSnackBar(AppStrings.whatsappSummaryCopied.tr());
+                    context.safeShowSnackBar(SnackBar(content: Text(AppStrings.whatsappSummaryCopied.tr())));
                   },
                 ),
               ],

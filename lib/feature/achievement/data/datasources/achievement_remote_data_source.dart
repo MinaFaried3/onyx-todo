@@ -13,15 +13,14 @@ abstract interface class AchievementRemoteDataSource {
 }
 
 class AchievementRemoteDataSourceImpl implements AchievementRemoteDataSource {
-  final FirebaseFirestore? _firestore;
+  final FirebaseFirestore? firestore;
   static final List<DailyAchievementEntity> _memoryAchievements = [];
 
-  AchievementRemoteDataSourceImpl({FirebaseFirestore? firestore})
-      : _firestore = firestore;
+  AchievementRemoteDataSourceImpl({this.firestore});
 
   CollectionReference<Map<String, dynamic>>? get _collection {
     try {
-      return _firestore?.collection('daily_achievements');
+      return firestore?.collection('daily_achievements');
     } catch (_) {
       return null;
     }

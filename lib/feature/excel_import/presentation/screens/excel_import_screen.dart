@@ -150,7 +150,7 @@ class ExcelImportScreen extends HookWidget {
                         TextButton(
                           onPressed: () {
                             context.tasksCubit.fetchTasks();
-                            context.safeShowSnackBar('تم تحديث قائمة المهام!');
+                            context.safeShowSnackBar(SnackBar(content: Text(AppStrings.success.tr())));
                           },
                           child: const Text('عرض المهام في لوحة كانبان'),
                         ),

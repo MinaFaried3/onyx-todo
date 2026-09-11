@@ -6,7 +6,6 @@ import 'package:onyx_todo/core/extension/context_extensions.dart';
 import 'package:onyx_todo/core/localization/app_strings.dart';
 import 'package:onyx_todo/core/ui/clickup_colors.dart';
 import 'package:onyx_todo/feature/month_plan/domain/entities/monthly_plan_entity.dart';
-import 'package:onyx_todo/feature/workspace/presentation/cubit/workspace_cubit.dart';
 
 class CreatePlanDialog extends HookWidget {
   final int month;

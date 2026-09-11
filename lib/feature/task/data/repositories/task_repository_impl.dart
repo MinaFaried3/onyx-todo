@@ -7,10 +7,9 @@ import 'package:onyx_todo/feature/task/domain/entities/task_history_item.dart';
 import 'package:onyx_todo/feature/task/domain/repositories/task_repository.dart';
 
 class TaskRepositoryImpl implements TaskRepository {
-  final TaskRemoteDataSource _remoteDataSource;
+  final TaskRemoteDataSource remoteDataSource;
 
-  TaskRepositoryImpl({required TaskRemoteDataSource remoteDataSource})
-      : _remoteDataSource = remoteDataSource;
+  TaskRepositoryImpl({required this.remoteDataSource});
 
   @override
   Future<Either<Failure, List<TaskEntity>>> getTasks({
@@ -20,7 +19,7 @@ class TaskRepositoryImpl implements TaskRepository {
     String? assigneeName,
   }) async {
     try {
-      final tasks = await _remoteDataSource.getTasks(
+      final tasks = await remoteDataSource.getTasks(
         moduleCode: moduleCode,
         version: version,
         status: status,
@@ -49,7 +48,7 @@ class TaskRepositoryImpl implements TaskRepository {
     String? devNotes,
   }) async {
     try {
-      final seq = await _remoteDataSource.getNextSequenceNumber(
+      final seq = await remoteDataSource.getNextSequenceNumber(
         version: version,
         moduleCode: moduleCode,
       );
@@ -90,7 +89,7 @@ class TaskRepositoryImpl implements TaskRepository {
         history: [initialHistory],
       );
 
-      final created = await _remoteDataSource.createTask(newTask);
+      final created = await remoteDataSource.createTask(newTask);
       return Right(created);
     } catch (e) {
       return Left(ServerFailure(code: -1, message: e.toString()));
@@ -105,7 +104,7 @@ class TaskRepositoryImpl implements TaskRepository {
     String? note,
   }) async {
     try {
-      await _remoteDataSource.updateTaskStatus(
+      await remoteDataSource.updateTaskStatus(
         taskId: taskId,
         newStatus: newStatus,
         authorName: authorName,
@@ -120,7 +119,7 @@ class TaskRepositoryImpl implements TaskRepository {
   @override
   Future<Either<Failure, Unit>> updateTask(TaskEntity task) async {
     try {
-      await _remoteDataSource.updateTask(task);
+      await remoteDataSource.updateTask(task);
       return const Right(unit);
     } catch (e) {
       return Left(ServerFailure(code: -1, message: e.toString()));
@@ -130,7 +129,7 @@ class TaskRepositoryImpl implements TaskRepository {
   @override
   Future<Either<Failure, int>> importTasks(List<TaskEntity> tasks) async {
     try {
-      final count = await _remoteDataSource.batchImportTasks(tasks);
+      final count = await remoteDataSource.batchImportTasks(tasks);
       return Right(count);
     } catch (e) {
       return Left(ServerFailure(code: -1, message: e.toString()));

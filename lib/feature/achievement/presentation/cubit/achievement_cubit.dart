@@ -1,5 +1,4 @@
 import 'package:onyx_todo/core/controller/cubit/base_cubit.dart';
-import 'package:onyx_todo/core/controller/cubit/sub_state.dart';
 import 'package:onyx_todo/core/enum/ui_state.dart';
 import 'package:onyx_todo/feature/achievement/domain/entities/daily_achievement_entity.dart';
 import 'package:onyx_todo/feature/achievement/domain/repositories/achievement_repository.dart';
@@ -7,11 +6,10 @@ import 'package:onyx_todo/feature/achievement/presentation/cubit/achievement_sta
 import 'package:fpdart/fpdart.dart';
 
 class AchievementCubit extends BaseCubit<AchievementState> {
-  final AchievementRepository _achievementRepository;
+  final AchievementRepository achievementRepository;
 
-  AchievementCubit({required AchievementRepository achievementRepository})
-      : _achievementRepository = achievementRepository,
-        super(const AchievementState());
+  AchievementCubit({required this.achievementRepository})
+      : super(const AchievementState());
 
   Future<void> fetchAchievements({String? developerName}) async {
     emit(state.copyWith(
@@ -55,7 +53,7 @@ class AchievementCubit extends BaseCubit<AchievementState> {
         break;
     }
 
-    final res = await _achievementRepository.getAchievements(
+    final res = await achievementRepository.getAchievements(
       startDate: startDate,
       endDate: endDate,
       developerName: developerName ?? state.developerFilter,
@@ -96,7 +94,7 @@ class AchievementCubit extends BaseCubit<AchievementState> {
       logState: state.logState.copyWith(state: UiState.loading),
     ));
 
-    final res = await _achievementRepository.submitAchievement(achievement);
+    final res = await achievementRepository.submitAchievement(achievement);
 
     return res.fold(
       (failure) {

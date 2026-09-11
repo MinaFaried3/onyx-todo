@@ -14,10 +14,9 @@ abstract interface class AchievementRepository {
 }
 
 class AchievementRepositoryImpl implements AchievementRepository {
-  final AchievementRemoteDataSource _remoteDataSource;
+  final AchievementRemoteDataSource remoteDataSource;
 
-  AchievementRepositoryImpl({required AchievementRemoteDataSource remoteDataSource})
-      : _remoteDataSource = remoteDataSource;
+  AchievementRepositoryImpl({required this.remoteDataSource});
 
   @override
   Future<Either<Failure, List<DailyAchievementEntity>>> getAchievements({
@@ -26,7 +25,7 @@ class AchievementRepositoryImpl implements AchievementRepository {
     String? developerName,
   }) async {
     try {
-      final list = await _remoteDataSource.getAchievements(
+      final list = await remoteDataSource.getAchievements(
         startDate: startDate,
         endDate: endDate,
         developerName: developerName,
@@ -40,7 +39,7 @@ class AchievementRepositoryImpl implements AchievementRepository {
   @override
   Future<Either<Failure, Unit>> submitAchievement(DailyAchievementEntity achievement) async {
     try {
-      await _remoteDataSource.submitAchievement(achievement);
+      await remoteDataSource.submitAchievement(achievement);
       return const Right(unit);
     } catch (e) {
       return Left(ServerFailure(code: -1, message: e.toString()));

@@ -331,7 +331,9 @@ class TaskCreateDialog extends HookWidget {
                       : () async {
                           final title = titleController.text.trim();
                           if (title.isEmpty) {
-                            context.safeShowSnackBar('يرجى كتابة عنوان المهمة');
+                            context.safeShowSnackBar(
+                              const SnackBar(content: Text('يرجى كتابة عنوان المهمة')),
+                            );
                             return;
                           }
 

@@ -1,5 +1,4 @@
 import 'package:onyx_todo/core/controller/cubit/base_cubit.dart';
-import 'package:onyx_todo/core/controller/cubit/sub_state.dart';
 import 'package:onyx_todo/core/enum/task_enums.dart';
 import 'package:onyx_todo/core/enum/ui_state.dart';
 import 'package:onyx_todo/feature/task/domain/entities/task_entity.dart';
@@ -7,11 +6,10 @@ import 'package:onyx_todo/feature/task/domain/repositories/task_repository.dart'
 import 'package:onyx_todo/feature/task/presentation/cubit/tasks_state.dart';
 
 class TasksCubit extends BaseCubit<TasksState> {
-  final TaskRepository _taskRepository;
+  final TaskRepository taskRepository;
 
-  TasksCubit({required TaskRepository taskRepository})
-      : _taskRepository = taskRepository,
-        super(const TasksState());
+  TasksCubit({required this.taskRepository})
+      : super(const TasksState());
 
   Future<void> fetchTasks({
     String? moduleCode,
@@ -22,7 +20,7 @@ class TasksCubit extends BaseCubit<TasksState> {
       tasksState: state.tasksState.copyWith(state: UiState.loading),
     ));
 
-    final res = await _taskRepository.getTasks(
+    final res = await taskRepository.getTasks(
       moduleCode: moduleCode,
       version: version,
       status: status,
@@ -63,7 +61,7 @@ class TasksCubit extends BaseCubit<TasksState> {
       createTaskState: state.createTaskState.copyWith(state: UiState.loading),
     ));
 
-    final res = await _taskRepository.createTask(
+    final res = await taskRepository.createTask(
       version: version,
       moduleCode: moduleCode,
       screenName: screenName,
@@ -89,13 +87,13 @@ class TasksCubit extends BaseCubit<TasksState> {
         ));
         return false;
       },
-      (createdTask) {
+      (newTask) {
         final currentList = List<TaskEntity>.from(state.tasksState.data ?? []);
-        currentList.insert(0, createdTask);
+        currentList.insert(0, newTask);
         emit(state.copyWith(
           createTaskState: state.createTaskState.copyWith(
             state: UiState.succeed,
-            data: createdTask,
+            data: newTask,
           ),
           tasksState: state.tasksState.copyWith(data: currentList),
         ));
@@ -114,8 +112,7 @@ class TasksCubit extends BaseCubit<TasksState> {
     final currentList = List<TaskEntity>.from(state.tasksState.data ?? []);
     final index = currentList.indexWhere((t) => t.id == taskId);
     if (index != -1) {
-      final current = currentList[index];
-      currentList[index] = current.copyWith(status: newStatus);
+      currentList[index] = currentList[index].copyWith(status: newStatus);
       emit(state.copyWith(
         tasksState: state.tasksState.copyWith(data: currentList),
         selectedTask: state.selectedTask?.id == taskId
@@ -124,7 +121,7 @@ class TasksCubit extends BaseCubit<TasksState> {
       ));
     }
 
-    final res = await _taskRepository.updateTaskStatus(
+    final res = await taskRepository.updateTaskStatus(
       taskId: taskId,
       newStatus: newStatus.value,
       authorName: authorName,
@@ -148,7 +145,7 @@ class TasksCubit extends BaseCubit<TasksState> {
       ));
     }
 
-    final res = await _taskRepository.updateTask(task);
+    final res = await taskRepository.updateTask(task);
     res.fold(
       (failure) => emit(state.copyWith(failure: () => failure)),
       (_) {},

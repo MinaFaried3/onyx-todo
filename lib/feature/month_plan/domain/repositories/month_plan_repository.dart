@@ -22,10 +22,9 @@ abstract interface class MonthPlanRepository {
 }
 
 class MonthPlanRepositoryImpl implements MonthPlanRepository {
-  final MonthPlanRemoteDataSource _remoteDataSource;
+  final MonthPlanRemoteDataSource remoteDataSource;
 
-  MonthPlanRepositoryImpl({required MonthPlanRemoteDataSource remoteDataSource})
-      : _remoteDataSource = remoteDataSource;
+  MonthPlanRepositoryImpl({required this.remoteDataSource});
 
   @override
   Future<Either<Failure, List<MonthlyPlanEntity>>> getPlans({
@@ -34,7 +33,7 @@ class MonthPlanRepositoryImpl implements MonthPlanRepository {
     String? developerName,
   }) async {
     try {
-      final plans = await _remoteDataSource.getPlans(
+      final plans = await remoteDataSource.getPlans(
         month: month,
         year: year,
         developerName: developerName,
@@ -48,7 +47,7 @@ class MonthPlanRepositoryImpl implements MonthPlanRepository {
   @override
   Future<Either<Failure, MonthlyPlanEntity?>> getPlanById(String planId) async {
     try {
-      final plan = await _remoteDataSource.getPlanById(planId);
+      final plan = await remoteDataSource.getPlanById(planId);
       return Right(plan);
     } catch (e) {
       return Left(ServerFailure(code: -1, message: e.toString()));
@@ -58,7 +57,7 @@ class MonthPlanRepositoryImpl implements MonthPlanRepository {
   @override
   Future<Either<Failure, Unit>> savePlan(MonthlyPlanEntity plan) async {
     try {
-      await _remoteDataSource.savePlan(plan);
+      await remoteDataSource.savePlan(plan);
       return const Right(unit);
     } catch (e) {
       return Left(ServerFailure(code: -1, message: e.toString()));
@@ -72,7 +71,7 @@ class MonthPlanRepositoryImpl implements MonthPlanRepository {
     String? managerNotes,
   }) async {
     try {
-      await _remoteDataSource.updatePlanStatus(
+      await remoteDataSource.updatePlanStatus(
         planId: planId,
         status: status,
         managerNotes: managerNotes,

@@ -1,21 +1,18 @@
 import 'dart:typed_data';
 import 'package:onyx_todo/core/controller/cubit/base_cubit.dart';
-import 'package:onyx_todo/core/controller/cubit/sub_state.dart';
 import 'package:onyx_todo/core/enum/ui_state.dart';
 import 'package:onyx_todo/feature/excel_import/data/services/excel_parser_service.dart';
 import 'package:onyx_todo/feature/excel_import/presentation/cubit/excel_import_state.dart';
 import 'package:onyx_todo/feature/task/domain/repositories/task_repository.dart';
 
 class ExcelImportCubit extends BaseCubit<ExcelImportState> {
-  final ExcelParserService _excelParserService;
-  final TaskRepository _taskRepository;
+  final ExcelParserService excelParserService;
+  final TaskRepository taskRepository;
 
   ExcelImportCubit({
-    required ExcelParserService excelParserService,
-    required TaskRepository taskRepository,
-  })  : _excelParserService = excelParserService,
-        _taskRepository = taskRepository,
-        super(const ExcelImportState());
+    required this.excelParserService,
+    required this.taskRepository,
+  }) : super(const ExcelImportState());
 
   Future<void> processExcelBytes(Uint8List bytes, String fileName) async {
     emit(state.copyWith(
@@ -24,7 +21,7 @@ class ExcelImportCubit extends BaseCubit<ExcelImportState> {
     ));
 
     try {
-      final tasks = _excelParserService.parseExcelBytes(bytes);
+      final tasks = excelParserService.parseExcelBytes(bytes);
       final sheets = tasks.map((t) => t.moduleCode).toSet().toList()..sort();
 
       emit(state.copyWith(
@@ -33,7 +30,7 @@ class ExcelImportCubit extends BaseCubit<ExcelImportState> {
       ));
 
       // Batch import parsed tasks to repository
-      final res = await _taskRepository.importTasks(tasks);
+      final res = await taskRepository.importTasks(tasks);
 
       res.fold(
         (failure) => emit(state.copyWith(

@@ -32,17 +32,16 @@ abstract interface class TaskRemoteDataSource {
 }
 
 class TaskRemoteDataSourceImpl implements TaskRemoteDataSource {
-  final FirebaseFirestore? _firestore;
+  final FirebaseFirestore? firestore;
 
   // In-memory fallback / cache for fast local access and testing
   static final List<TaskEntity> _localMemoryTasks = [];
 
-  TaskRemoteDataSourceImpl({FirebaseFirestore? firestore})
-      : _firestore = firestore;
+  TaskRemoteDataSourceImpl({this.firestore});
 
   CollectionReference<Map<String, dynamic>>? get _tasksCollection {
     try {
-      return _firestore?.collection('tasks');
+      return firestore?.collection('tasks');
     } catch (_) {
       return null;
     }
@@ -50,7 +49,7 @@ class TaskRemoteDataSourceImpl implements TaskRemoteDataSource {
 
   CollectionReference<Map<String, dynamic>>? get _countersCollection {
     try {
-      return _firestore?.collection('counters');
+      return firestore?.collection('counters');
     } catch (_) {
       return null;
     }
@@ -242,7 +241,7 @@ class TaskRemoteDataSourceImpl implements TaskRemoteDataSource {
             i,
             (i + batchSize > tasks.length) ? tasks.length : i + batchSize,
           );
-          final batch = _firestore!.batch();
+          final batch = firestore!.batch();
           for (final task in chunk) {
             final docRef = _tasksCollection!.doc(task.formattedId);
             batch.set(docRef, task.toMap(), SetOptions(merge: true));

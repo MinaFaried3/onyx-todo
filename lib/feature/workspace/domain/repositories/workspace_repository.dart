@@ -12,16 +12,16 @@ abstract interface class WorkspaceRepository {
 }
 
 class WorkspaceRepositoryImpl implements WorkspaceRepository {
-  final FirebaseFirestore? _firestore;
+  final FirebaseFirestore? firestore;
   static final List<OnyxModule> _memoryModules = List.from(OnyxModule.standardModules);
   static final List<OnyxVersion> _memoryVersions = List.from(OnyxVersion.defaultVersions);
 
-  WorkspaceRepositoryImpl({FirebaseFirestore? firestore}) : _firestore = firestore;
+  WorkspaceRepositoryImpl({this.firestore});
 
   CollectionReference<Map<String, dynamic>>? get _modulesCol =>
-      _firestore?.collection('modules');
+      firestore?.collection('modules');
   CollectionReference<Map<String, dynamic>>? get _versionsCol =>
-      _firestore?.collection('versions');
+      firestore?.collection('versions');
 
   @override
   Future<Either<Failure, List<OnyxModule>>> getModules() async {

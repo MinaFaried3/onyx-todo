@@ -5,15 +5,13 @@ import 'package:onyx_todo/feature/workspace/domain/repositories/workspace_reposi
 import 'package:onyx_todo/feature/workspace/presentation/cubit/workspace_state.dart';
 
 class WorkspaceCubit extends BaseCubit<WorkspaceState> {
-  final WorkspaceRepository _workspaceRepository;
-  final AuthRepository _authRepository;
+  final WorkspaceRepository workspaceRepository;
+  final AuthRepository authRepository;
 
   WorkspaceCubit({
-    required WorkspaceRepository workspaceRepository,
-    required AuthRepository authRepository,
-  })  : _workspaceRepository = workspaceRepository,
-        _authRepository = authRepository,
-        super(WorkspaceState(
+    required this.workspaceRepository,
+    required this.authRepository,
+  }) : super(WorkspaceState(
           currentUser: authRepository.getCurrentUser(),
           availableUsers: authRepository.getAllUsers(),
         ));
@@ -25,8 +23,8 @@ class WorkspaceCubit extends BaseCubit<WorkspaceState> {
     ));
 
     final (modulesRes, versionsRes) = await (
-      _workspaceRepository.getModules(),
-      _workspaceRepository.getVersions(),
+      workspaceRepository.getModules(),
+      workspaceRepository.getVersions(),
     ).wait;
 
     modulesRes.fold(
@@ -83,7 +81,7 @@ class WorkspaceCubit extends BaseCubit<WorkspaceState> {
   }
 
   Future<void> switchUser(String userId) async {
-    final res = await _authRepository.switchUser(userId);
+    final res = await authRepository.switchUser(userId);
     res.fold(
       (failure) => emit(state.copyWith(failure: () => failure)),
       (user) => emit(state.copyWith(currentUser: user)),

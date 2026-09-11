@@ -13,7 +13,6 @@ import 'package:onyx_todo/feature/month_plan/presentation/cubit/month_plan_cubit
 import 'package:onyx_todo/feature/month_plan/presentation/cubit/month_plan_state.dart';
 import 'package:onyx_todo/feature/month_plan/presentation/widgets/create_plan_dialog.dart';
 import 'package:onyx_todo/feature/task/presentation/widgets/task_id_badge.dart';
-import 'package:onyx_todo/feature/workspace/presentation/cubit/workspace_cubit.dart';
 
 class MonthPlanScreen extends HookWidget {
   const MonthPlanScreen({super.key});
@@ -144,7 +143,7 @@ class MonthPlanScreen extends HookWidget {
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
                       itemCount: plans.length,
-                      separatorBuilder: (_, __) => const SizedBox(width: 8),
+                      separatorBuilder: (context, index) => const SizedBox(width: 8),
                       itemBuilder: (context, index) {
                         final p = plans[index];
                         final isSelected = activePlan?.id == p.id;
@@ -289,7 +288,9 @@ class MonthPlanScreen extends HookWidget {
                     planId: plan.id,
                     status: PlanStatus.submitted,
                   );
-                  context.safeShowSnackBar('تم رفع الخطة لمدير الإدارة للاعتماد');
+                  context.safeShowSnackBar(
+                    const SnackBar(content: Text('تم رفع الخطة لمدير الإدارة للاعتماد')),
+                  );
                 },
               ),
 
@@ -307,7 +308,9 @@ class MonthPlanScreen extends HookWidget {
                     planId: plan.id,
                     status: PlanStatus.approved,
                   );
-                  context.safeShowSnackBar('تم اعتماد الخطة بنجاح');
+                  context.safeShowSnackBar(
+                    const SnackBar(content: Text('تم اعتماد الخطة بنجاح')),
+                  );
                 },
               ),
               const SizedBox(width: 8),
@@ -336,7 +339,9 @@ class MonthPlanScreen extends HookWidget {
                     planId: plan.id,
                     status: PlanStatus.closed,
                   );
-                  context.safeShowSnackBar('تم إغلاق خطة الشهر واعتماد الساعات الفعلية');
+                  context.safeShowSnackBar(
+                    const SnackBar(content: Text('تم إغلاق خطة الشهر واعتماد الساعات الفعلية')),
+                  );
                 },
               ),
             ],

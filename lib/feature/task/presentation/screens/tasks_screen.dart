@@ -22,7 +22,6 @@ class TasksScreen extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final tasksCubit = context.tasksCubit;
-    final workspaceCubit = context.workspaceCubit;
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 

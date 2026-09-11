@@ -1,5 +1,4 @@
 import 'package:onyx_todo/core/controller/cubit/base_cubit.dart';
-import 'package:onyx_todo/core/controller/cubit/sub_state.dart';
 import 'package:onyx_todo/core/enum/task_enums.dart';
 import 'package:onyx_todo/core/enum/ui_state.dart';
 import 'package:onyx_todo/feature/month_plan/domain/entities/monthly_plan_entity.dart';
@@ -8,11 +7,10 @@ import 'package:onyx_todo/feature/month_plan/domain/repositories/month_plan_repo
 import 'package:onyx_todo/feature/month_plan/presentation/cubit/month_plan_state.dart';
 
 class MonthPlanCubit extends BaseCubit<MonthPlanState> {
-  final MonthPlanRepository _monthPlanRepository;
+  final MonthPlanRepository monthPlanRepository;
 
-  MonthPlanCubit({required MonthPlanRepository monthPlanRepository})
-      : _monthPlanRepository = monthPlanRepository,
-        super(MonthPlanState(
+  MonthPlanCubit({required this.monthPlanRepository})
+      : super(MonthPlanState(
           selectedMonth: DateTime.now().month,
           selectedYear: DateTime.now().year,
         ));
@@ -22,7 +20,7 @@ class MonthPlanCubit extends BaseCubit<MonthPlanState> {
       plansState: state.plansState.copyWith(state: UiState.loading),
     ));
 
-    final res = await _monthPlanRepository.getPlans(
+    final res = await monthPlanRepository.getPlans(
       month: state.selectedMonth,
       year: state.selectedYear,
       developerName: developerName,
@@ -58,7 +56,7 @@ class MonthPlanCubit extends BaseCubit<MonthPlanState> {
   }
 
   Future<void> saveOrUpdatePlan(MonthlyPlanEntity plan) async {
-    final res = await _monthPlanRepository.savePlan(plan);
+    final res = await monthPlanRepository.savePlan(plan);
     res.fold(
       (failure) => emit(state.copyWith(failure: () => failure)),
       (_) {
@@ -85,7 +83,7 @@ class MonthPlanCubit extends BaseCubit<MonthPlanState> {
     required PlanStatus status,
     String? managerNotes,
   }) async {
-    final res = await _monthPlanRepository.updatePlanStatus(
+    final res = await monthPlanRepository.updatePlanStatus(
       planId: planId,
       status: status.value,
       managerNotes: managerNotes,

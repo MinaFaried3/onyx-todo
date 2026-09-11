@@ -14,15 +14,14 @@ abstract interface class MonthPlanRemoteDataSource {
 }
 
 class MonthPlanRemoteDataSourceImpl implements MonthPlanRemoteDataSource {
-  final FirebaseFirestore? _firestore;
+  final FirebaseFirestore? firestore;
   static final List<MonthlyPlanEntity> _memoryPlans = [];
 
-  MonthPlanRemoteDataSourceImpl({FirebaseFirestore? firestore})
-      : _firestore = firestore;
+  MonthPlanRemoteDataSourceImpl({this.firestore});
 
   CollectionReference<Map<String, dynamic>>? get _collection {
     try {
-      return _firestore?.collection('monthly_plans');
+      return firestore?.collection('monthly_plans');
     } catch (_) {
       return null;
     }

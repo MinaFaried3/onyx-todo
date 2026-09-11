@@ -8,7 +8,6 @@ import 'package:onyx_todo/core/localization/app_strings.dart';
 import 'package:onyx_todo/core/ui/clickup_colors.dart';
 import 'package:onyx_todo/feature/achievement/domain/entities/achievement_task_item.dart';
 import 'package:onyx_todo/feature/achievement/domain/entities/daily_achievement_entity.dart';
-import 'package:onyx_todo/feature/workspace/presentation/cubit/workspace_cubit.dart';
 
 class LogAchievementDialog extends HookWidget {
   const LogAchievementDialog({super.key});
@@ -237,7 +236,7 @@ class LogAchievementDialog extends HookWidget {
                       submittedAt: DateTime.now(),
                     );
                     Clipboard.setData(ClipboardData(text: achievement.toWhatsAppSummary()));
-                    context.safeShowSnackBar(AppStrings.whatsappSummaryCopied.tr());
+                    context.safeShowSnackBar(SnackBar(content: Text(AppStrings.whatsappSummaryCopied.tr())));
                   },
                 ),
                 const Spacer(),
@@ -263,7 +262,7 @@ class LogAchievementDialog extends HookWidget {
                     );
                     final ok = await achievementCubit.submitDailyAchievement(achievement);
                     if (ok && context.mounted) {
-                      context.safeShowSnackBar('تم تسجيل إنجاز اليوم بنجاح!');
+                      context.safeShowSnackBar(SnackBar(content: Text(AppStrings.success.tr())));
                       context.safePop();
                     }
                   },
