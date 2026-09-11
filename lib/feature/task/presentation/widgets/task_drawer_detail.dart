@@ -1,11 +1,14 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:onyx_todo/core/extension/bloc_reader.dart';
 import 'package:onyx_todo/core/localization/app_strings.dart';
 import 'package:onyx_todo/core/ui/clickup_colors.dart';
 import 'package:onyx_todo/feature/task/domain/entities/task_entity.dart';
 import 'package:onyx_todo/feature/task/domain/entities/task_history_item.dart';
+import 'package:onyx_todo/feature/task/presentation/widgets/assignee_info_row.dart';
+import 'package:onyx_todo/feature/task/presentation/widgets/task_history_tile.dart';
 import 'package:onyx_todo/feature/task/presentation/widgets/task_id_badge.dart';
 import 'package:onyx_todo/feature/task/presentation/widgets/task_priority_flag.dart';
 import 'package:onyx_todo/feature/task/presentation/widgets/task_status_pill.dart';
@@ -63,7 +66,11 @@ class TaskDrawerDetail extends HookWidget {
                 const SizedBox(width: 8),
                 Text(
                   task.moduleCode,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                    color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                  ),
                 ),
                 const Spacer(),
                 TaskPriorityFlag(
@@ -85,7 +92,11 @@ class TaskDrawerDetail extends HookWidget {
                 ),
                 const SizedBox(width: 12),
                 IconButton(
-                  icon: const Icon(Icons.close_rounded, size: 20),
+                  icon: FaIcon(
+                    FontAwesomeIcons.xmark,
+                    size: 16,
+                    color: isDark ? ClickUpColors.neutral400 : ClickUpColors.neutral600,
+                  ),
                   tooltip: AppStrings.close.tr(),
                   onPressed: onClose,
                 ),
@@ -101,16 +112,23 @@ class TaskDrawerDetail extends HookWidget {
                 // Screen Name Badge
                 Row(
                   children: [
-                    const Icon(Icons.layers_outlined, size: 16, color: Colors.grey),
-                    const SizedBox(width: 6),
+                    FaIcon(
+                      FontAwesomeIcons.layerGroup,
+                      size: 14,
+                      color: isDark ? ClickUpColors.neutral400 : ClickUpColors.neutral500,
+                    ),
+                    const SizedBox(width: 8),
                     Text(
                       '${AppStrings.screenName.tr()}: ',
-                      style: const TextStyle(fontSize: 12, color: Colors.grey),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: isDark ? ClickUpColors.neutral400 : ClickUpColors.neutral500,
+                      ),
                     ),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(
-                        color: ClickUpColors.primary.withValues(alpha: 0.1),
+                        color: ClickUpColors.primary.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
@@ -129,7 +147,11 @@ class TaskDrawerDetail extends HookWidget {
                 // Editable Title
                 TextField(
                   controller: titleController,
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                  ),
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     hintText: AppStrings.taskTitle.tr(),
@@ -145,7 +167,11 @@ class TaskDrawerDetail extends HookWidget {
                 // Description Field
                 Text(
                   AppStrings.description.tr(),
-                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 TextField(
@@ -176,7 +202,10 @@ class TaskDrawerDetail extends HookWidget {
                         children: [
                           Text(
                             AppStrings.estimatedHours.tr(),
-                            style: const TextStyle(fontSize: 12, color: Colors.grey),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: isDark ? ClickUpColors.neutral400 : ClickUpColors.neutral500,
+                            ),
                           ),
                           const SizedBox(height: 6),
                           TextField(
@@ -202,7 +231,10 @@ class TaskDrawerDetail extends HookWidget {
                         children: [
                           Text(
                             AppStrings.actualHours.tr(),
-                            style: const TextStyle(fontSize: 12, color: Colors.grey),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: isDark ? ClickUpColors.neutral400 : ClickUpColors.neutral500,
+                            ),
                           ),
                           const SizedBox(height: 6),
                           TextField(
@@ -228,27 +260,31 @@ class TaskDrawerDetail extends HookWidget {
                 // Assignees Information
                 Text(
                   AppStrings.assignees.tr(),
-                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                  ),
                 ),
                 const SizedBox(height: 8),
-                _buildAssigneeRow(
-                  AppStrings.frontendDev.tr(),
-                  task.frontendDevName ?? 'غير محدد',
-                  Icons.laptop_chromebook_rounded,
-                  Colors.teal,
+                AssigneeInfoRow(
+                  label: AppStrings.frontendDev.tr(),
+                  name: task.frontendDevName ?? AppStrings.unassigned.tr(),
+                  icon: FontAwesomeIcons.laptopCode,
+                  color: ClickUpColors.teal,
                 ),
-                _buildAssigneeRow(
-                  AppStrings.backendDev.tr(),
-                  task.backendDevName ?? 'غير محدد',
-                  Icons.dns_rounded,
-                  Colors.deepPurple,
+                AssigneeInfoRow(
+                  label: AppStrings.backendDev.tr(),
+                  name: task.backendDevName ?? AppStrings.unassigned.tr(),
+                  icon: FontAwesomeIcons.server,
+                  color: ClickUpColors.purple,
                 ),
                 if (task.qaTesterName != null)
-                  _buildAssigneeRow(
-                    AppStrings.qaTester.tr(),
-                    task.qaTesterName!,
-                    Icons.verified_outlined,
-                    Colors.amber,
+                  AssigneeInfoRow(
+                    label: AppStrings.qaTester.tr(),
+                    name: task.qaTesterName!,
+                    icon: FontAwesomeIcons.circleCheck,
+                    color: ClickUpColors.warning,
                   ),
                 const SizedBox(height: 20),
 
@@ -256,16 +292,29 @@ class TaskDrawerDetail extends HookWidget {
                 if (task.devNotes != null && task.devNotes!.isNotEmpty) ...[
                   Text(
                     AppStrings.devNotes.tr(),
-                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: Colors.blue.withValues(alpha: 0.08),
+                      color: ClickUpColors.info.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(6),
+                      border: Border.all(
+                        color: ClickUpColors.info.withValues(alpha: 0.25),
+                      ),
                     ),
-                    child: Text(task.devNotes!, style: const TextStyle(fontSize: 12)),
+                    child: Text(
+                      task.devNotes!,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 16),
                 ],
@@ -273,16 +322,23 @@ class TaskDrawerDetail extends HookWidget {
                 // Activity & History Trail
                 Text(
                   AppStrings.activityHistory.tr(),
-                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 if (task.history.isEmpty)
-                  const Text(
-                    'لا يوجد سجل تغييرات بعد',
-                    style: TextStyle(fontSize: 11, color: Colors.grey),
+                  Text(
+                    AppStrings.noHistoryYet.tr(),
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: isDark ? ClickUpColors.neutral400 : ClickUpColors.neutral500,
+                    ),
                   )
                 else
-                  ...task.history.reversed.map((h) => _buildHistoryTile(h)),
+                  ...task.history.reversed.map((h) => TaskHistoryTile(item: h)),
 
                 const SizedBox(height: 20),
 
@@ -303,7 +359,7 @@ class TaskDrawerDetail extends HookWidget {
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: ClickUpColors.primary,
-                        foregroundColor: Colors.white,
+                        foregroundColor: ClickUpColors.lightCard,
                       ),
                       onPressed: () {
                         if (commentController.text.trim().isNotEmpty) {
@@ -320,64 +376,10 @@ class TaskDrawerDetail extends HookWidget {
                           commentController.clear();
                         }
                       },
-                      child: const Icon(Icons.send_rounded, size: 16),
+                      child: const FaIcon(FontAwesomeIcons.paperPlane, size: 14),
                     ),
                   ],
                 ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAssigneeRow(String label, String name, IconData icon, Color color) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Row(
-        children: [
-          Icon(icon, size: 16, color: color),
-          const SizedBox(width: 8),
-          Text('$label: ', style: const TextStyle(fontSize: 12, color: Colors.grey)),
-          Text(name, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHistoryTile(TaskHistoryItem item) {
-    final timeStr = DateFormat('yyyy/MM/dd HH:mm').format(item.timestamp);
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            margin: const EdgeInsets.only(top: 4),
-            width: 6,
-            height: 6,
-            decoration: const BoxDecoration(
-              color: ClickUpColors.primary,
-              shape: BoxShape.circle,
-            ),
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      item.authorName,
-                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
-                    ),
-                    const Spacer(),
-                    Text(timeStr, style: const TextStyle(fontSize: 10, color: Colors.grey)),
-                  ],
-                ),
-                Text(item.details, style: const TextStyle(fontSize: 11)),
               ],
             ),
           ),

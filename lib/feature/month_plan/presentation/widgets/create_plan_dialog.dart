@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:onyx_todo/core/extension/bloc_reader.dart';
 import 'package:onyx_todo/core/extension/context_extensions.dart';
 import 'package:onyx_todo/core/localization/app_strings.dart';
@@ -41,28 +42,46 @@ class CreatePlanDialog extends HookWidget {
           children: [
             Row(
               children: [
-                const Icon(Icons.calendar_month_rounded, color: ClickUpColors.primary),
-                const SizedBox(width: 8),
+                const FaIcon(FontAwesomeIcons.calendarCheck, color: ClickUpColors.primary, size: 18),
+                const SizedBox(width: 10),
                 Text(
                   AppStrings.createMonthPlan.tr(),
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                  ),
                 ),
                 const Spacer(),
                 IconButton(
-                  icon: const Icon(Icons.close_rounded),
+                  icon: FaIcon(
+                    FontAwesomeIcons.xmark,
+                    size: 16,
+                    color: isDark ? ClickUpColors.neutral400 : ClickUpColors.neutral600,
+                  ),
                   onPressed: () => context.safePop(),
                 ),
               ],
             ),
-            const Divider(height: 24),
+            Divider(
+              height: 24,
+              color: isDark ? ClickUpColors.darkBorder : ClickUpColors.lightBorder,
+            ),
             Text(
-              'المطور: ${currentUser.name} (${currentUser.stack.label})',
-              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+              '${AppStrings.developerLabel.tr()}: ${currentUser.name} (${currentUser.stack.label})',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 13,
+                color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+              ),
             ),
             const SizedBox(height: 6),
             Text(
-              'شهر: $month / $year',
-              style: const TextStyle(color: Colors.grey, fontSize: 12),
+              '${AppStrings.monthLabel.tr()}: $month / $year',
+              style: TextStyle(
+                color: isDark ? ClickUpColors.neutral400 : ClickUpColors.neutral500,
+                fontSize: 12,
+              ),
             ),
             const SizedBox(height: 16),
             Row(
@@ -71,10 +90,10 @@ class CreatePlanDialog extends HookWidget {
                   child: TextField(
                     controller: workingDaysController,
                     keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      labelText: 'أيام العمل',
-                      suffixText: 'يوم',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: AppStrings.daysLabel.tr(),
+                      suffixText: AppStrings.dayUnit.tr(),
+                      border: const OutlineInputBorder(),
                     ),
                     onChanged: (val) {
                       final days = double.tryParse(val) ?? 0.0;
@@ -108,7 +127,7 @@ class CreatePlanDialog extends HookWidget {
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: ClickUpColors.primary,
-                    foregroundColor: Colors.white,
+                    foregroundColor: ClickUpColors.lightCard,
                   ),
                   onPressed: () {
                     final days = int.tryParse(workingDaysController.text.trim()) ?? 20;

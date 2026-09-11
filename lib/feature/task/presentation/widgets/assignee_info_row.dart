@@ -1,0 +1,48 @@
+import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:onyx_todo/core/ui/clickup_colors.dart';
+
+class AssigneeInfoRow extends StatelessWidget {
+  final String label;
+  final String name;
+  final IconData icon;
+  final Color color;
+
+  const AssigneeInfoRow({
+    super.key,
+    required this.label,
+    required this.name,
+    required this.icon,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Row(
+        children: [
+          FaIcon(icon, size: 14, color: color),
+          const SizedBox(width: 8),
+          Text(
+            '$label: ',
+            style: TextStyle(
+              fontSize: 12,
+              color: isDark ? ClickUpColors.neutral400 : ClickUpColors.neutral500,
+            ),
+          ),
+          Text(
+            name,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:onyx_todo/core/enum/task_enums.dart';
 import 'package:onyx_todo/core/extension/bloc_reader.dart';
 import 'package:onyx_todo/core/extension/context_extensions.dart';
@@ -55,11 +56,15 @@ class TaskCreateDialog extends HookWidget {
             // Header
             Row(
               children: [
-                const Icon(Icons.add_task_rounded, color: ClickUpColors.primary, size: 22),
-                const SizedBox(width: 8),
+                const FaIcon(FontAwesomeIcons.listCheck, color: ClickUpColors.primary, size: 18),
+                const SizedBox(width: 10),
                 Text(
                   AppStrings.createTask.tr(),
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                  ),
                 ),
                 const Spacer(),
                 // Quick "General Task" Shortcut
@@ -69,24 +74,31 @@ class TaskCreateDialog extends HookWidget {
                     side: const BorderSide(color: ClickUpColors.primary),
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   ),
-                  icon: const Icon(Icons.flash_on_rounded, size: 14),
+                  icon: const FaIcon(FontAwesomeIcons.bolt, size: 12),
                   label: Text(
                     AppStrings.generalTask.tr(),
                     style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
                   ),
                   onPressed: () {
                     selectedModule.value = 'GNR';
-                    screenController.text = 'عام';
+                    screenController.text = AppStrings.generalScreen.tr();
                   },
                 ),
                 const SizedBox(width: 8),
                 IconButton(
-                  icon: const Icon(Icons.close_rounded),
+                  icon: FaIcon(
+                    FontAwesomeIcons.xmark,
+                    size: 16,
+                    color: isDark ? ClickUpColors.neutral400 : ClickUpColors.neutral600,
+                  ),
                   onPressed: () => context.safePop(),
                 ),
               ],
             ),
-            const Divider(height: 24),
+            Divider(
+              height: 24,
+              color: isDark ? ClickUpColors.darkBorder : ClickUpColors.lightBorder,
+            ),
 
             // Version & Module Selectors
             Row(
@@ -97,7 +109,11 @@ class TaskCreateDialog extends HookWidget {
                     children: [
                       Text(
                         AppStrings.versions.tr(),
-                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                        ),
                       ),
                       const SizedBox(height: 6),
                       DropdownButtonFormField<String>(
@@ -126,7 +142,11 @@ class TaskCreateDialog extends HookWidget {
                     children: [
                       Text(
                         AppStrings.modules.tr(),
-                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: isDark ? ClickUpColors.darkTextPrimary : ClickUpColors.lightTextPrimary,
+                        ),
                       ),
                       const SizedBox(height: 6),
                       DropdownButtonFormField<String>(
@@ -162,7 +182,7 @@ class TaskCreateDialog extends HookWidget {
                     controller: screenController,
                     decoration: InputDecoration(
                       labelText: AppStrings.screenName.tr(),
-                      hintText: 'e.g. شاشة الدخول / قيود اليومية',
+                      hintText: AppStrings.screenHint.tr(),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                       isDense: true,
                     ),
@@ -175,7 +195,7 @@ class TaskCreateDialog extends HookWidget {
                     controller: titleController,
                     decoration: InputDecoration(
                       labelText: AppStrings.taskTitle.tr(),
-                      hintText: 'عنوان المهمة أو المشكلة',
+                      hintText: AppStrings.titleHint.tr(),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                       isDense: true,
                     ),
@@ -202,8 +222,8 @@ class TaskCreateDialog extends HookWidget {
                         value: t,
                         child: Row(
                           children: [
-                            Icon(t.icon, size: 14, color: t.color),
-                            const SizedBox(width: 6),
+                            FaIcon(t.icon, size: 12, color: t.color),
+                            const SizedBox(width: 8),
                             Text(t.label, style: const TextStyle(fontSize: 12)),
                           ],
                         ),
@@ -229,8 +249,8 @@ class TaskCreateDialog extends HookWidget {
                         value: p,
                         child: Row(
                           children: [
-                            Icon(Icons.flag_rounded, size: 14, color: p.color),
-                            const SizedBox(width: 6),
+                            FaIcon(p.icon, size: 12, color: p.color),
+                            const SizedBox(width: 8),
                             Text(p.label, style: const TextStyle(fontSize: 12)),
                           ],
                         ),
@@ -266,7 +286,7 @@ class TaskCreateDialog extends HookWidget {
                     controller: frontendDevController,
                     decoration: InputDecoration(
                       labelText: AppStrings.frontendDev.tr(),
-                      hintText: 'e.g. علي بن جحلان / nader',
+                      hintText: AppStrings.assigneeHint.tr(),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                       isDense: true,
                     ),
@@ -278,7 +298,7 @@ class TaskCreateDialog extends HookWidget {
                     controller: backendDevController,
                     decoration: InputDecoration(
                       labelText: AppStrings.backendDev.tr(),
-                      hintText: 'e.g. Alkholi / Mahmoud',
+                      hintText: AppStrings.assigneeHint.tr(),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                       isDense: true,
                     ),
@@ -294,7 +314,7 @@ class TaskCreateDialog extends HookWidget {
               maxLines: 3,
               decoration: InputDecoration(
                 labelText: AppStrings.description.tr(),
-                hintText: 'التفاصيل والوصف الكامل...',
+                hintText: AppStrings.descriptionHint.tr(),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
               ),
             ),
@@ -312,16 +332,19 @@ class TaskCreateDialog extends HookWidget {
                 ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: ClickUpColors.primary,
-                    foregroundColor: Colors.white,
+                    foregroundColor: ClickUpColors.lightCard,
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                   ),
                   icon: isSubmitting.value
-                      ? const SizedBox(
+                      ? SizedBox(
                           width: 16,
                           height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: ClickUpColors.lightCard,
+                          ),
                         )
-                      : const Icon(Icons.check_rounded, size: 18),
+                      : const FaIcon(FontAwesomeIcons.check, size: 14),
                   label: Text(
                     AppStrings.createTask.tr(),
                     style: const TextStyle(fontWeight: FontWeight.bold),
@@ -332,7 +355,7 @@ class TaskCreateDialog extends HookWidget {
                           final title = titleController.text.trim();
                           if (title.isEmpty) {
                             context.safeShowSnackBar(
-                              const SnackBar(content: Text('يرجى كتابة عنوان المهمة')),
+                              SnackBar(content: Text(AppStrings.enterTaskTitle.tr())),
                             );
                             return;
                           }
@@ -342,7 +365,7 @@ class TaskCreateDialog extends HookWidget {
                             version: selectedVersion.value,
                             moduleCode: selectedModule.value,
                             screenName: screenController.text.trim().isEmpty
-                                ? 'عام'
+                                ? AppStrings.generalScreen.tr()
                                 : screenController.text.trim(),
                             title: title,
                             description: descController.text.trim(),
