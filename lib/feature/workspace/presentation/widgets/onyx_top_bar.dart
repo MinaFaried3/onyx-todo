@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:onyx_todo/core/extension/bloc_reader.dart';
 import 'package:onyx_todo/core/localization/app_strings.dart';
@@ -137,11 +138,15 @@ class OnyxTopBar extends StatelessWidget {
               style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
             ),
             onPressed: () {
+              final tasksCubit = context.tasksCubit;
               showDialog(
                 context: context,
-                builder: (ctx) => TaskCreateDialog(
-                  defaultVersion: state.selectedVersionCode,
-                  defaultModuleCode: state.selectedModuleCode,
+                builder: (ctx) => BlocProvider.value(
+                  value: tasksCubit,
+                  child: TaskCreateDialog(
+                    defaultVersion: state.selectedVersionCode,
+                    defaultModuleCode: state.selectedModuleCode,
+                  ),
                 ),
               );
             },

@@ -11,6 +11,7 @@ import 'package:onyx_todo/core/ui/onyx_colors.dart';
 import 'package:onyx_todo/feature/excel_import/presentation/cubit/excel_import_cubit.dart';
 import 'package:onyx_todo/feature/excel_import/presentation/cubit/excel_import_state.dart';
 import 'package:onyx_todo/feature/task/presentation/widgets/task_id_badge.dart';
+import 'package:onyx_todo/feature/workspace/presentation/cubit/workspace_state.dart';
 
 class ExcelImportScreen extends HookWidget {
   const ExcelImportScreen({super.key});
@@ -18,15 +19,67 @@ class ExcelImportScreen extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final excelImportCubit = context.excelImportCubit;
+    final workspaceCubit = context.workspaceCubit;
+    final tasksCubit = context.tasksCubit;
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    return BlocBuilder<ExcelImportCubit, ExcelImportState>(
+    return BlocConsumer<ExcelImportCubit, ExcelImportState>(
+      listenWhen: (prev, curr) =>
+          (!prev.importState.isSucceed && curr.importState.isSucceed) ||
+          (!prev.importState.isFailed && curr.importState.isFailed),
+      listener: (context, state) {
+        if (state.importState.isSucceed) {
+          tasksCubit.fetchTasks();
+          context.safeShowSnackBar(
+            SnackBar(
+              backgroundColor: OnyxColors.success,
+              content: Row(
+                children: [
+                  const FaIcon(FontAwesomeIcons.circleCheck, color: OnyxColors.white, size: 16),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      '${AppStrings.tasksImportedSuccess.tr()} (${state.previewTasks.length})',
+                      style: const TextStyle(fontWeight: FontWeight.bold, color: OnyxColors.white),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        } else if (state.importState.isFailed) {
+          context.safeShowSnackBar(
+            SnackBar(
+              backgroundColor: OnyxColors.statusClosed,
+              content: Row(
+                children: [
+                  const FaIcon(FontAwesomeIcons.triangleExclamation, color: OnyxColors.white, size: 16),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      state.importState.message ?? AppStrings.error.tr(),
+                      style: const TextStyle(fontWeight: FontWeight.bold, color: OnyxColors.white),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+      },
       builder: (context, state) {
         final isLoading = state.importState.isLoading;
         final isSuccess = state.importState.isSucceed;
+        final isFailed = state.importState.isFailed;
         final previewTasks = state.previewTasks;
         final sheetsFound = state.sheetsFound;
+
+        // Group preview tasks by version for quick inspection
+        final versionCounts = <String, int>{};
+        for (final t in previewTasks) {
+          versionCounts[t.version] = (versionCounts[t.version] ?? 0) + 1;
+        }
 
         return Scaffold(
           backgroundColor: Colors.transparent,
@@ -137,32 +190,127 @@ class ExcelImportScreen extends HookWidget {
                 ),
                 const SizedBox(height: 20),
 
+                // Error notification banner
+                if (isFailed) ...[
+                  Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: OnyxColors.statusClosed.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: OnyxColors.statusClosed),
+                    ),
+                    child: Row(
+                      children: [
+                        const FaIcon(FontAwesomeIcons.circleExclamation, color: OnyxColors.statusClosed, size: 18),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            state.importState.message ?? AppStrings.error.tr(),
+                            style: const TextStyle(fontWeight: FontWeight.bold, color: OnyxColors.statusClosed),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () => excelImportCubit.reset(),
+                          child: Text(AppStrings.retry.tr()),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
+
                 // Success notification banner
                 if (isSuccess) ...[
                   Container(
-                    padding: const EdgeInsets.all(14),
+                    padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: OnyxColors.success.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: OnyxColors.success),
                     ),
-                    child: Row(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const FaIcon(FontAwesomeIcons.circleCheck, color: OnyxColors.success, size: 18),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            AppStrings.tasksImportedSuccess.tr(),
-                            style: const TextStyle(fontWeight: FontWeight.bold, color: OnyxColors.success),
+                        Row(
+                          children: [
+                            const FaIcon(FontAwesomeIcons.circleCheck, color: OnyxColors.success, size: 20),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                '${AppStrings.tasksImportedSuccess.tr()}: ${previewTasks.length} ${AppStrings.tasks.tr()}',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                  color: OnyxColors.success,
+                                ),
+                              ),
+                            ),
+                            Wrap(
+                              spacing: 8,
+                              children: [
+                                ElevatedButton.icon(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: OnyxColors.primary,
+                                    foregroundColor: OnyxColors.white,
+                                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                                  ),
+                                  icon: const FaIcon(FontAwesomeIcons.listCheck, size: 12),
+                                  label: Text(
+                                    AppStrings.listView.tr(),
+                                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                                  ),
+                                  onPressed: () {
+                                    workspaceCubit.setView(WorkspaceView.list);
+                                    tasksCubit.fetchTasks();
+                                    context.safeShowSnackBar(
+                                      SnackBar(content: Text(AppStrings.tasksUpdatedSuccess.tr())),
+                                    );
+                                  },
+                                ),
+                                ElevatedButton.icon(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: OnyxColors.success,
+                                    foregroundColor: OnyxColors.white,
+                                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                                  ),
+                                  icon: const FaIcon(FontAwesomeIcons.tableColumns, size: 12),
+                                  label: Text(
+                                    AppStrings.boardView.tr(),
+                                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                                  ),
+                                  onPressed: () {
+                                    workspaceCubit.setView(WorkspaceView.board);
+                                    tasksCubit.fetchTasks();
+                                    context.safeShowSnackBar(
+                                      SnackBar(content: Text(AppStrings.tasksUpdatedSuccess.tr())),
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        if (versionCounts.isNotEmpty) ...[
+                          const SizedBox(height: 10),
+                          Wrap(
+                            spacing: 8,
+                            children: versionCounts.entries.map((e) {
+                              return ActionChip(
+                                label: Text(
+                                  '${e.key} (${e.value} ${AppStrings.tasks.tr()})',
+                                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                                ),
+                                onPressed: () {
+                                  workspaceCubit.selectVersion(e.key);
+                                  workspaceCubit.setView(WorkspaceView.list);
+                                  tasksCubit.fetchTasks(version: e.key);
+                                },
+                              );
+                            }).toList(),
                           ),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            context.tasksCubit.fetchTasks();
-                            context.safeShowSnackBar(SnackBar(content: Text(AppStrings.tasksUpdatedSuccess.tr())));
-                          },
-                          child: Text(AppStrings.viewTasksBoard.tr()),
-                        ),
+                        ],
                       ],
                     ),
                   ),

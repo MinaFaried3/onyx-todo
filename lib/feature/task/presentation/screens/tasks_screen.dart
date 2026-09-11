@@ -37,17 +37,17 @@ class TasksScreen extends HookWidget {
       (c) => c.state.selectedVersionCode,
     );
 
+    final activeView = context.select<WorkspaceCubit, WorkspaceView>(
+      (c) => c.state.activeView,
+    );
+
     useEffect(() {
       tasksCubit.fetchTasks(
         moduleCode: activeModule == 'ALL' ? null : activeModule,
         version: activeVersion == 'ALL' ? null : activeVersion,
       );
       return null;
-    }, [activeModule, activeVersion]);
-
-    final activeView = context.select<WorkspaceCubit, WorkspaceView>(
-      (c) => c.state.activeView,
-    );
+    }, [activeModule, activeVersion, activeView]);
 
     return BlocBuilder<TasksCubit, TasksState>(
       builder: (context, state) {
@@ -161,9 +161,12 @@ class TasksScreen extends HookWidget {
                           onPressed: () {
                             showDialog(
                               context: context,
-                              builder: (ctx) => TaskCreateDialog(
-                                defaultVersion: activeVersion == 'ALL' ? 'V5.1.8' : activeVersion,
-                                defaultModuleCode: activeModule == 'ALL' ? 'GNR' : activeModule,
+                              builder: (ctx) => BlocProvider.value(
+                                value: tasksCubit,
+                                child: TaskCreateDialog(
+                                  defaultVersion: activeVersion == 'ALL' ? 'V5.1.8' : activeVersion,
+                                  defaultModuleCode: activeModule == 'ALL' ? 'GNR' : activeModule,
+                                ),
                               ),
                             );
                           },

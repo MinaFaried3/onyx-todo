@@ -61,7 +61,7 @@ class TaskRemoteDataSourceImpl implements TaskRemoteDataSource {
     String? version,
     String? status,
     String? assigneeName,
-    int limit = 200,
+    int limit = 1000,
   }) async {
     try {
       if (_tasksCollection != null) {
@@ -79,19 +79,22 @@ class TaskRemoteDataSourceImpl implements TaskRemoteDataSource {
 
         query = query.limit(limit);
 
-        // One-shot fetch without continuous stream subscription
-        final snapshot = await query.get(const GetOptions(source: Source.serverAndCache));
+        final snapshot = await query
+            .get(const GetOptions(source: Source.serverAndCache))
+            .timeout(const Duration(seconds: 2));
         if (snapshot.docs.isNotEmpty) {
           final tasks = snapshot.docs
               .map((doc) => TaskEntity.fromMap(doc.data(), doc.id))
               .toList();
 
-          // Sync to memory cache
+          // Sync to memory cache in O(N)
+          final map = {for (final t in _localMemoryTasks) t.formattedId: t};
           for (final t in tasks) {
-            _localMemoryTasks.removeWhere((item) => item.id == t.id);
-            _localMemoryTasks.add(t);
+            map[t.formattedId] = t;
           }
-          return tasks;
+          _localMemoryTasks
+            ..clear()
+            ..addAll(map.values);
         }
       }
     } catch (e) {
@@ -232,7 +235,16 @@ class TaskRemoteDataSourceImpl implements TaskRemoteDataSource {
 
   @override
   Future<int> batchImportTasks(List<TaskEntity> tasks) async {
-    int count = 0;
+    // 1. Immediately store into local memory cache using O(N) Map indexing
+    final map = {for (final t in _localMemoryTasks) t.formattedId: t};
+    for (final t in tasks) {
+      map[t.formattedId] = t;
+    }
+    _localMemoryTasks
+      ..clear()
+      ..addAll(map.values);
+
+    // 2. Try Firestore batch write if configured, guarded with a 4s timeout
     try {
       if (_tasksCollection != null) {
         const batchSize = 400; // Under Firestore 500 limit
@@ -245,22 +257,19 @@ class TaskRemoteDataSourceImpl implements TaskRemoteDataSource {
           for (final task in chunk) {
             final docRef = _tasksCollection!.doc(task.formattedId);
             batch.set(docRef, task.toMap(), SetOptions(merge: true));
-            count++;
           }
-          await batch.commit();
+          try {
+            await batch.commit().timeout(const Duration(seconds: 3));
+          } catch (e) {
+            Printer.logger('Firestore batch write notice on chunk $i ($e). Falling back to memory storage.');
+            break;
+          }
         }
       }
     } catch (e) {
       Printer.logger('Firestore batchImportTasks notice (storing in memory): $e');
     }
 
-    // Always ensure local memory has all imported tasks
-    for (final t in tasks) {
-      _localMemoryTasks.removeWhere((item) => item.formattedId == t.formattedId);
-      _localMemoryTasks.add(t);
-      count++;
-    }
-
-    return count;
+    return tasks.length;
   }
 }

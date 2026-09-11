@@ -55,35 +55,6 @@ void main() async {
             path: '/',
             pageBuilder: (context, state) => RouteBuilderHelper.buildPage(
               state: state,
-              providers: () => [
-                BlocProvider<WorkspaceCubit>(
-                  create: (ctx) => WorkspaceCubit(
-                    workspaceRepository: getIt<WorkspaceRepository>(),
-                    authRepository: getIt<AuthRepository>(),
-                  ),
-                ),
-                BlocProvider<TasksCubit>(
-                  create: (ctx) => TasksCubit(
-                    taskRepository: getIt<TaskRepository>(),
-                  ),
-                ),
-                BlocProvider<MonthPlanCubit>(
-                  create: (ctx) => MonthPlanCubit(
-                    monthPlanRepository: getIt<MonthPlanRepository>(),
-                  ),
-                ),
-                BlocProvider<AchievementCubit>(
-                  create: (ctx) => AchievementCubit(
-                    achievementRepository: getIt<AchievementRepository>(),
-                  ),
-                ),
-                BlocProvider<ExcelImportCubit>(
-                  create: (ctx) => ExcelImportCubit(
-                    excelParserService: getIt<ExcelParserService>(),
-                    taskRepository: getIt<TaskRepository>(),
-                  ),
-                ),
-              ],
               child: const WorkspaceShellScreen(),
             ),
           ),
@@ -99,16 +70,47 @@ class OnyxTodoApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'Onyx Task Manager',
-      debugShowCheckedModeBanner: false,
-      localizationsDelegates: context.localizationDelegates,
-      supportedLocales: context.supportedLocales,
-      locale: context.locale,
-      theme: getOnyxTheme(isDark: false),
-      darkTheme: getOnyxTheme(isDark: true),
-      themeMode: ThemeMode.dark,
-      routerConfig: getIt<GoRouter>(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<WorkspaceCubit>(
+          create: (ctx) => WorkspaceCubit(
+            workspaceRepository: getIt<WorkspaceRepository>(),
+            authRepository: getIt<AuthRepository>(),
+          ),
+        ),
+        BlocProvider<TasksCubit>(
+          create: (ctx) => TasksCubit(
+            taskRepository: getIt<TaskRepository>(),
+          ),
+        ),
+        BlocProvider<MonthPlanCubit>(
+          create: (ctx) => MonthPlanCubit(
+            monthPlanRepository: getIt<MonthPlanRepository>(),
+          ),
+        ),
+        BlocProvider<AchievementCubit>(
+          create: (ctx) => AchievementCubit(
+            achievementRepository: getIt<AchievementRepository>(),
+          ),
+        ),
+        BlocProvider<ExcelImportCubit>(
+          create: (ctx) => ExcelImportCubit(
+            excelParserService: getIt<ExcelParserService>(),
+            taskRepository: getIt<TaskRepository>(),
+          ),
+        ),
+      ],
+      child: MaterialApp.router(
+        title: 'Onyx Task Manager',
+        debugShowCheckedModeBanner: false,
+        localizationsDelegates: context.localizationDelegates,
+        supportedLocales: context.supportedLocales,
+        locale: context.locale,
+        theme: getOnyxTheme(isDark: false),
+        darkTheme: getOnyxTheme(isDark: true),
+        themeMode: ThemeMode.dark,
+        routerConfig: getIt<GoRouter>(),
+      ),
     );
   }
 }

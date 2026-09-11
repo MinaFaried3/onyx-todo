@@ -104,9 +104,13 @@ class OnyxSidebar extends StatelessWidget {
                     style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                   ),
                   onPressed: () {
+                    final tasksCubit = context.tasksCubit;
                     showDialog(
                       context: context,
-                      builder: (ctx) => const TaskCreateDialog(),
+                      builder: (ctx) => BlocProvider.value(
+                        value: tasksCubit,
+                        child: const TaskCreateDialog(),
+                      ),
                     );
                   },
                 ),
