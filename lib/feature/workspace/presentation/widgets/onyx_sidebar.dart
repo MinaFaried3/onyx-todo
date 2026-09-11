@@ -9,6 +9,7 @@ import 'package:onyx_todo/feature/task/presentation/widgets/task_create_dialog.d
 import 'package:onyx_todo/feature/workspace/domain/entities/onyx_module.dart';
 import 'package:onyx_todo/feature/workspace/presentation/cubit/workspace_cubit.dart';
 import 'package:onyx_todo/feature/workspace/presentation/cubit/workspace_state.dart';
+import 'package:onyx_todo/feature/workspace/presentation/widgets/module_create_dialog.dart';
 import 'package:onyx_todo/feature/workspace/presentation/widgets/onyx_collapsed_sidebar.dart';
 import 'package:onyx_todo/feature/workspace/presentation/widgets/onyx_module_tile.dart';
 import 'package:onyx_todo/feature/workspace/presentation/widgets/onyx_sidebar_item.dart';
@@ -180,6 +181,25 @@ class OnyxSidebar extends StatelessWidget {
                             '${modules.length}',
                             style: const TextStyle(fontSize: 10, color: OnyxColors.neutral400),
                           ),
+                          if (currentUser.canManageTeam) ...[
+                            const SizedBox(width: 4),
+                            InkWell(
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (ctx) => BlocProvider.value(
+                                    value: workspaceCubit,
+                                    child: const ModuleCreateDialog(),
+                                  ),
+                                );
+                              },
+                              borderRadius: BorderRadius.circular(4),
+                              child: const Padding(
+                                padding: EdgeInsets.all(2),
+                                child: FaIcon(FontAwesomeIcons.plus, size: 10, color: OnyxColors.primary),
+                              ),
+                            ),
+                          ],
                         ],
                       ),
                     ),

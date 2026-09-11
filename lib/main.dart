@@ -21,6 +21,7 @@ import 'package:onyx_todo/feature/task/presentation/cubit/tasks_cubit.dart';
 import 'package:onyx_todo/feature/team/domain/repositories/team_repository.dart';
 import 'package:onyx_todo/feature/workspace/domain/repositories/workspace_repository.dart';
 import 'package:onyx_todo/feature/workspace/presentation/cubit/workspace_cubit.dart';
+import 'package:onyx_todo/feature/workspace/presentation/cubit/workspace_state.dart';
 import 'package:onyx_todo/feature/workspace/presentation/screens/workspace_shell_screen.dart';
 import 'package:onyx_todo/firebase_options.dart';
 
@@ -105,16 +106,21 @@ class OnyxTodoApp extends StatelessWidget {
           ),
         ),
       ],
-      child: MaterialApp.router(
-        title: 'Onyx Task Manager',
-        debugShowCheckedModeBanner: false,
-        localizationsDelegates: context.localizationDelegates,
-        supportedLocales: context.supportedLocales,
-        locale: context.locale,
-        theme: getOnyxTheme(isDark: false),
-        darkTheme: getOnyxTheme(isDark: true),
-        themeMode: ThemeMode.dark,
-        routerConfig: getIt<GoRouter>(),
+      child: BlocBuilder<WorkspaceCubit, WorkspaceState>(
+        buildWhen: (prev, curr) => prev.isDarkMode != curr.isDarkMode,
+        builder: (context, state) {
+          return MaterialApp.router(
+            title: 'Onyx Task Manager',
+            debugShowCheckedModeBanner: false,
+            localizationsDelegates: context.localizationDelegates,
+            supportedLocales: context.supportedLocales,
+            locale: context.locale,
+            theme: getOnyxTheme(isDark: false),
+            darkTheme: getOnyxTheme(isDark: true),
+            themeMode: state.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+            routerConfig: getIt<GoRouter>(),
+          );
+        },
       ),
     );
   }

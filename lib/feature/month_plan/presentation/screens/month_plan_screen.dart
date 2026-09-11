@@ -3,20 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:onyx_todo/core/enum/task_enums.dart';
 import 'package:onyx_todo/core/extension/bloc_reader.dart';
-import 'package:onyx_todo/core/extension/context_extensions.dart';
 import 'package:onyx_todo/core/localization/app_strings.dart';
 import 'package:onyx_todo/core/ui/onyx_colors.dart';
-import 'package:onyx_todo/feature/month_plan/domain/entities/monthly_plan_entity.dart';
 import 'package:onyx_todo/feature/month_plan/presentation/cubit/month_plan_cubit.dart';
 import 'package:onyx_todo/feature/month_plan/presentation/cubit/month_plan_state.dart';
-import 'package:onyx_todo/feature/month_plan/presentation/widgets/add_plan_task_dialog.dart';
 import 'package:onyx_todo/feature/month_plan/presentation/widgets/create_plan_dialog.dart';
-import 'package:onyx_todo/feature/month_plan/presentation/widgets/plan_kpi_card.dart';
-import 'package:onyx_todo/feature/month_plan/presentation/widgets/plan_status_card.dart';
-import 'package:onyx_todo/feature/month_plan/presentation/widgets/reject_plan_dialog.dart';
-import 'package:onyx_todo/feature/task/presentation/widgets/task_id_badge.dart';
+import 'package:onyx_todo/feature/month_plan/presentation/widgets/month_plan_empty_state.dart';
+import 'package:onyx_todo/feature/month_plan/presentation/widgets/my_plan_detail_view.dart';
+import 'package:onyx_todo/feature/month_plan/presentation/widgets/team_task_pool_view.dart';
 
 class MonthPlanScreen extends HookWidget {
   const MonthPlanScreen({super.key});
@@ -29,6 +24,8 @@ class MonthPlanScreen extends HookWidget {
 
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+
+    final selectedTab = useState(0); // 0: My Plan, 1: Team Task Pool
 
     useEffect(() {
       monthPlanCubit.fetchPlans(
@@ -147,10 +144,56 @@ class MonthPlanScreen extends HookWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 16),
+
+                // Tab Switcher: "خطة الشهر الخاصة بي" vs "مجمع مهام الفريق"
+                Row(
+                  children: [
+                    ChoiceChip(
+                      label: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const FaIcon(FontAwesomeIcons.listCheck, size: 12),
+                          const SizedBox(width: 6),
+                          Text(AppStrings.myMonthlyPlan.tr()),
+                        ],
+                      ),
+                      selected: selectedTab.value == 0,
+                      selectedColor: OnyxColors.primary.withValues(alpha: 0.18),
+                      labelStyle: TextStyle(
+                        fontWeight: selectedTab.value == 0 ? FontWeight.bold : FontWeight.normal,
+                        color: selectedTab.value == 0
+                            ? OnyxColors.primary
+                            : (isDark ? OnyxColors.neutral300 : OnyxColors.neutral700),
+                      ),
+                      onSelected: (_) => selectedTab.value = 0,
+                    ),
+                    const SizedBox(width: 8),
+                    ChoiceChip(
+                      label: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const FaIcon(FontAwesomeIcons.boxesStacked, size: 12),
+                          const SizedBox(width: 6),
+                          Text(AppStrings.teamTaskPool.tr()),
+                        ],
+                      ),
+                      selected: selectedTab.value == 1,
+                      selectedColor: OnyxColors.primary.withValues(alpha: 0.18),
+                      labelStyle: TextStyle(
+                        fontWeight: selectedTab.value == 1 ? FontWeight.bold : FontWeight.normal,
+                        color: selectedTab.value == 1
+                            ? OnyxColors.primary
+                            : (isDark ? OnyxColors.neutral300 : OnyxColors.neutral700),
+                      ),
+                      onSelected: (_) => selectedTab.value = 1,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 14),
 
                 // Department Manager: Plans List Tabs / Switcher
-                if (currentUser.isDepartmentManager && plans.isNotEmpty) ...[
+                if (currentUser.isDepartmentManager && plans.isNotEmpty && selectedTab.value == 0) ...[
                   SizedBox(
                     height: 38,
                     child: ListView.separated(
@@ -174,302 +217,30 @@ class MonthPlanScreen extends HookWidget {
                   const SizedBox(height: 16),
                 ],
 
-                // Content Area
+                // Content Area: Tab 0 (My Plan) or Tab 1 (Team Task Pool)
                 Expanded(
-                  child: activePlan == null
-                      ? _buildEmptyState(context, state.selectedMonth, state.selectedYear, isDark)
-                      : _buildPlanDetails(context, activePlan, currentUser.isDepartmentManager, isDark),
+                  child: selectedTab.value == 0
+                      ? (activePlan == null
+                          ? MonthPlanEmptyState(
+                              month: state.selectedMonth,
+                              year: state.selectedYear,
+                              isDark: isDark,
+                            )
+                          : MyPlanDetailView(
+                              plan: activePlan,
+                              isDepartmentManager: currentUser.isDepartmentManager,
+                              isDark: isDark,
+                            ))
+                      : TeamTaskPoolView(
+                          activePlan: activePlan,
+                          isDark: isDark,
+                        ),
                 ),
               ],
             ),
           ),
         );
       },
-    );
-  }
-
-  Widget _buildEmptyState(BuildContext context, int month, int year, bool isDark) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          FaIcon(
-            FontAwesomeIcons.calendarDays,
-            size: 52,
-            color: isDark ? OnyxColors.neutral600 : OnyxColors.neutral400,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            AppStrings.noPlanForMonth.tr(args: ['$month', '$year']),
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
-            ),
-          ),
-          const SizedBox(height: 14),
-          ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: OnyxColors.primary,
-              foregroundColor: OnyxColors.lightCard,
-            ),
-            icon: const FaIcon(FontAwesomeIcons.plus, size: 14),
-            label: Text(AppStrings.createMonthPlan.tr()),
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (ctx) => CreatePlanDialog(month: month, year: year),
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPlanDetails(
-    BuildContext context,
-    MonthlyPlanEntity plan,
-    bool isDepartmentManager,
-    bool isDark,
-  ) {
-    final monthPlanCubit = context.monthPlanCubit;
-
-    final targetHours = plan.targetHours;
-    final estimatedHours = plan.totalEstimatedHours;
-    final actualHours = plan.totalActualHours;
-    final completionRate = targetHours > 0 ? (estimatedHours / targetHours) : 0.0;
-
-    return ListView(
-      children: [
-        // KPI Summary Cards
-        Row(
-          children: [
-            PlanKpiCard(
-              title: AppStrings.targetWorkHours.tr(),
-              value: '${targetHours.toStringAsFixed(0)}h',
-              subtitle: '${plan.workingDays} ${AppStrings.workingDaysCount.tr()}',
-              icon: FontAwesomeIcons.clock,
-              color: OnyxColors.info,
-              isDark: isDark,
-            ),
-            const SizedBox(width: 14),
-            PlanKpiCard(
-              title: AppStrings.totalEstimatedHours.tr(),
-              value: '${estimatedHours.toStringAsFixed(1)}h',
-              subtitle: '${AppStrings.coveragePercentage.tr()}: ${(completionRate * 100).toStringAsFixed(0)}%',
-              icon: FontAwesomeIcons.hourglassHalf,
-              color: OnyxColors.warning,
-              isDark: isDark,
-            ),
-            const SizedBox(width: 14),
-            PlanKpiCard(
-              title: AppStrings.totalActualHours.tr(),
-              value: '${actualHours.toStringAsFixed(1)}h',
-              subtitle: AppStrings.endOfMonthActual.tr(),
-              icon: FontAwesomeIcons.checkDouble,
-              color: OnyxColors.success,
-              isDark: isDark,
-            ),
-            const SizedBox(width: 14),
-            PlanStatusCard(status: plan.status, isDark: isDark),
-          ],
-        ),
-        const SizedBox(height: 24),
-
-        // Plan Actions Bar
-        Row(
-          children: [
-            Text(
-              '${AppStrings.planTasksCount.tr()} (${plan.plannedTasks.length})',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
-              ),
-            ),
-            const Spacer(),
-
-            // Add Quick Task to Plan
-            OutlinedButton.icon(
-              icon: const FaIcon(FontAwesomeIcons.plus, size: 12),
-              label: Text(AppStrings.addTaskToPlan.tr()),
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (ctx) => AddPlanTaskDialog(plan: plan),
-                );
-              },
-            ),
-            const SizedBox(width: 10),
-
-            // Submit for approval (Developer action)
-            if (plan.status == PlanStatus.draft || plan.status == PlanStatus.rejected)
-              ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: OnyxColors.primary,
-                  foregroundColor: OnyxColors.lightCard,
-                ),
-                icon: const FaIcon(FontAwesomeIcons.paperPlane, size: 13),
-                label: Text(AppStrings.submitForApproval.tr()),
-                onPressed: () {
-                  monthPlanCubit.updatePlanStatus(
-                    planId: plan.id,
-                    status: PlanStatus.submitted,
-                  );
-                  context.safeShowSnackBar(
-                    SnackBar(content: Text(AppStrings.planSubmittedToast.tr())),
-                  );
-                },
-              ),
-
-            // Approve or Reject (Department Manager actions)
-            if (isDepartmentManager && plan.status == PlanStatus.submitted) ...[
-              ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: OnyxColors.success,
-                  foregroundColor: OnyxColors.lightCard,
-                ),
-                icon: const FaIcon(FontAwesomeIcons.circleCheck, size: 13),
-                label: Text(AppStrings.approvePlan.tr()),
-                onPressed: () {
-                  monthPlanCubit.updatePlanStatus(
-                    planId: plan.id,
-                    status: PlanStatus.approved,
-                  );
-                  context.safeShowSnackBar(
-                    SnackBar(content: Text(AppStrings.planApprovedToast.tr())),
-                  );
-                },
-              ),
-              const SizedBox(width: 8),
-              OutlinedButton.icon(
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: OnyxColors.danger,
-                  side: const BorderSide(color: OnyxColors.danger),
-                ),
-                icon: const FaIcon(FontAwesomeIcons.circleXmark, size: 13),
-                label: Text(AppStrings.rejectPlan.tr()),
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (ctx) => RejectPlanDialog(plan: plan),
-                  );
-                },
-              ),
-            ],
-
-            // Close Month Plan (End of month action)
-            if (plan.status == PlanStatus.approved) ...[
-              ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: OnyxColors.purple,
-                  foregroundColor: OnyxColors.lightCard,
-                ),
-                icon: const FaIcon(FontAwesomeIcons.lock, size: 13),
-                label: Text(AppStrings.closePlan.tr()),
-                onPressed: () {
-                  monthPlanCubit.updatePlanStatus(
-                    planId: plan.id,
-                    status: PlanStatus.closed,
-                  );
-                  context.safeShowSnackBar(
-                    SnackBar(content: Text(AppStrings.planClosedToast.tr())),
-                  );
-                },
-              ),
-            ],
-          ],
-        ),
-        const SizedBox(height: 12),
-
-        // Tasks Table
-        Container(
-          decoration: BoxDecoration(
-            color: isDark ? OnyxColors.darkCard : OnyxColors.lightCard,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: isDark ? OnyxColors.darkBorder : OnyxColors.lightBorder,
-            ),
-          ),
-          child: Column(
-            children: [
-              // Header Row
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                decoration: BoxDecoration(
-                  color: isDark ? OnyxColors.neutral800 : OnyxColors.neutral100,
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
-                ),
-                child: Row(
-                  children: [
-                    SizedBox(width: 140, child: Text(AppStrings.taskIdCol.tr(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
-                    SizedBox(width: 80, child: Text(AppStrings.moduleCol.tr(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
-                    SizedBox(width: 120, child: Text(AppStrings.screenCol.tr(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
-                    Expanded(child: Text(AppStrings.titleCol.tr(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
-                    SizedBox(width: 100, child: Text(AppStrings.estDaysCol.tr(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
-                    SizedBox(width: 100, child: Text(AppStrings.estHoursCol.tr(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
-                    SizedBox(width: 100, child: Text(AppStrings.actHoursCol.tr(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
-                  ],
-                ),
-              ),
-              Divider(
-                height: 1,
-                color: isDark ? OnyxColors.darkBorder : OnyxColors.lightBorder,
-              ),
-
-              // Rows
-              if (plan.plannedTasks.isEmpty)
-                Padding(
-                  padding: const EdgeInsets.all(32),
-                  child: Center(
-                    child: Text(
-                      AppStrings.noTasksInPlan.tr(),
-                      style: TextStyle(
-                        color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
-                      ),
-                    ),
-                  ),
-                )
-              else
-                ...plan.plannedTasks.map((t) {
-                  return Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    decoration: BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                          color: isDark ? OnyxColors.darkBorder : OnyxColors.lightBorder,
-                          width: 0.5,
-                        ),
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        SizedBox(width: 140, child: TaskIdBadge(formattedId: t.formattedId)),
-                        SizedBox(width: 80, child: Text(t.moduleCode, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11))),
-                        SizedBox(width: 120, child: Text(t.screenName, style: const TextStyle(fontSize: 12))),
-                        Expanded(child: Text(t.title, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600))),
-                        SizedBox(width: 100, child: Text('${t.estimatedDays}d', style: const TextStyle(fontSize: 12))),
-                        SizedBox(width: 100, child: Text('${t.estimatedHours}h', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
-                        SizedBox(
-                          width: 100,
-                          child: Text(
-                            '${t.actualHours}h',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
-                              color: t.actualHours > 0 ? OnyxColors.success : (isDark ? OnyxColors.neutral400 : OnyxColors.neutral500),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }),
-            ],
-          ),
-        ),
-      ],
     );
   }
 }

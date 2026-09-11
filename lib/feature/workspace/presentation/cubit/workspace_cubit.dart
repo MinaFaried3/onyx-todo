@@ -6,6 +6,7 @@ import 'package:onyx_todo/feature/notification/domain/entities/system_notificati
 import 'package:onyx_todo/feature/notification/domain/repositories/notification_repository.dart';
 import 'package:onyx_todo/feature/team/domain/entities/team_entity.dart';
 import 'package:onyx_todo/feature/team/domain/repositories/team_repository.dart';
+import 'package:onyx_todo/feature/workspace/domain/entities/onyx_module.dart';
 import 'package:onyx_todo/feature/workspace/domain/repositories/workspace_repository.dart';
 import 'package:onyx_todo/feature/workspace/presentation/cubit/workspace_state.dart';
 
@@ -148,6 +149,20 @@ class WorkspaceCubit extends BaseCubit<WorkspaceState> {
 
   void toggleSidebar() {
     emit(state.copyWith(isSidebarCollapsed: !state.isSidebarCollapsed));
+  }
+
+  void toggleThemeMode() {
+    emit(state.copyWith(isDarkMode: !state.isDarkMode));
+  }
+
+  Future<void> createModule(OnyxModule module) async {
+    final currentModules = List<OnyxModule>.from(state.modulesState.data ?? []);
+    if (!currentModules.any((m) => m.code == module.code)) {
+      currentModules.add(module);
+      emit(state.copyWith(
+        modulesState: state.modulesState.copyWith(data: currentModules),
+      ));
+    }
   }
 
   Future<void> switchUser(String userId) async {

@@ -152,6 +152,18 @@ class OnyxTopBar extends StatelessWidget {
               }
             },
           ),
+          const SizedBox(width: 4),
+
+          // Dark / Light Mode Switcher
+          IconButton(
+            tooltip: isDark ? 'الوضع الفاتح / Light Mode' : 'الوضع الداكن / Dark Mode',
+            icon: FaIcon(
+              isDark ? FontAwesomeIcons.solidSun : FontAwesomeIcons.solidMoon,
+              size: 15,
+              color: isDark ? OnyxColors.warning : OnyxColors.neutral700,
+            ),
+            onPressed: () => workspaceCubit.toggleThemeMode(),
+          ),
           const SizedBox(width: 8),
 
           // New Task Action Button

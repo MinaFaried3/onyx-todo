@@ -32,78 +32,99 @@ class OnyxUserSwitcher extends StatelessWidget {
           color: isDark ? OnyxColors.darkBorder : OnyxColors.lightBorder,
         ),
       ),
-      child: PopupMenuButton<String>(
-        tooltip: AppStrings.switchAccount.tr(),
-        onSelected: (uid) => cubit.switchUser(uid),
-        itemBuilder: (ctx) => users.map((u) {
-          return PopupMenuItem(
-            value: u.id,
-            child: Row(
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 14,
+            backgroundColor: OnyxColors.getAvatarColor(currentUser.name),
+            child: Text(
+              currentUser.name.isNotEmpty ? currentUser.name.substring(0, 1).toUpperCase() : 'U',
+              style: const TextStyle(
+                color: OnyxColors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                CircleAvatar(
-                  radius: 12,
-                  backgroundColor: OnyxColors.primary.withValues(alpha: 0.2),
-                  child: Text(
-                    u.name.substring(0, 1),
-                    style: const TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                      color: OnyxColors.primary,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                Row(
                   children: [
-                    Text(
-                      u.name,
-                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                    Flexible(
+                      child: Text(
+                        currentUser.name,
+                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
-                    Text(
-                      '${u.role.label} (${u.stack.label})',
-                      style: const TextStyle(fontSize: 10, color: OnyxColors.neutral400),
+                    const SizedBox(width: 4),
+                    Container(
+                      width: 6,
+                      height: 6,
+                      decoration: const BoxDecoration(
+                        color: OnyxColors.success,
+                        shape: BoxShape.circle,
+                      ),
                     ),
                   ],
                 ),
+                Text(
+                  currentUser.role.label,
+                  style: const TextStyle(fontSize: 10, color: OnyxColors.neutral400),
+                ),
               ],
             ),
-          );
-        }).toList(),
-        child: Row(
-          children: [
-            CircleAvatar(
-              radius: 14,
-              backgroundColor: OnyxColors.primary,
-              child: Text(
-                currentUser.name.substring(0, 1),
-                style: const TextStyle(
-                  color: OnyxColors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12,
-                ),
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    currentUser.name,
-                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                    overflow: TextOverflow.ellipsis,
+          ),
+          if (currentUser.canManageTeam)
+            PopupMenuButton<String>(
+              tooltip: AppStrings.switchAccount.tr(),
+              icon: const FaIcon(FontAwesomeIcons.chevronDown, size: 10, color: OnyxColors.neutral400),
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
+              onSelected: (uid) => cubit.switchUser(uid),
+              itemBuilder: (ctx) => users.map((u) {
+                return PopupMenuItem(
+                  value: u.id,
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 12,
+                        backgroundColor: OnyxColors.getAvatarColor(u.name),
+                        child: Text(
+                          u.name.isNotEmpty ? u.name.substring(0, 1).toUpperCase() : 'U',
+                          style: const TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            color: OnyxColors.white,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            u.name,
+                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            u.role.label,
+                            style: const TextStyle(fontSize: 10, color: OnyxColors.neutral400),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                  Text(
-                    currentUser.role.label,
-                    style: const TextStyle(fontSize: 10, color: OnyxColors.neutral400),
-                  ),
-                ],
-              ),
-            ),
-            const FaIcon(FontAwesomeIcons.sort, size: 12, color: OnyxColors.neutral400),
-          ],
-        ),
+                );
+              }).toList(),
+            )
+          else
+            const FaIcon(FontAwesomeIcons.lock, size: 10, color: OnyxColors.neutral400),
+        ],
       ),
     );
   }

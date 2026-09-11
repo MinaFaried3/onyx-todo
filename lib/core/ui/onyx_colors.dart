@@ -46,6 +46,7 @@ abstract final class OnyxColors {
   // ─── Dark Theme Surfaces ─────────────────────────────────────────────────────
   static const Color darkSidebar = Color(0xFF1E1F21); // Navigation sidebar
   static const Color darkBackground = Color(0xFF252628); // Main workspace canvas
+  static const Color darkSurface = Color(0xFF26272B); // Surface / elevated panels
   static const Color darkCard = Color(0xFF2D2E30); // Task cards & panels
   static const Color darkCardHover = Color(0xFF343538); // Hover state
   static const Color darkBorder = Color(0xFF3C3E41); // Dividers and borders
@@ -75,17 +76,32 @@ abstract final class OnyxColors {
   static const Color priorityMedium = Color(0xFF3B82F6); // Blue
   static const Color priorityLow = Color(0xFF9CA3AF); // Gray
 
-  // ─── Syncfusion Charts Color Palette ─────────────────────────────────────────
-  static const List<Color> chartPalette = [
-    Color(0xFF7B68EE), // Violet
-    Color(0xFF06B6D4), // Cyan
-    Color(0xFF10B981), // Emerald
-    Color(0xFFF59E0B), // Amber
-    Color(0xFFF43F5E), // Rose
-    Color(0xFF8B5CF6), // Purple
-    Color(0xFF0EA5E9), // Sky Blue
-    Color(0xFF14B8A6), // Teal
-    Color(0xFFEC4899), // Pink
-    Color(0xFFEAB308), // Yellow
+  // ─── ClickUp Assignee Avatar Palette ──────────────────────────────────────
+  static const Color avatarBlue = Color(0xFF3B82F6);
+  static const Color avatarPurple = Color(0xFF8B5CF6);
+  static const Color avatarGreen = Color(0xFF10B981);
+  static const Color avatarOrange = Color(0xFFF97316);
+  static const Color avatarTeal = Color(0xFF14B8A6);
+  static const Color avatarPink = Color(0xFFEC4899);
+  static const Color avatarIndigo = Color(0xFF6366F1);
+  static const Color avatarAmber = Color(0xFFF59E0B);
+
+  static const List<Color> avatarPalette = [
+    avatarBlue,
+    avatarPurple,
+    avatarGreen,
+    avatarOrange,
+    avatarTeal,
+    avatarPink,
+    avatarIndigo,
+    avatarAmber,
   ];
+
+  static const List<Color> chartPalette = avatarPalette;
+
+  static Color getAvatarColor(String seed) {
+    if (seed.isEmpty) return avatarBlue;
+    final hash = seed.codeUnits.fold<int>(0, (sum, c) => sum + c);
+    return avatarPalette[hash % avatarPalette.length];
+  }
 }

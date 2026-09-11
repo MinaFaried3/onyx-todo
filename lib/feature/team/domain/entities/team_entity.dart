@@ -8,6 +8,8 @@ class TeamEntity extends Equatable {
   final List<String> memberIds;
   final List<String> moduleCodes;
   final String? description;
+  final List<String> roleFlow; // e.g. ['backend', 'middle', 'frontend', 'qa']
+  final Map<String, String> defaultRoleAssignees; // role -> devName
   final DateTime createdAt;
 
   TeamEntity({
@@ -18,6 +20,8 @@ class TeamEntity extends Equatable {
     this.memberIds = const [],
     this.moduleCodes = const [],
     this.description,
+    this.roleFlow = const ['backend', 'middle', 'frontend', 'qa'],
+    this.defaultRoleAssignees = const {},
     DateTime? createdAt,
   }) : createdAt = createdAt ?? DateTime.now();
 
@@ -30,6 +34,8 @@ class TeamEntity extends Equatable {
         memberIds,
         moduleCodes,
         description,
+        roleFlow,
+        defaultRoleAssignees,
         createdAt,
       ];
 
@@ -41,6 +47,8 @@ class TeamEntity extends Equatable {
     List<String>? memberIds,
     List<String>? moduleCodes,
     String? description,
+    List<String>? roleFlow,
+    Map<String, String>? defaultRoleAssignees,
     DateTime? createdAt,
   }) {
     return TeamEntity(
@@ -51,6 +59,8 @@ class TeamEntity extends Equatable {
       memberIds: memberIds ?? this.memberIds,
       moduleCodes: moduleCodes ?? this.moduleCodes,
       description: description ?? this.description,
+      roleFlow: roleFlow ?? this.roleFlow,
+      defaultRoleAssignees: defaultRoleAssignees ?? this.defaultRoleAssignees,
       createdAt: createdAt ?? this.createdAt,
     );
   }
@@ -64,6 +74,8 @@ class TeamEntity extends Equatable {
       'memberIds': memberIds,
       'moduleCodes': moduleCodes,
       'description': description,
+      'roleFlow': roleFlow,
+      'defaultRoleAssignees': defaultRoleAssignees,
       'createdAt': createdAt.toIso8601String(),
     };
   }
@@ -84,6 +96,8 @@ class TeamEntity extends Equatable {
       memberIds: List<String>.from(map['memberIds'] as List? ?? const []),
       moduleCodes: List<String>.from(map['moduleCodes'] as List? ?? const []),
       description: map['description'] as String?,
+      roleFlow: List<String>.from(map['roleFlow'] as List? ?? const ['backend', 'middle', 'frontend', 'qa']),
+      defaultRoleAssignees: Map<String, String>.from(map['defaultRoleAssignees'] as Map? ?? const {}),
       createdAt: parseDate(map['createdAt']),
     );
   }
@@ -98,6 +112,13 @@ class TeamEntity extends Equatable {
       memberIds: const ['dm_1', 'fl_1', 'be_1'],
       moduleCodes: const ['ADM', 'GNR', 'GLS', 'SYS'],
       description: 'فريق إدارة البنية التحتية، الأمان، وإعدادات النظام العام',
+      roleFlow: const ['backend', 'middle', 'frontend', 'qa'],
+      defaultRoleAssignees: const {
+        'backend': 'أحمد حسين',
+        'middle': 'إسلام سليمان',
+        'frontend': 'مينا فريد',
+        'qa': 'عمر بن عميرة',
+      },
     ),
     TeamEntity(
       id: 'team_sales',
@@ -107,6 +128,12 @@ class TeamEntity extends Equatable {
       memberIds: const ['be_2', 'fe_2'],
       moduleCodes: const ['POS', 'CRM', 'SLS', 'DIS'],
       description: 'إدارة فواتير المبيعات، عروض الأسعار، ونقاط البيع السحابية',
+      roleFlow: const ['backend', 'frontend', 'qa'],
+      defaultRoleAssignees: const {
+        'backend': 'محمد سالم',
+        'frontend': 'سارة أحمد',
+        'qa': 'عمر بن عميرة',
+      },
     ),
     TeamEntity(
       id: 'team_inventory',
@@ -116,6 +143,13 @@ class TeamEntity extends Equatable {
       memberIds: const ['fe_1', 'be_3'],
       moduleCodes: const ['INV', 'PUR', 'WMS', 'MFG'],
       description: 'متابعة حركات الأصناف، الجرد، التوريد وأوامر الشراء',
+      roleFlow: const ['backend', 'middle', 'frontend', 'qa'],
+      defaultRoleAssignees: const {
+        'backend': 'حسين ياسر',
+        'middle': 'إسلام سليمان',
+        'frontend': 'مينا فريد',
+        'qa': 'عمر بن عميرة',
+      },
     ),
   ];
 }

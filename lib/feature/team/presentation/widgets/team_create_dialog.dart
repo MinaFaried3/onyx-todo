@@ -30,6 +30,8 @@ class TeamCreateDialog extends HookWidget {
     final selectedLeaderId = useState<String?>(initialTeam?.leaderId ?? users.firstOrNull?.id);
     final selectedMemberIds = useState<List<String>>(List.from(initialTeam?.memberIds ?? const []));
     final selectedModules = useState<List<String>>(List.from(initialTeam?.moduleCodes ?? const []));
+    final selectedRoleFlow = useState<List<String>>(List.from(initialTeam?.roleFlow ?? const ['backend', 'middle', 'frontend', 'qa']));
+    final defaultAssignees = useState<Map<String, String>>(Map.from(initialTeam?.defaultRoleAssignees ?? const {}));
     final isSaving = useState(false);
 
     return Dialog(
@@ -209,6 +211,159 @@ class TeamCreateDialog extends HookWidget {
                         );
                       }).toList(),
                     ),
+                    const SizedBox(height: 18),
+
+                    // Role Flow Sequence
+                    Text(
+                      AppStrings.roleFlow.tr(),
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: isDark ? OnyxColors.neutral300 : OnyxColors.neutral700,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: isDark ? OnyxColors.darkSurface : OnyxColors.neutral50,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: isDark ? OnyxColors.darkBorder : OnyxColors.lightBorder,
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Visual Flow Sequence
+                          Wrap(
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            spacing: 6,
+                            children: [
+                              for (int i = 0; i < selectedRoleFlow.value.length; i++) ...[
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: OnyxColors.primary.withValues(alpha: 0.15),
+                                    borderRadius: BorderRadius.circular(6),
+                                    border: Border.all(color: OnyxColors.primary.withValues(alpha: 0.4)),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        selectedRoleFlow.value[i].toUpperCase(),
+                                        style: const TextStyle(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.bold,
+                                          color: OnyxColors.primary,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 4),
+                                      InkWell(
+                                        onTap: () {
+                                          final current = List<String>.from(selectedRoleFlow.value);
+                                          current.removeAt(i);
+                                          selectedRoleFlow.value = current;
+                                        },
+                                        child: const Icon(Icons.close, size: 12, color: OnyxColors.primary),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                if (i < selectedRoleFlow.value.length - 1)
+                                  const FaIcon(FontAwesomeIcons.arrowRight, size: 10, color: OnyxColors.neutral400),
+                              ],
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          // Quick Role Add Chips
+                          Wrap(
+                            spacing: 6,
+                            children: ['backend', 'middle', 'frontend', 'qa']
+                                .where((role) => !selectedRoleFlow.value.contains(role))
+                                .map((role) {
+                              return ActionChip(
+                                label: Text('+ ${role.toUpperCase()}', style: const TextStyle(fontSize: 10)),
+                                onPressed: () {
+                                  final current = List<String>.from(selectedRoleFlow.value)..add(role);
+                                  selectedRoleFlow.value = current;
+                                },
+                              );
+                            }).toList(),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 18),
+
+                    // Default Role Assignees
+                    if (selectedRoleFlow.value.isNotEmpty) ...[
+                      Text(
+                        AppStrings.defaultRoleAssignees.tr(),
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: isDark ? OnyxColors.neutral300 : OnyxColors.neutral700,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      ...selectedRoleFlow.value.map((role) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 90,
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: isDark ? OnyxColors.neutral800 : OnyxColors.neutral200,
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  role.toUpperCase(),
+                                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: DropdownButtonFormField<String>(
+                                  initialValue: defaultAssignees.value[role],
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                                    contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                    isDense: true,
+                                    hintText: 'Select default assignee...',
+                                  ),
+                                  items: [
+                                    const DropdownMenuItem<String>(
+                                      value: null,
+                                      child: Text('Auto / None', style: TextStyle(fontSize: 11, color: OnyxColors.neutral400)),
+                                    ),
+                                    ...users.map((u) {
+                                      return DropdownMenuItem<String>(
+                                        value: u.name,
+                                        child: Text('${u.name} (${u.role.label})', style: const TextStyle(fontSize: 11)),
+                                      );
+                                    }),
+                                  ],
+                                  onChanged: (val) {
+                                    final current = Map<String, String>.from(defaultAssignees.value);
+                                    if (val != null) {
+                                      current[role] = val;
+                                    } else {
+                                      current.remove(role);
+                                    }
+                                    defaultAssignees.value = current;
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }),
+                    ],
                   ],
                 ),
               ),
@@ -255,6 +410,8 @@ class TeamCreateDialog extends HookWidget {
                               leaderName: leader?.name,
                               memberIds: selectedMemberIds.value,
                               moduleCodes: selectedModules.value,
+                              roleFlow: selectedRoleFlow.value,
+                              defaultRoleAssignees: defaultAssignees.value,
                             );
 
                             if (initialTeam != null) {

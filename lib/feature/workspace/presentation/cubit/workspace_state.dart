@@ -29,6 +29,7 @@ final class WorkspaceState extends BaseState {
   final String selectedVersionCode; // 'ALL' or specific version e.g. 'V5.1.8'
   final WorkspaceView activeView;
   final bool isSidebarCollapsed;
+  final bool isDarkMode;
   final UserProfile currentUser;
   final List<UserProfile> availableUsers;
 
@@ -44,6 +45,7 @@ final class WorkspaceState extends BaseState {
     this.selectedVersionCode = 'V5.1.8',
     this.activeView = WorkspaceView.list,
     this.isSidebarCollapsed = false,
+    this.isDarkMode = true,
     required this.currentUser,
     this.availableUsers = const [],
   });
@@ -64,6 +66,7 @@ final class WorkspaceState extends BaseState {
         selectedVersionCode,
         activeView,
         isSidebarCollapsed,
+        isDarkMode,
         currentUser,
         availableUsers,
       ];
@@ -81,6 +84,7 @@ final class WorkspaceState extends BaseState {
     String? selectedVersionCode,
     WorkspaceView? activeView,
     bool? isSidebarCollapsed,
+    bool? isDarkMode,
     UserProfile? currentUser,
     List<UserProfile>? availableUsers,
   }) {
@@ -96,6 +100,7 @@ final class WorkspaceState extends BaseState {
       selectedVersionCode: selectedVersionCode ?? this.selectedVersionCode,
       activeView: activeView ?? this.activeView,
       isSidebarCollapsed: isSidebarCollapsed ?? this.isSidebarCollapsed,
+      isDarkMode: isDarkMode ?? this.isDarkMode,
       currentUser: currentUser ?? this.currentUser,
       availableUsers: availableUsers ?? this.availableUsers,
     );

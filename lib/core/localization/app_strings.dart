@@ -27,6 +27,8 @@ abstract final class AppStrings {
   static String get retry => 'retry';
   static String get error => 'error';
   static String get success => 'success';
+  static String get add => 'add';
+  static String get addTask => 'add_task';
 
   // ─── Views ───────────────────────────────────────────────────────────────────
   static String get listView => 'list_view';
@@ -269,5 +271,38 @@ abstract final class AppStrings {
   static String get allUsers => 'all_users';
   static String get noTeamsFound => 'no_teams_found';
   static String get email => 'email';
+  static String get myMonthlyPlan => 'my_monthly_plan';
+  static String get teamTaskPool => 'team_task_pool';
+  static String get addToMyPlan => 'add_to_my_plan';
+  static String get monthlyHoursCounter => 'monthly_hours_counter';
+  static String get calculatedWorkHours => 'calculated_work_hours';
+  static String get registeredHours => 'registered_hours';
+  static String get remainingHours => 'remaining_hours';
+  static String get extraHours => 'extra_hours';
+  static String get roleFlow => 'role_flow';
+  static String get defaultRoleAssignees => 'default_role_assignees';
+  static String get selectedTasksCount => 'selected_tasks_count';
+  static String get addSelectedToPlan => 'add_selected_to_plan';
+  static String get tasksAddedToPlan => 'tasks_added_to_plan';
+  static String get searchTeamPoolHint => 'search_team_pool_hint';
+  static String get filterByModule => 'filter_by_module';
+  static String get moduleHierarchy => 'module_hierarchy';
+  static String get screenTypes => 'screen_types';
+  static String get screenTypeConfig => 'screen_type_config';
+  static String get screenTypeInputs => 'screen_type_inputs';
+  static String get screenTypeTransaction => 'screen_type_transaction';
+  static String get screenTypeReports => 'screen_type_reports';
+  static String get subModules => 'sub_modules';
+  static String get addSubModule => 'add_sub_module';
+  static String get addScreen => 'add_screen';
+  static String get backendProgress => 'backend_progress';
+  static String get frontendProgress => 'frontend_progress';
+  static String get screenProgress => 'screen_progress';
+  static String get systemProgress => 'system_progress';
+  static String get assignedTeam => 'assigned_team';
+  static String get subModuleNameAr => 'sub_module_name_ar';
+  static String get subModuleNameEn => 'sub_module_name_en';
+  static String get screenNameAr => 'screen_name_ar';
+  static String get screenNameEn => 'screen_name_en';
 }
 

@@ -2,6 +2,7 @@ import 'package:onyx_todo/core/controller/cubit/base_cubit.dart';
 import 'package:onyx_todo/core/enum/task_enums.dart';
 import 'package:onyx_todo/core/enum/ui_state.dart';
 import 'package:onyx_todo/feature/task/domain/entities/task_entity.dart';
+import 'package:onyx_todo/feature/task/domain/entities/task_history_item.dart';
 import 'package:onyx_todo/feature/task/domain/repositories/task_repository.dart';
 import 'package:onyx_todo/feature/task/presentation/cubit/tasks_state.dart';
 
@@ -149,15 +150,46 @@ class TasksCubit extends BaseCubit<TasksState> {
     required String authorName,
     String? note,
   }) async {
-    // Optimistic UI update
+    // Optimistic UI update with role flow progression and history audit
     final currentList = List<TaskEntity>.from(state.tasksState.data ?? []);
     final index = currentList.indexWhere((t) => t.id == taskId);
     if (index != -1) {
-      currentList[index] = currentList[index].copyWith(status: newStatus);
+      final oldTask = currentList[index];
+      String nextRoleStage = oldTask.currentRoleStage;
+
+      // Sequential role flow transitions
+      if (newStatus == TaskStatus.backendSolved) {
+        if (oldTask.roleFlow.contains('middle')) {
+          nextRoleStage = 'middle';
+        } else if (oldTask.roleFlow.contains('frontend')) {
+          nextRoleStage = 'frontend';
+        }
+      } else if (newStatus == TaskStatus.frontendSolved) {
+        if (oldTask.roleFlow.contains('qa')) {
+          nextRoleStage = 'qa';
+        }
+      }
+
+      final updatedHistory = List<TaskHistoryItem>.from(oldTask.history);
+      updatedHistory.add(TaskHistoryItem(
+        id: 'hist_${DateTime.now().millisecondsSinceEpoch}',
+        action: 'status_change',
+        authorName: authorName,
+        timestamp: DateTime.now(),
+        details: '${oldTask.status.label} ➔ ${newStatus.label}${note != null ? ' ($note)' : ''}',
+      ));
+
+      final updatedTask = oldTask.copyWith(
+        status: newStatus,
+        currentRoleStage: nextRoleStage,
+        history: updatedHistory,
+      );
+
+      currentList[index] = updatedTask;
       emit(state.copyWith(
         tasksState: state.tasksState.copyWith(data: currentList),
         selectedTask: state.selectedTask?.id == taskId
-            ? () => currentList[index]
+            ? () => updatedTask
             : null,
       ));
     }

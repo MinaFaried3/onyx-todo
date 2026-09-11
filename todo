@@ -21,4 +21,31 @@ so if i called this task will have role flows that contians backend -> middle ->
 
 then after the month tasks is created it have area like pool that contains all tasks for each team and then at this step the developer enter notice the all tasks that uploaded at the general team pool maonth plan 
 and start select from it the following that assgined to him or another or use maulliy make advanced search and multi select then getting this tasks at his private month tasks pool
-and start doing the following its has a screen for 
+and start doing the following its has a screen for now showing the following number of hours he should register and  start adding eevry task and ading period days for each task and how many hours will be take and discription of the tasks that will do 
+then after hat i have hour counter after adding one by one plan all the tasks for the month it calculate how many hours should he register for the month as it should be the same amount of hours for the month plan but it will calculate from the days he intred that means the real number of hours for this month 
+and can have more or less than month hour amount it should calc 8. hours per day 5 days per week for all months days 
+then after finishing doing this he can add more tasks if wanted the he review screen for all tasks number and hours and so on and have directed to approved for manger 
+now the plan hae status can aprroved r under review or editing and i have as developer the permission if not approved yet to change at tasks and modifiy it then the manger view my plan and have approved when its approved its tasks viewed at my home tasks for me
+after that i can workk at task and if the task is multi assgine flow backend -> middle -> front like this its should i start work at it when my role is have the order to execute 
+
+also every task can have status at each role thats mean the back have todo -> in progress -> underrewve -> completed and autoatioc go to next role assgined developer and so on \
+and the manger can control this flow also 
+
+the user at any time can add any task at any module with any type of tasks and assgins what its need 
+
+when at any action happen it should register if i moved statuse  tasks i moved from a status to another with date and user id and task id and status and role and so on it register at tasks history 
+
+and also the manager can show the achivement for any developer and any time
+this goes as following the developer and the system saves the all history of achivement at this days and then at specfic day and time what its have done 
+directly at each tasks is reported at manager with times and tasks hapend todays and meeting to have for each developer at team as reprot and can view what is done directly and what is in progress and what is achived tody to mussure perfrmance and kpis
+
+and can have same for weeks and or any interval and also can view the all team achivement also at any intervals 
+
+
+
+at the end of month the developer start closing the plan of the months and all tasks that add to it even ut side the plan by writing what it actukly takes from time and logic done and have option to move this task to the next plan private pool
+
+
+
+now notice the manager creates modules and also can assgind team at start to adding screens and the module can have sub modules nd sub modules can have one of the following screentytypes 1- config 2- inputs 3- transaction 4- reprots movements and start adding screen as last leaf and update how much done perentage of that screen for backend and front and outer scope at screen take average perentage from backend and front end and outer scope take all screentypes averege perentage and outer scope the sub module all average done perentage and outer scope the module perentage 
+and all system done perentage by taking average of all modules

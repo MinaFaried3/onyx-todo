@@ -34,6 +34,7 @@ class UserProfile extends Equatable {
   bool get isDepartmentManager => role == UserRole.departmentManager;
   bool get isTeamLead => role == UserRole.teamLead || role == UserRole.frontendLead;
   bool get isLeader => isDepartmentManager || isTeamLead;
+  bool get canManageTeam => isDepartmentManager;
 
   @override
   List<Object?> get props => [

@@ -4,11 +4,11 @@ import 'package:onyx_todo/feature/task/domain/entities/task_history_item.dart';
 
 class TaskEntity extends Equatable {
   final String id;
-  final String formattedId; // e.g., "V5.1.8.GNR.000028"
-  final String version; // e.g., "V5.1.8"
-  final String moduleCode; // e.g., "GNR"
-  final int sequenceNumber; // e.g., 28
-  final String screenName; // e.g., "شاشة الدخول"
+  final String formattedId;
+  final String version;
+  final String moduleCode;
+  final int sequenceNumber;
+  final String screenName;
   final String title;
   final String description;
   final TaskType taskType;
@@ -18,6 +18,8 @@ class TaskEntity extends Equatable {
   final String? frontendDevName;
   final String? middleDevName;
   final String? qaTesterName;
+  final List<String> roleFlow;
+  final String currentRoleStage;
   final DateTime createdDate;
   final DateTime? dueDate;
   final DateTime? resolvedDate;
@@ -43,6 +45,8 @@ class TaskEntity extends Equatable {
     this.frontendDevName,
     this.middleDevName,
     this.qaTesterName,
+    this.roleFlow = const ['backend', 'middle', 'frontend', 'qa'],
+    this.currentRoleStage = 'backend',
     required this.createdDate,
     this.dueDate,
     this.resolvedDate,
@@ -82,6 +86,8 @@ class TaskEntity extends Equatable {
         frontendDevName,
         middleDevName,
         qaTesterName,
+        roleFlow,
+        currentRoleStage,
         createdDate,
         dueDate,
         resolvedDate,
@@ -108,6 +114,8 @@ class TaskEntity extends Equatable {
     String? frontendDevName,
     String? middleDevName,
     String? qaTesterName,
+    List<String>? roleFlow,
+    String? currentRoleStage,
     DateTime? createdDate,
     DateTime? dueDate,
     DateTime? resolvedDate,
@@ -133,6 +141,8 @@ class TaskEntity extends Equatable {
       frontendDevName: frontendDevName ?? this.frontendDevName,
       middleDevName: middleDevName ?? this.middleDevName,
       qaTesterName: qaTesterName ?? this.qaTesterName,
+      roleFlow: roleFlow ?? this.roleFlow,
+      currentRoleStage: currentRoleStage ?? this.currentRoleStage,
       createdDate: createdDate ?? this.createdDate,
       dueDate: dueDate ?? this.dueDate,
       resolvedDate: resolvedDate ?? this.resolvedDate,
@@ -161,6 +171,8 @@ class TaskEntity extends Equatable {
       'frontendDevName': frontendDevName,
       'middleDevName': middleDevName,
       'qaTesterName': qaTesterName,
+      'roleFlow': roleFlow,
+      'currentRoleStage': currentRoleStage,
       'createdDate': createdDate.toIso8601String(),
       'dueDate': dueDate?.toIso8601String(),
       'resolvedDate': resolvedDate?.toIso8601String(),
@@ -189,6 +201,8 @@ class TaskEntity extends Equatable {
       frontendDevName: map['frontendDevName'] as String?,
       middleDevName: map['middleDevName'] as String?,
       qaTesterName: map['qaTesterName'] as String?,
+      roleFlow: List<String>.from(map['roleFlow'] as List? ?? const ['backend', 'middle', 'frontend', 'qa']),
+      currentRoleStage: map['currentRoleStage'] as String? ?? 'backend',
       createdDate: map['createdDate'] != null
           ? DateTime.tryParse(map['createdDate'] as String) ?? DateTime.now()
           : DateTime.now(),
