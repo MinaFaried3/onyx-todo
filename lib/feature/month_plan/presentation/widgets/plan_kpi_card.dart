@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:onyx_todo/core/ui/clickup_colors.dart';
+import 'package:onyx_todo/core/ui/onyx_colors.dart';
 
 class PlanKpiCard extends StatelessWidget {
   final String title;
   final String value;
   final String subtitle;
-  final IconData icon;
+  final FaIconData icon;
   final Color color;
   final bool isDark;
 

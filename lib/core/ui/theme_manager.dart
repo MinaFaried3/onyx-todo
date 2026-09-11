@@ -397,9 +397,9 @@ ThemeData getApplicationTheme() {
   );
 }
 
-ThemeData getClickUpTheme({bool isDark = true}) {
-  final bg = isDark ? ClickUpColors.darkBackground : ClickUpColors.lightBackground;
-  final surface = isDark ? ClickUpColors.darkCard : ClickUpColors.lightCard;
+ThemeData getOnyxTheme({bool isDark = true}) {
+  final bg = isDark ? OnyxColors.darkBackground : OnyxColors.lightBackground;
+  final surface = isDark ? OnyxColors.darkCard : OnyxColors.lightCard;
 
   return ThemeData(
     useMaterial3: true,
@@ -408,9 +408,11 @@ ThemeData getClickUpTheme({bool isDark = true}) {
     scaffoldBackgroundColor: bg,
     cardColor: surface,
     colorScheme: ColorScheme.fromSeed(
-      seedColor: ClickUpColors.primary,
+      seedColor: OnyxColors.primary,
       brightness: isDark ? Brightness.dark : Brightness.light,
       surface: surface,
     ),
   );
 }
+
+ThemeData getClickUpTheme({bool isDark = true}) => getOnyxTheme(isDark: isDark);

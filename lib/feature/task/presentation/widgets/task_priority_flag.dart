@@ -12,7 +12,7 @@ class TaskPriorityFlag extends StatelessWidget {
     this.onPriorityChanged,
   });
 
-  IconData _getPriorityIcon(TaskPriority p) {
+  FaIconData _getPriorityIcon(TaskPriority p) {
     return switch (p) {
       TaskPriority.urgent => FontAwesomeIcons.fire,
       TaskPriority.high => FontAwesomeIcons.flag,

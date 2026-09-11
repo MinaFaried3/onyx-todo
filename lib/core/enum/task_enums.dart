@@ -76,7 +76,7 @@ enum TaskPriority {
         low => ClickUpColors.priorityLow,
       };
 
-  IconData get icon => switch (this) {
+  FaIconData get icon => switch (this) {
         urgent => FontAwesomeIcons.fire,
         high => FontAwesomeIcons.flag,
         medium => FontAwesomeIcons.flag,
@@ -109,7 +109,7 @@ enum TaskType {
         urgent => AppStrings.typeUrgent.tr(),
       };
 
-  IconData get icon => switch (this) {
+  FaIconData get icon => switch (this) {
         task => FontAwesomeIcons.circleCheck,
         bug => FontAwesomeIcons.bug,
         feature => FontAwesomeIcons.star,

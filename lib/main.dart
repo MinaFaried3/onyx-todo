@@ -105,8 +105,8 @@ class OnyxTodoApp extends StatelessWidget {
       localizationsDelegates: context.localizationDelegates,
       supportedLocales: context.supportedLocales,
       locale: context.locale,
-      theme: getClickUpTheme(isDark: false),
-      darkTheme: getClickUpTheme(isDark: true),
+      theme: getOnyxTheme(isDark: false),
+      darkTheme: getOnyxTheme(isDark: true),
       themeMode: ThemeMode.dark,
       routerConfig: getIt<GoRouter>(),
     );

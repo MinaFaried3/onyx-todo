@@ -12,7 +12,7 @@ class TaskStatusPill extends StatelessWidget {
     this.onStatusChanged,
   });
 
-  IconData _getStatusIcon(TaskStatus s) {
+  FaIconData _getStatusIcon(TaskStatus s) {
     return switch (s) {
       TaskStatus.open => FontAwesomeIcons.circleDot,
       TaskStatus.inProgress => FontAwesomeIcons.arrowsRotate,

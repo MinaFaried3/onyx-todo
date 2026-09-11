@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:onyx_todo/core/ui/clickup_colors.dart';
+import 'package:onyx_todo/core/ui/onyx_colors.dart';
 
 class AssigneeInfoRow extends StatelessWidget {
   final String label;
   final String name;
-  final IconData icon;
+  final FaIconData icon;
   final Color color;
 
   const AssigneeInfoRow({
