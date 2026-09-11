@@ -141,4 +141,83 @@ abstract final class AppStrings {
   static const String stackFrontend = 'stack_frontend';
   static const String stackBackend = 'stack_backend';
   static const String stackMiddle = 'stack_middle';
+
+  // ─── Form Hints & Labels ─────────────────────────────────────────────────────
+  static const String enterTaskTitle = 'enter_task_title';
+  static const String unassigned = 'unassigned';
+  static const String noHistoryYet = 'no_history_yet';
+  static const String generalScreen = 'general_screen';
+  static const String dailyEntriesScreen = 'daily_entries_screen';
+  static const String screenHint = 'screen_hint';
+  static const String titleHint = 'title_hint';
+  static const String assigneeHint = 'assignee_hint';
+  static const String descriptionHint = 'description_hint';
+  static const String taskCreatedSuccess = 'task_created_success';
+  static const String copyTaskId = 'copy_task_id';
+
+  // ─── Month Plan Labels & Columns ─────────────────────────────────────────────
+  static const String crmSystemTitle = 'crm_system_title';
+  static const String noPlanForMonth = 'no_plan_for_month';
+  static const String targetWorkHours = 'target_work_hours';
+  static const String workingDaysCount = 'working_days_count';
+  static const String coveragePercentage = 'coverage_percentage';
+  static const String endOfMonthActual = 'end_of_month_actual';
+  static const String planTasksCount = 'plan_tasks_count';
+  static const String addTaskToPlan = 'add_task_to_plan';
+  static const String planSubmittedSuccess = 'plan_submitted_success';
+  static const String planApprovedSuccess = 'plan_approved_success';
+  static const String planClosedSuccess = 'plan_closed_success';
+  static const String planRejectedSuccess = 'plan_rejected_success';
+  static const String codeCol = 'code_col';
+  static const String moduleCol = 'module_col';
+  static const String screenCol = 'screen_col';
+  static const String titleCol = 'title_col';
+  static const String estDaysCol = 'est_days_col';
+  static const String estHoursCol = 'est_hours_col';
+  static const String actHoursCol = 'act_hours_col';
+  static const String noTasksInPlan = 'no_tasks_in_plan';
+  static const String planStatusApprovedActive = 'plan_status_approved_active';
+  static const String planStatusPendingManager = 'plan_status_pending_manager';
+  static const String planStatusUnderRevision = 'plan_status_under_revision';
+  static const String rejectPlanTitle = 'reject_plan_title';
+  static const String rejectNotesLabel = 'reject_notes_label';
+  static const String sendFeedback = 'send_feedback';
+  static const String daysLabel = 'days_label';
+  static const String dayUnit = 'day_unit';
+  static const String developerLabel = 'developer_label';
+  static const String monthLabel = 'month_label';
+  static const String moduleCodeHint = 'module_code_hint';
+
+  // ─── Workload View ───────────────────────────────────────────────────────────
+  static const String noDevelopersAssigned = 'no_developers_assigned';
+  static const String assignedTasksCount = 'assigned_tasks_count';
+  static const String completedCount = 'completed_count';
+  static const String estLabel = 'est_label';
+  static const String actLabel = 'act_label';
+
+  // ─── Shell & Notifications ───────────────────────────────────────────────────
+  static const String collapseMenu = 'collapse_menu';
+  static const String expandMenu = 'expand_menu';
+  static const String switchAccount = 'switch_account';
+  static const String viewTasksBoard = 'view_tasks_board';
+  static const String tasksImportedSuccess = 'tasks_imported_success';
+  static const String tasksUpdatedSuccess = 'tasks_updated_success';
+  static const String achievementLoggedSuccess = 'achievement_logged_success';
+  static const String workHoursUnit = 'work_hours_unit';
+  static const String noAchievementsFound = 'no_achievements_found';
+
+  // ─── Analytics & Syncfusion Charts ───────────────────────────────────────────
+  static const String analyticsView = 'analytics_view';
+  static const String chartsAndMetrics = 'charts_and_metrics';
+  static const String moduleTaskDistribution = 'module_task_distribution';
+  static const String developerVelocity = 'developer_velocity';
+  static const String estimatedVsActualHours = 'estimated_vs_actual_hours';
+  static const String statusPipelineBreakdown = 'status_pipeline_breakdown';
+  static const String monthlyBurnupTrajectory = 'monthly_burnup_trajectory';
+  static const String totalTasksMetric = 'total_tasks_metric';
+  static const String completedTasksMetric = 'completed_tasks_metric';
+  static const String estHoursMetric = 'est_hours_metric';
+  static const String actHoursMetric = 'act_hours_metric';
+  static const String completionRateMetric = 'completion_rate_metric';
+  static const String taskCountLabel = 'task_count_label';
 }

@@ -126,8 +126,9 @@ class JwtVerificationService {
         return _fail(JwtFailureReason.malformed, 'Cannot parse claims');
 
       final subject = rawClaims['sub']?.toString();
-      if (subject == null)
+      if (subject == null) {
         return _fail(JwtFailureReason.missingClaim, 'Missing sub');
+      }
 
       // ── 4. Fetch secret via callback (supports key rotation) ──────
       final String secret;
