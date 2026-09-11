@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:onyx_todo/core/helper/constants.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
 import 'package:onyx_todo/core/ui/color_manager.dart';
 
 part 'bottom_nav_bar_item.dart';

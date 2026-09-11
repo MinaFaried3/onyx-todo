@@ -168,7 +168,11 @@ abstract final class AppStrings {
   static const String planApprovedSuccess = 'plan_approved_success';
   static const String planClosedSuccess = 'plan_closed_success';
   static const String planRejectedSuccess = 'plan_rejected_success';
+  static const String planSubmittedToast = 'plan_submitted_success';
+  static const String planApprovedToast = 'plan_approved_success';
+  static const String planClosedToast = 'plan_closed_success';
   static const String codeCol = 'code_col';
+  static const String taskIdCol = 'code_col';
   static const String moduleCol = 'module_col';
   static const String screenCol = 'screen_col';
   static const String titleCol = 'title_col';

@@ -8,6 +8,8 @@ abstract final class ClickUpColors {
   static const Color primaryLight = Color(0xFFEEEBFF); // Soft violet tint
   static const Color accentCyan = Color(0xFF00D2D3); // ClickUp Cyan
   static const Color accentPurple = Color(0xFFA855F7); // Accent purple
+  static const Color teal = Color(0xFF0D9488); // Modern Teal
+  static const Color purple = Color(0xFF9333EA); // Modern Purple
 
   // ─── Semantic Modern Feedback Colors (Replaces raw Flutter Colors.*) ─────────
   static const Color danger = Color(0xFFF43F5E); // Modern Rose/Red

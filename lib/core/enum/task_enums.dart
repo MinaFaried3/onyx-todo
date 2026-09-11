@@ -76,6 +76,13 @@ enum TaskPriority {
         low => ClickUpColors.priorityLow,
       };
 
+  IconData get icon => switch (this) {
+        urgent => FontAwesomeIcons.fire,
+        high => FontAwesomeIcons.flag,
+        medium => FontAwesomeIcons.flag,
+        low => FontAwesomeIcons.flag,
+      };
+
   static TaskPriority fromString(String? val) {
     if (val == null) return TaskPriority.medium;
     final clean = val.trim().toLowerCase();

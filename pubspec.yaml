@@ -55,7 +55,7 @@ dependencies:
 
   # ui
   syncfusion_flutter_charts: ^34.2.7
-  font_awesome_flutter: ^10.8.0
+  font_awesome_flutter: ^11.0.0
 
   # storage
   hive: ^2.2.3
