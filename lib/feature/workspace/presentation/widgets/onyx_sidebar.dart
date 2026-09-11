@@ -150,6 +150,12 @@ class OnyxSidebar extends StatelessWidget {
                       onTap: () => workspaceCubit.setView(WorkspaceView.monthlyPlan),
                     ),
                     OnyxSidebarItem(
+                      icon: FontAwesomeIcons.usersGear,
+                      label: AppStrings.teamsAndUsers.tr(),
+                      isSelected: state.activeView == WorkspaceView.teamManagement,
+                      onTap: () => workspaceCubit.setView(WorkspaceView.teamManagement),
+                    ),
+                    OnyxSidebarItem(
                       icon: FontAwesomeIcons.fileExcel,
                       label: AppStrings.excelImport.tr(),
                       isSelected: state.activeView == WorkspaceView.excelImport,

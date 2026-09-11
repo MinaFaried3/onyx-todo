@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'package:onyx_todo/core/controller/cubit/base_cubit.dart';
 import 'package:onyx_todo/core/enum/ui_state.dart';
 import 'package:onyx_todo/core/helper/printer_manager.dart';
+import 'package:onyx_todo/feature/auth/domain/repositories/auth_repository.dart';
 import 'package:onyx_todo/feature/excel_import/data/services/excel_parser_service.dart';
 import 'package:onyx_todo/feature/excel_import/presentation/cubit/excel_import_state.dart';
 import 'package:onyx_todo/feature/task/domain/repositories/task_repository.dart';
@@ -9,10 +10,12 @@ import 'package:onyx_todo/feature/task/domain/repositories/task_repository.dart'
 class ExcelImportCubit extends BaseCubit<ExcelImportState> {
   final ExcelParserService excelParserService;
   final TaskRepository taskRepository;
+  final AuthRepository authRepository;
 
   ExcelImportCubit({
     required this.excelParserService,
     required this.taskRepository,
+    required this.authRepository,
   }) : super(const ExcelImportState());
 
   /// Step 1: Parse Excel bytes into staged preview tasks (In-Memory Only).
@@ -69,6 +72,10 @@ class ExcelImportCubit extends BaseCubit<ExcelImportState> {
     ));
 
     try {
+      // 1. Auto-provision missing developers and assignees in database
+      await authRepository.autoProvisionUsersFromTasks(state.previewTasks);
+
+      // 2. Commit tasks to Firestore / repository
       final res = await taskRepository.importTasks(
         state.previewTasks,
         onProgress: (uploaded, total) {

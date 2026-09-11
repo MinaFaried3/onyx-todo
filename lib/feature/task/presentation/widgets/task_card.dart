@@ -43,41 +43,53 @@ class TaskCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header: ID + Module + Priority + Status
-              Row(
+              // Header: ID + Priority + Status (resilient layout)
+              Wrap(
+                alignment: WrapAlignment.spaceBetween,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: 6,
+                runSpacing: 6,
                 children: [
                   TaskIdBadge(
                     formattedId: task.formattedId,
                     onTap: onTap,
                   ),
-                  const SizedBox(width: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: isDark ? OnyxColors.neutral700 : OnyxColors.neutral200,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text(
-                      task.screenName,
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w600,
-                        color: isDark ? OnyxColors.neutral300 : OnyxColors.neutral700,
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TaskPriorityFlag(
+                        priority: task.priority,
+                        onPriorityChanged: (p) => onStatusChanged?.call(task.copyWith(priority: p)),
                       ),
-                    ),
-                  ),
-                  const Spacer(),
-                  TaskPriorityFlag(
-                    priority: task.priority,
-                    onPriorityChanged: (p) => onStatusChanged?.call(task.copyWith(priority: p)),
-                  ),
-                  const SizedBox(width: 6),
-                  TaskStatusPill(
-                    status: task.status,
-                    onStatusChanged: (s) => onStatusChanged?.call(task.copyWith(status: s)),
+                      const SizedBox(width: 6),
+                      TaskStatusPill(
+                        status: task.status,
+                        onStatusChanged: (s) => onStatusChanged?.call(task.copyWith(status: s)),
+                      ),
+                    ],
                   ),
                 ],
               ),
+              if (task.screenName.isNotEmpty) ...[
+                const SizedBox(height: 6),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: isDark ? OnyxColors.neutral700 : OnyxColors.neutral200,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    task.screenName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                      color: isDark ? OnyxColors.neutral300 : OnyxColors.neutral700,
+                    ),
+                  ),
+                ),
+              ],
               const SizedBox(height: 8),
 
               // Title
@@ -99,10 +111,15 @@ class TaskCard extends StatelessWidget {
                 children: [
                   FaIcon(task.taskType.icon, size: 12, color: task.taskType.color),
                   const SizedBox(width: 5),
-                  Text(
-                    task.taskType.label,
-                    style: TextStyle(fontSize: 10, color: task.taskType.color, fontWeight: FontWeight.w600),
+                  Flexible(
+                    child: Text(
+                      task.taskType.label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontSize: 10, color: task.taskType.color, fontWeight: FontWeight.w600),
+                    ),
                   ),
+                  const SizedBox(width: 6),
                   const Spacer(),
 
                   // Assignees avatars / chips

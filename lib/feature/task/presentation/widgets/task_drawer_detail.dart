@@ -37,8 +37,11 @@ class TaskDrawerDetail extends HookWidget {
     final estimatedHoursController =
         useTextEditingController(text: task.estimatedHours > 0 ? task.estimatedHours.toString() : '');
 
+    final screenWidth = MediaQuery.of(context).size.width;
+    final drawerWidth = screenWidth < 700 ? screenWidth * 0.9 : 520.0;
+
     return Container(
-      width: 520,
+      width: drawerWidth,
       decoration: BoxDecoration(
         color: isDark ? OnyxColors.darkCard : OnyxColors.lightCard,
         border: Border(
@@ -64,12 +67,16 @@ class TaskDrawerDetail extends HookWidget {
               children: [
                 TaskIdBadge(formattedId: task.formattedId, isLarge: true),
                 const SizedBox(width: 8),
-                Text(
-                  task.moduleCode,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 13,
-                    color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
+                Flexible(
+                  child: Text(
+                    task.moduleCode,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                      color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
+                    ),
                   ),
                 ),
                 const Spacer(),
@@ -125,18 +132,25 @@ class TaskDrawerDetail extends HookWidget {
                         color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
                       ),
                     ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: OnyxColors.primary.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        task.screenName,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: OnyxColors.primary,
+                    Expanded(
+                      child: Align(
+                        alignment: AlignmentDirectional.centerStart,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: OnyxColors.primary.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            task.screenName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: OnyxColors.primary,
+                            ),
+                          ),
                         ),
                       ),
                     ),

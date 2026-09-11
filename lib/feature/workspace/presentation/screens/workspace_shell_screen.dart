@@ -7,6 +7,7 @@ import 'package:onyx_todo/feature/achievement/presentation/screens/achievement_s
 import 'package:onyx_todo/feature/excel_import/presentation/screens/excel_import_screen.dart';
 import 'package:onyx_todo/feature/month_plan/presentation/screens/month_plan_screen.dart';
 import 'package:onyx_todo/feature/task/presentation/screens/tasks_screen.dart';
+import 'package:onyx_todo/feature/team/presentation/screens/team_management_screen.dart';
 import 'package:onyx_todo/feature/workspace/presentation/cubit/workspace_cubit.dart';
 import 'package:onyx_todo/feature/workspace/presentation/cubit/workspace_state.dart';
 import 'package:onyx_todo/feature/workspace/presentation/widgets/onyx_sidebar.dart';
@@ -49,6 +50,7 @@ class WorkspaceShellScreen extends HookWidget {
                         WorkspaceView.achievements => const AchievementScreen(),
                         WorkspaceView.monthlyPlan => const MonthPlanScreen(),
                         WorkspaceView.excelImport => const ExcelImportScreen(),
+                        WorkspaceView.teamManagement => const TeamManagementScreen(),
                         _ => const TasksScreen(),
                       };
                     },

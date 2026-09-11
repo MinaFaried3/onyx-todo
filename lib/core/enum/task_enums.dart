@@ -168,18 +168,26 @@ enum PlanStatus {
 
 enum UserRole {
   departmentManager('department_manager'),
+  teamLead('team_lead'),
   frontendLead('frontend_lead'),
-  developer('developer'),
-  qa('qa');
+  backend('backend'),
+  frontend('frontend'),
+  middle('middle'),
+  qa('qa'),
+  developer('developer');
 
   final String value;
   const UserRole(this.value);
 
   String get label => switch (this) {
         departmentManager => AppStrings.roleManager.tr(),
+        teamLead => AppStrings.roleTeamLead.tr(),
         frontendLead => AppStrings.roleLead.tr(),
-        developer => AppStrings.roleDeveloper.tr(),
+        backend => AppStrings.stackBackend.tr(),
+        frontend => AppStrings.stackFrontend.tr(),
+        middle => AppStrings.stackMiddle.tr(),
         qa => AppStrings.roleQa.tr(),
+        developer => AppStrings.roleDeveloper.tr(),
       };
 }
 
@@ -199,3 +207,19 @@ enum DeveloperStack {
         qa => AppStrings.roleQa.tr(),
       };
 }
+
+enum NotificationType {
+  taskAssigned('task_assigned'),
+  statusChanged('status_changed'),
+  systemAnnouncement('system_announcement');
+
+  final String value;
+  const NotificationType(this.value);
+
+  String get label => switch (this) {
+        taskAssigned => AppStrings.notifTaskAssigned.tr(),
+        statusChanged => AppStrings.notifStatusChanged.tr(),
+        systemAnnouncement => AppStrings.notifSystem.tr(),
+      };
+}
+

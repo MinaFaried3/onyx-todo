@@ -71,79 +71,87 @@ class TasksScreen extends HookWidget {
                         ),
                       ),
                     ),
-                    child: Row(
+                    child: Wrap(
+                      alignment: WrapAlignment.spaceBetween,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      spacing: 12,
+                      runSpacing: 8,
                       children: [
-                        // Search Box
-                        SizedBox(
-                          width: 240,
-                          height: 36,
-                          child: TextField(
-                            controller: searchController,
-                            onChanged: (v) => tasksCubit.setSearchQuery(v),
-                            style: const TextStyle(fontSize: 12),
-                            decoration: InputDecoration(
-                              hintText: AppStrings.search.tr(),
-                              prefixIcon: const Center(
-                                widthFactor: 1.0,
-                                child: FaIcon(FontAwesomeIcons.magnifyingGlass, size: 13, color: OnyxColors.neutral400),
+                        Wrap(
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          spacing: 12,
+                          runSpacing: 8,
+                          children: [
+                            // Search Box
+                            SizedBox(
+                              width: 220,
+                              height: 36,
+                              child: TextField(
+                                controller: searchController,
+                                onChanged: (v) => tasksCubit.setSearchQuery(v),
+                                style: const TextStyle(fontSize: 12),
+                                decoration: InputDecoration(
+                                  hintText: AppStrings.search.tr(),
+                                  prefixIcon: const Center(
+                                    widthFactor: 1.0,
+                                    child: FaIcon(FontAwesomeIcons.magnifyingGlass, size: 13, color: OnyxColors.neutral400),
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  contentPadding: const EdgeInsets.symmetric(vertical: 6),
+                                  isDense: true,
+                                ),
                               ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(6),
+                            ),
+
+                            // Priority Filter Dropdown
+                            DropdownButton<TaskPriority?>(
+                              value: state.priorityFilter,
+                              hint: Text(
+                                AppStrings.priority.tr(),
+                                style: const TextStyle(fontSize: 12),
                               ),
-                              contentPadding: const EdgeInsets.symmetric(vertical: 6),
-                              isDense: true,
+                              underline: const SizedBox(),
+                              items: [
+                                DropdownMenuItem(
+                                  value: null,
+                                  child: Text(AppStrings.all.tr(), style: const TextStyle(fontSize: 12)),
+                                ),
+                                ...TaskPriority.values.map((p) {
+                                  return DropdownMenuItem(
+                                    value: p,
+                                    child: Text(p.label, style: const TextStyle(fontSize: 12)),
+                                  );
+                                }),
+                              ],
+                              onChanged: (p) => tasksCubit.setPriorityFilter(p),
                             ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
 
-                        // Priority Filter Dropdown
-                        DropdownButton<TaskPriority?>(
-                          value: state.priorityFilter,
-                          hint: Text(
-                            AppStrings.priority.tr(),
-                            style: const TextStyle(fontSize: 12),
-                          ),
-                          underline: const SizedBox(),
-                          items: [
-                            DropdownMenuItem(
-                              value: null,
-                              child: Text(AppStrings.all.tr(), style: const TextStyle(fontSize: 12)),
+                            // Status Filter Dropdown
+                            DropdownButton<TaskStatus?>(
+                              value: state.statusFilter,
+                              hint: Text(
+                                AppStrings.status.tr(),
+                                style: const TextStyle(fontSize: 12),
+                              ),
+                              underline: const SizedBox(),
+                              items: [
+                                DropdownMenuItem(
+                                  value: null,
+                                  child: Text(AppStrings.all.tr(), style: const TextStyle(fontSize: 12)),
+                                ),
+                                ...TaskStatus.values.map((s) {
+                                  return DropdownMenuItem(
+                                    value: s,
+                                    child: Text(s.label, style: const TextStyle(fontSize: 12)),
+                                  );
+                                }),
+                              ],
+                              onChanged: (s) => tasksCubit.setStatusFilter(s),
                             ),
-                            ...TaskPriority.values.map((p) {
-                              return DropdownMenuItem(
-                                value: p,
-                                child: Text(p.label, style: const TextStyle(fontSize: 12)),
-                              );
-                            }),
                           ],
-                          onChanged: (p) => tasksCubit.setPriorityFilter(p),
                         ),
-                        const SizedBox(width: 12),
-
-                        // Status Filter Dropdown
-                        DropdownButton<TaskStatus?>(
-                          value: state.statusFilter,
-                          hint: Text(
-                            AppStrings.status.tr(),
-                            style: const TextStyle(fontSize: 12),
-                          ),
-                          underline: const SizedBox(),
-                          items: [
-                            DropdownMenuItem(
-                              value: null,
-                              child: Text(AppStrings.all.tr(), style: const TextStyle(fontSize: 12)),
-                            ),
-                            ...TaskStatus.values.map((s) {
-                              return DropdownMenuItem(
-                                value: s,
-                                child: Text(s.label, style: const TextStyle(fontSize: 12)),
-                              );
-                            }),
-                          ],
-                          onChanged: (s) => tasksCubit.setStatusFilter(s),
-                        ),
-                        const Spacer(),
 
                         // Create Task Button
                         ElevatedButton.icon(

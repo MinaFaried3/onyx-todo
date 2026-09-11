@@ -51,6 +51,11 @@ class OnyxCollapsedSidebar extends StatelessWidget {
             onPressed: () => cubit.setView(WorkspaceView.monthlyPlan),
           ),
           IconButton(
+            icon: const FaIcon(FontAwesomeIcons.usersGear, size: 15),
+            tooltip: AppStrings.teamsAndUsers.tr(),
+            onPressed: () => cubit.setView(WorkspaceView.teamManagement),
+          ),
+          IconButton(
             icon: const FaIcon(FontAwesomeIcons.fileExcel, size: 15),
             tooltip: AppStrings.excelImport.tr(),
             onPressed: () => cubit.setView(WorkspaceView.excelImport),

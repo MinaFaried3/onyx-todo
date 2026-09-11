@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:onyx_todo/core/extension/bloc_reader.dart';
 import 'package:onyx_todo/core/localization/app_strings.dart';
 import 'package:onyx_todo/core/ui/onyx_colors.dart';
+import 'package:onyx_todo/feature/notification/presentation/widgets/notification_dropdown_overlay.dart';
 import 'package:onyx_todo/feature/task/presentation/widgets/task_create_dialog.dart';
 import 'package:onyx_todo/feature/workspace/presentation/cubit/workspace_state.dart';
 import 'package:onyx_todo/feature/workspace/presentation/widgets/onyx_view_tab.dart';
@@ -102,6 +103,35 @@ class OnyxTopBar extends StatelessWidget {
           ],
 
           const Spacer(),
+
+          // Notification Bell
+          IconButton(
+            tooltip: AppStrings.notifications.tr(),
+            icon: Badge(
+              isLabelVisible: state.unreadNotificationCount > 0,
+              label: Text(
+                '${state.unreadNotificationCount}',
+                style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+              ),
+              backgroundColor: OnyxColors.danger,
+              child: FaIcon(
+                FontAwesomeIcons.solidBell,
+                size: 16,
+                color: isDark ? OnyxColors.neutral300 : OnyxColors.neutral700,
+              ),
+            ),
+            onPressed: () {
+              showDialog(
+                context: context,
+                barrierColor: Colors.transparent,
+                builder: (ctx) => BlocProvider.value(
+                  value: workspaceCubit,
+                  child: const NotificationDropdownOverlay(),
+                ),
+              );
+            },
+          ),
+          const SizedBox(width: 8),
 
           // Quick Language Switcher
           TextButton.icon(

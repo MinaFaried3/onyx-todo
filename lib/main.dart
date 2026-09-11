@@ -15,8 +15,10 @@ import 'package:onyx_todo/feature/excel_import/data/services/excel_parser_servic
 import 'package:onyx_todo/feature/excel_import/presentation/cubit/excel_import_cubit.dart';
 import 'package:onyx_todo/feature/month_plan/domain/repositories/month_plan_repository.dart';
 import 'package:onyx_todo/feature/month_plan/presentation/cubit/month_plan_cubit.dart';
+import 'package:onyx_todo/feature/notification/domain/repositories/notification_repository.dart';
 import 'package:onyx_todo/feature/task/domain/repositories/task_repository.dart';
 import 'package:onyx_todo/feature/task/presentation/cubit/tasks_cubit.dart';
+import 'package:onyx_todo/feature/team/domain/repositories/team_repository.dart';
 import 'package:onyx_todo/feature/workspace/domain/repositories/workspace_repository.dart';
 import 'package:onyx_todo/feature/workspace/presentation/cubit/workspace_cubit.dart';
 import 'package:onyx_todo/feature/workspace/presentation/screens/workspace_shell_screen.dart';
@@ -76,6 +78,8 @@ class OnyxTodoApp extends StatelessWidget {
           create: (ctx) => WorkspaceCubit(
             workspaceRepository: getIt<WorkspaceRepository>(),
             authRepository: getIt<AuthRepository>(),
+            teamRepository: getIt<TeamRepository>(),
+            notificationRepository: getIt<NotificationRepository>(),
           ),
         ),
         BlocProvider<TasksCubit>(
@@ -97,6 +101,7 @@ class OnyxTodoApp extends StatelessWidget {
           create: (ctx) => ExcelImportCubit(
             excelParserService: getIt<ExcelParserService>(),
             taskRepository: getIt<TaskRepository>(),
+            authRepository: getIt<AuthRepository>(),
           ),
         ),
       ],

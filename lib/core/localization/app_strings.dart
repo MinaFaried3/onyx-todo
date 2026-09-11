@@ -237,4 +237,37 @@ abstract final class AppStrings {
   static String get teamAchievementSubtitle => 'team_achievement_subtitle';
   static String get filterByDeveloper => 'filter_by_developer';
   static String get allDevelopers => 'all_developers';
+
+  // ─── Teams & User Management ────────────────────────────────────────────────
+  static String get teamsAndUsers => 'teams_and_users';
+  static String get teams => 'teams';
+  static String get users => 'users';
+  static String get teamMembers => 'team_members';
+  static String get teamReports => 'team_reports';
+  static String get teamStatistics => 'team_statistics';
+  static String get addTeam => 'add_team';
+  static String get editTeam => 'edit_team';
+  static String get deleteTeam => 'delete_team';
+  static String get teamName => 'team_name';
+  static String get teamLead => 'team_lead';
+  static String get roleTeamLead => 'role_lead';
+  static String get assignModules => 'assign_modules';
+  static String get selectMembers => 'select_members';
+  static String get resetPassword => 'reset_password';
+  static String get passwordResetSent => 'password_reset_sent';
+  static String get lastActive => 'last_active';
+  static String get activeNow => 'active_now';
+  static String get notifications => 'notifications';
+  static String get noNotifications => 'no_notifications';
+  static String get markAllRead => 'mark_all_read';
+  static String get notifTaskAssigned => 'notif_task_assigned';
+  static String get notifStatusChanged => 'notif_status_changed';
+  static String get notifSystem => 'notif_system';
+  static String get userRole => 'user_role';
+  static String get assignToTeam => 'assign_to_team';
+  static String get changeRole => 'change_role';
+  static String get allUsers => 'all_users';
+  static String get noTeamsFound => 'no_teams_found';
+  static String get email => 'email';
 }
+

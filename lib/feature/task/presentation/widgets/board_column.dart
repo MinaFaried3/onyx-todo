@@ -30,7 +30,7 @@ class BoardColumn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 290,
+      width: 300,
       margin: const EdgeInsets.only(right: 12),
       decoration: BoxDecoration(
         color: isDark ? OnyxColors.darkSidebar : OnyxColors.lightSidebar,
@@ -67,12 +67,16 @@ class BoardColumn extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      Text(
-                        status.label,
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
+                      Flexible(
+                        child: Text(
+                          status.label,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
+                          ),
                         ),
                       ),
                       const SizedBox(width: 6),

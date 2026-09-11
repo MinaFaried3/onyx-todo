@@ -3,6 +3,8 @@ import 'package:onyx_todo/core/controller/cubit/sub_state.dart';
 import 'package:onyx_todo/core/enum/ui_state.dart';
 import 'package:onyx_todo/core/network/error/app_failures.dart';
 import 'package:onyx_todo/feature/auth/domain/entities/user_profile.dart';
+import 'package:onyx_todo/feature/notification/domain/entities/system_notification_entity.dart';
+import 'package:onyx_todo/feature/team/domain/entities/team_entity.dart';
 import 'package:onyx_todo/feature/workspace/domain/entities/onyx_module.dart';
 import 'package:onyx_todo/feature/workspace/domain/entities/onyx_version.dart';
 
@@ -14,11 +16,15 @@ enum WorkspaceView {
   achievements,
   monthlyPlan,
   excelImport,
+  teamManagement,
 }
 
 final class WorkspaceState extends BaseState {
   final SubState<List<OnyxModule>> modulesState;
   final SubState<List<OnyxVersion>> versionsState;
+  final SubState<List<UserProfile>> usersState;
+  final SubState<List<TeamEntity>> teamsState;
+  final SubState<List<SystemNotificationEntity>> notificationsState;
   final String selectedModuleCode; // 'ALL' or specific module code
   final String selectedVersionCode; // 'ALL' or specific version e.g. 'V5.1.8'
   final WorkspaceView activeView;
@@ -31,6 +37,9 @@ final class WorkspaceState extends BaseState {
     super.failure,
     this.modulesState = const SubState(),
     this.versionsState = const SubState(),
+    this.usersState = const SubState(),
+    this.teamsState = const SubState(),
+    this.notificationsState = const SubState(),
     this.selectedModuleCode = 'ALL',
     this.selectedVersionCode = 'V5.1.8',
     this.activeView = WorkspaceView.list,
@@ -39,12 +48,18 @@ final class WorkspaceState extends BaseState {
     this.availableUsers = const [],
   });
 
+  int get unreadNotificationCount =>
+      (notificationsState.data ?? []).where((n) => !n.isRead).length;
+
   @override
   List<Object?> get props => [
         uiState,
         failure,
         modulesState,
         versionsState,
+        usersState,
+        teamsState,
+        notificationsState,
         selectedModuleCode,
         selectedVersionCode,
         activeView,
@@ -59,6 +74,9 @@ final class WorkspaceState extends BaseState {
     Failure? Function()? failure,
     SubState<List<OnyxModule>>? modulesState,
     SubState<List<OnyxVersion>>? versionsState,
+    SubState<List<UserProfile>>? usersState,
+    SubState<List<TeamEntity>>? teamsState,
+    SubState<List<SystemNotificationEntity>>? notificationsState,
     String? selectedModuleCode,
     String? selectedVersionCode,
     WorkspaceView? activeView,
@@ -71,6 +89,9 @@ final class WorkspaceState extends BaseState {
       failure: failure != null ? failure.copy : this.failure,
       modulesState: modulesState ?? this.modulesState,
       versionsState: versionsState ?? this.versionsState,
+      usersState: usersState ?? this.usersState,
+      teamsState: teamsState ?? this.teamsState,
+      notificationsState: notificationsState ?? this.notificationsState,
       selectedModuleCode: selectedModuleCode ?? this.selectedModuleCode,
       selectedVersionCode: selectedVersionCode ?? this.selectedVersionCode,
       activeView: activeView ?? this.activeView,

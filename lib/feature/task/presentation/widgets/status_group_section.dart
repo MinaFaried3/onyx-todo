@@ -117,22 +117,29 @@ class StatusGroupSection extends HookWidget {
                         onTap: () => onTaskTap(task),
                       ),
                       const SizedBox(width: 12),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: isDark ? OnyxColors.neutral700 : OnyxColors.neutral200,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          task.screenName,
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                            color: isDark ? OnyxColors.neutral300 : OnyxColors.neutral700,
+                      if (task.screenName.isNotEmpty) ...[
+                        ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 130),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: isDark ? OnyxColors.neutral700 : OnyxColors.neutral200,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              task.screenName,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color: isDark ? OnyxColors.neutral300 : OnyxColors.neutral700,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 12),
+                        const SizedBox(width: 12),
+                      ],
                       Expanded(
                         child: Text(
                           task.title,
@@ -194,15 +201,20 @@ class StatusGroupSection extends HookWidget {
   }
 
   Widget _buildDevChip(String name, Color color) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Text(
-        name,
-        style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: color),
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 85),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: Text(
+          name,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: color),
+        ),
       ),
     );
   }

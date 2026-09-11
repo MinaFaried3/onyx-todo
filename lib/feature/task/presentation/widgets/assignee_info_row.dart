@@ -23,8 +23,12 @@ class AssigneeInfoRow extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          FaIcon(icon, size: 14, color: color),
+          Padding(
+            padding: const EdgeInsets.only(top: 2),
+            child: FaIcon(icon, size: 14, color: color),
+          ),
           const SizedBox(width: 8),
           Text(
             '$label: ',
@@ -33,12 +37,14 @@ class AssigneeInfoRow extends StatelessWidget {
               color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
             ),
           ),
-          Text(
-            name,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
+          Expanded(
+            child: Text(
+              name,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
+              ),
             ),
           ),
         ],
