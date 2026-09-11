@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:onyx_todo/core/ui/clickup_colors.dart';
 import 'package:onyx_todo/feature/task/domain/entities/task_entity.dart';
 import 'package:onyx_todo/feature/task/presentation/widgets/task_id_badge.dart';
@@ -45,12 +46,15 @@ class TaskCard extends StatelessWidget {
               // Header: ID + Module + Priority + Status
               Row(
                 children: [
-                  TaskIdBadge(formattedId: task.formattedId),
+                  TaskIdBadge(
+                    formattedId: task.formattedId,
+                    onTap: onTap,
+                  ),
                   const SizedBox(width: 8),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
-                      color: isDark ? Colors.white10 : Colors.black.withValues(alpha: 0.05),
+                      color: isDark ? ClickUpColors.neutral700 : ClickUpColors.neutral200,
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
@@ -58,7 +62,7 @@ class TaskCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w600,
-                        color: isDark ? Colors.white70 : Colors.black87,
+                        color: isDark ? ClickUpColors.neutral300 : ClickUpColors.neutral700,
                       ),
                     ),
                   ),
@@ -93,21 +97,21 @@ class TaskCard extends StatelessWidget {
               // Footer: Type + Assignees + Hours
               Row(
                 children: [
-                  Icon(task.taskType.icon, size: 14, color: task.taskType.color),
-                  const SizedBox(width: 4),
+                  FaIcon(task.taskType.icon, size: 12, color: task.taskType.color),
+                  const SizedBox(width: 5),
                   Text(
                     task.taskType.label,
-                    style: TextStyle(fontSize: 10, color: task.taskType.color),
+                    style: TextStyle(fontSize: 10, color: task.taskType.color, fontWeight: FontWeight.w600),
                   ),
                   const Spacer(),
 
                   // Assignees avatars / chips
                   if (task.frontendDevName != null) ...[
-                    _buildAssigneeAvatar(task.frontendDevName!, Colors.teal, 'FE'),
+                    _buildAssigneeAvatar(task.frontendDevName!, ClickUpColors.info, 'FE'),
                     const SizedBox(width: 4),
                   ],
                   if (task.backendDevName != null) ...[
-                    _buildAssigneeAvatar(task.backendDevName!, Colors.deepPurple, 'BE'),
+                    _buildAssigneeAvatar(task.backendDevName!, ClickUpColors.accentPurple, 'BE'),
                     const SizedBox(width: 4),
                   ],
 
@@ -116,12 +120,19 @@ class TaskCard extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
-                        color: Colors.blueGrey.withValues(alpha: 0.15),
+                        color: ClickUpColors.primary.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(4),
                       ),
-                      child: Text(
-                        '${task.actualHours > 0 ? task.actualHours : task.estimatedHours}h',
-                        style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const FaIcon(FontAwesomeIcons.clock, size: 9, color: ClickUpColors.primary),
+                          const SizedBox(width: 4),
+                          Text(
+                            '${task.actualHours > 0 ? task.actualHours : task.estimatedHours}h',
+                            style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: ClickUpColors.primary),
+                          ),
+                        ],
                       ),
                     ),
                 ],

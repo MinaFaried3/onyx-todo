@@ -2,12 +2,14 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:onyx_todo/core/enum/task_enums.dart';
 import 'package:onyx_todo/core/extension/bloc_reader.dart';
 import 'package:onyx_todo/core/localization/app_strings.dart';
 import 'package:onyx_todo/core/ui/clickup_colors.dart';
 import 'package:onyx_todo/feature/task/presentation/cubit/tasks_cubit.dart';
 import 'package:onyx_todo/feature/task/presentation/cubit/tasks_state.dart';
+import 'package:onyx_todo/feature/task/presentation/views/clickup_analytics_view.dart';
 import 'package:onyx_todo/feature/task/presentation/views/clickup_board_view.dart';
 import 'package:onyx_todo/feature/task/presentation/views/clickup_list_view.dart';
 import 'package:onyx_todo/feature/task/presentation/views/clickup_workload_view.dart';
@@ -81,7 +83,10 @@ class TasksScreen extends HookWidget {
                             style: const TextStyle(fontSize: 12),
                             decoration: InputDecoration(
                               hintText: AppStrings.search.tr(),
-                              prefixIcon: const Icon(Icons.search_rounded, size: 16),
+                              prefixIcon: const Center(
+                                widthFactor: 1.0,
+                                child: FaIcon(FontAwesomeIcons.magnifyingGlass, size: 13, color: ClickUpColors.neutral400),
+                              ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(6),
                               ),
@@ -144,11 +149,11 @@ class TasksScreen extends HookWidget {
                         ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: ClickUpColors.primary,
-                            foregroundColor: Colors.white,
+                            foregroundColor: ClickUpColors.white,
                             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
                           ),
-                          icon: const Icon(Icons.add_rounded, size: 16),
+                          icon: const FaIcon(FontAwesomeIcons.plus, size: 12),
                           label: Text(
                             AppStrings.createTask.tr(),
                             style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
@@ -174,6 +179,7 @@ class TasksScreen extends HookWidget {
                         : switch (activeView) {
                             WorkspaceView.board => ClickUpBoardView(tasks: filteredTasks),
                             WorkspaceView.workload => ClickUpWorkloadView(tasks: filteredTasks),
+                            WorkspaceView.analytics => ClickUpAnalyticsView(tasks: filteredTasks),
                             _ => ClickUpListView(tasks: filteredTasks),
                           },
                   ),

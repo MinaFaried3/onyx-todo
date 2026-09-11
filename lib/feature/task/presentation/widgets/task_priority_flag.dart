@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:onyx_todo/core/enum/task_enums.dart';
 
 class TaskPriorityFlag extends StatelessWidget {
@@ -10,6 +11,15 @@ class TaskPriorityFlag extends StatelessWidget {
     required this.priority,
     this.onPriorityChanged,
   });
+
+  IconData _getPriorityIcon(TaskPriority p) {
+    return switch (p) {
+      TaskPriority.urgent => FontAwesomeIcons.fire,
+      TaskPriority.high => FontAwesomeIcons.flag,
+      TaskPriority.medium => FontAwesomeIcons.flag,
+      TaskPriority.low => FontAwesomeIcons.flag,
+    };
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +38,7 @@ class TaskPriorityFlag extends StatelessWidget {
           value: p,
           child: Row(
             children: [
-              Icon(Icons.flag_rounded, size: 16, color: p.color),
+              FaIcon(_getPriorityIcon(p), size: 14, color: p.color),
               const SizedBox(width: 8),
               Text(
                 p.label,
@@ -46,14 +56,14 @@ class TaskPriorityFlag extends StatelessWidget {
     return Tooltip(
       message: priority.label,
       child: Container(
-        padding: const EdgeInsets.all(4),
+        padding: const EdgeInsets.all(5),
         decoration: BoxDecoration(
-          color: flagColor.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(4),
+          color: flagColor.withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(5),
         ),
-        child: Icon(
-          Icons.flag_rounded,
-          size: 14,
+        child: FaIcon(
+          _getPriorityIcon(priority),
+          size: 12,
           color: flagColor,
         ),
       ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:onyx_todo/core/localization/app_strings.dart';
+import 'package:onyx_todo/core/ui/clickup_colors.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 enum TaskStatus {
@@ -23,12 +25,12 @@ enum TaskStatus {
       };
 
   Color get color => switch (this) {
-        open => const Color(0xFF87909E),
-        inProgress => const Color(0xFF2980B9),
-        backendSolved => const Color(0xFF8E44AD),
-        frontendSolved => const Color(0xFF16A085),
-        qaTesting => const Color(0xFFF39C12),
-        closed => const Color(0xFF27AE60),
+        open => ClickUpColors.statusOpen,
+        inProgress => ClickUpColors.statusInProgress,
+        backendSolved => ClickUpColors.statusBackendSolved,
+        frontendSolved => ClickUpColors.statusFrontendSolved,
+        qaTesting => ClickUpColors.statusQaTesting,
+        closed => ClickUpColors.statusClosed,
       };
 
   static TaskStatus fromString(String? val) {
@@ -68,10 +70,10 @@ enum TaskPriority {
       };
 
   Color get color => switch (this) {
-        urgent => const Color(0xFFE74C3C),
-        high => const Color(0xFFE67E22),
-        medium => const Color(0xFF3498DB),
-        low => const Color(0xFF95A5A6),
+        urgent => ClickUpColors.priorityUrgent,
+        high => ClickUpColors.priorityHigh,
+        medium => ClickUpColors.priorityMedium,
+        low => ClickUpColors.priorityLow,
       };
 
   static TaskPriority fromString(String? val) {
@@ -101,17 +103,17 @@ enum TaskType {
       };
 
   IconData get icon => switch (this) {
-        task => Icons.check_circle_outline_rounded,
-        bug => Icons.bug_report_outlined,
-        feature => Icons.star_outline_rounded,
-        urgent => Icons.warning_amber_rounded,
+        task => FontAwesomeIcons.circleCheck,
+        bug => FontAwesomeIcons.bug,
+        feature => FontAwesomeIcons.star,
+        urgent => FontAwesomeIcons.triangleExclamation,
       };
 
   Color get color => switch (this) {
-        task => const Color(0xFF5F55EE),
-        bug => const Color(0xFFE74C3C),
-        feature => const Color(0xFF2ECC71),
-        urgent => const Color(0xFFE67E22),
+        task => ClickUpColors.primary,
+        bug => ClickUpColors.danger,
+        feature => ClickUpColors.success,
+        urgent => ClickUpColors.warning,
       };
 
   static TaskType fromString(String? val) {

@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:onyx_todo/core/extension/bloc_reader.dart';
 import 'package:onyx_todo/core/localization/app_strings.dart';
 import 'package:onyx_todo/core/ui/clickup_colors.dart';
@@ -25,10 +26,11 @@ class ClickUpTopBar extends StatelessWidget {
 
         final isTaskView = activeView == WorkspaceView.list ||
             activeView == WorkspaceView.board ||
-            activeView == WorkspaceView.workload;
+            activeView == WorkspaceView.workload ||
+            activeView == WorkspaceView.analytics;
 
         return Container(
-          height: 52,
+          height: 54,
           padding: const EdgeInsets.symmetric(horizontal: 16),
           decoration: BoxDecoration(
             color: isDark ? ClickUpColors.darkCard : ClickUpColors.lightCard,
@@ -41,37 +43,37 @@ class ClickUpTopBar extends StatelessWidget {
           child: Row(
             children: [
               // Breadcrumb
-              Icon(Icons.home_outlined, size: 16, color: Colors.grey.shade500),
-              const SizedBox(width: 6),
+              const FaIcon(FontAwesomeIcons.house, size: 13, color: ClickUpColors.neutral400),
+              const SizedBox(width: 8),
               Text(
                 AppStrings.onyxErp.tr(),
                 style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
               ),
               const SizedBox(width: 6),
-              const Icon(Icons.chevron_right_rounded, size: 16, color: Colors.grey),
+              const FaIcon(FontAwesomeIcons.chevronRight, size: 10, color: ClickUpColors.neutral400),
               const SizedBox(width: 6),
               Text(
-                selectedModule == 'ALL' ? 'كافة الأنظمة' : selectedModule,
-                style: TextStyle(
+                selectedModule == 'ALL' ? AppStrings.all.tr() : selectedModule,
+                style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
                   color: ClickUpColors.primary,
                 ),
               ),
               const SizedBox(width: 6),
-              const Icon(Icons.chevron_right_rounded, size: 16, color: Colors.grey),
+              const FaIcon(FontAwesomeIcons.chevronRight, size: 10, color: ClickUpColors.neutral400),
               const SizedBox(width: 6),
               Text(
                 selectedVersion,
-                style: const TextStyle(fontSize: 12, color: Colors.grey),
+                style: const TextStyle(fontSize: 12, color: ClickUpColors.neutral400),
               ),
 
               const SizedBox(width: 24),
 
-              // View Tabs (List, Board, Workload) when in Tasks view
+              // View Tabs (List, Board, Workload, Analytics) when in Tasks view
               if (isTaskView) ...[
                 _buildViewTab(
-                  icon: Icons.format_list_bulleted_rounded,
+                  icon: FontAwesomeIcons.listCheck,
                   label: AppStrings.listView.tr(),
                   isSelected: activeView == WorkspaceView.list,
                   onTap: () => workspaceCubit.setView(WorkspaceView.list),
@@ -79,7 +81,7 @@ class ClickUpTopBar extends StatelessWidget {
                 ),
                 const SizedBox(width: 4),
                 _buildViewTab(
-                  icon: Icons.view_kanban_outlined,
+                  icon: FontAwesomeIcons.tableColumns,
                   label: AppStrings.boardView.tr(),
                   isSelected: activeView == WorkspaceView.board,
                   onTap: () => workspaceCubit.setView(WorkspaceView.board),
@@ -87,10 +89,18 @@ class ClickUpTopBar extends StatelessWidget {
                 ),
                 const SizedBox(width: 4),
                 _buildViewTab(
-                  icon: Icons.group_work_outlined,
+                  icon: FontAwesomeIcons.chartLine,
                   label: AppStrings.workloadView.tr(),
                   isSelected: activeView == WorkspaceView.workload,
                   onTap: () => workspaceCubit.setView(WorkspaceView.workload),
+                  isDark: isDark,
+                ),
+                const SizedBox(width: 4),
+                _buildViewTab(
+                  icon: FontAwesomeIcons.chartPie,
+                  label: AppStrings.analyticsView.tr(),
+                  isSelected: activeView == WorkspaceView.analytics,
+                  onTap: () => workspaceCubit.setView(WorkspaceView.analytics),
                   isDark: isDark,
                 ),
               ],
@@ -99,7 +109,7 @@ class ClickUpTopBar extends StatelessWidget {
 
               // Quick Language Switcher
               TextButton.icon(
-                icon: const Icon(Icons.language_rounded, size: 16),
+                icon: const FaIcon(FontAwesomeIcons.globe, size: 13),
                 label: Text(
                   context.locale.languageCode == 'ar' ? 'English' : 'العربية',
                   style: const TextStyle(fontSize: 12),
@@ -117,11 +127,11 @@ class ClickUpTopBar extends StatelessWidget {
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: ClickUpColors.primary,
-                  foregroundColor: Colors.white,
+                  foregroundColor: ClickUpColors.white,
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
                 ),
-                icon: const Icon(Icons.add_rounded, size: 16),
+                icon: const FaIcon(FontAwesomeIcons.plus, size: 12),
                 label: Text(
                   AppStrings.createTask.tr(),
                   style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
@@ -158,7 +168,7 @@ class ClickUpTopBar extends StatelessWidget {
         decoration: BoxDecoration(
           color: isSelected
               ? ClickUpColors.primary.withValues(alpha: 0.12)
-              : Colors.transparent,
+              : ClickUpColors.transparent,
           borderRadius: BorderRadius.circular(6),
           border: isSelected
               ? Border.all(color: ClickUpColors.primary.withValues(alpha: 0.3))
@@ -166,12 +176,12 @@ class ClickUpTopBar extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(
+            FaIcon(
               icon,
-              size: 15,
-              color: isSelected ? ClickUpColors.primary : Colors.grey,
+              size: 13,
+              color: isSelected ? ClickUpColors.primary : ClickUpColors.neutral400,
             ),
-            const SizedBox(width: 6),
+            const SizedBox(width: 7),
             Text(
               label,
               style: TextStyle(

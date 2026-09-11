@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:onyx_todo/core/extension/bloc_reader.dart';
 import 'package:onyx_todo/core/localization/app_strings.dart';
 import 'package:onyx_todo/core/ui/clickup_colors.dart';
@@ -41,8 +42,8 @@ class ClickUpSidebar extends StatelessWidget {
                 child: Row(
                   children: [
                     Container(
-                      width: 28,
-                      height: 28,
+                      width: 32,
+                      height: 32,
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
                           colors: [ClickUpColors.primary, ClickUpColors.primaryDark],
@@ -50,21 +51,22 @@ class ClickUpSidebar extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: const Center(
-                        child: Text(
-                          'O',
-                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 16),
+                        child: FaIcon(
+                          FontAwesomeIcons.circleCheck,
+                          size: 16,
+                          color: ClickUpColors.white,
                         ),
                       ),
                     ),
                     const SizedBox(width: 10),
-                    const Text(
-                      'Onyx Tasks',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: -0.2),
+                    Text(
+                      AppStrings.onyxErp.tr(),
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: -0.2),
                     ),
                     const Spacer(),
                     IconButton(
-                      icon: const Icon(Icons.menu_open_rounded, size: 18),
-                      tooltip: 'طي القائمة',
+                      icon: const FaIcon(FontAwesomeIcons.anglesLeft, size: 14),
+                      tooltip: AppStrings.collapseMenu.tr(),
                       onPressed: () => workspaceCubit.toggleSidebar(),
                     ),
                   ],
@@ -81,11 +83,11 @@ class ClickUpSidebar extends StatelessWidget {
                 child: ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: ClickUpColors.primary,
-                    foregroundColor: Colors.white,
-                    minimumSize: const Size(double.infinity, 38),
+                    foregroundColor: ClickUpColors.white,
+                    minimumSize: const Size(double.infinity, 40),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   ),
-                  icon: const Icon(Icons.add_rounded, size: 18),
+                  icon: const FaIcon(FontAwesomeIcons.plus, size: 14),
                   label: Text(
                     AppStrings.createTask.tr(),
                     style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
@@ -107,7 +109,7 @@ class ClickUpSidebar extends StatelessWidget {
                   children: [
                     // Main views
                     _buildNavItem(
-                      icon: Icons.check_circle_outline_rounded,
+                      icon: FontAwesomeIcons.listCheck,
                       label: AppStrings.tasks.tr(),
                       isSelected: state.activeView == WorkspaceView.list ||
                           state.activeView == WorkspaceView.board ||
@@ -115,19 +117,25 @@ class ClickUpSidebar extends StatelessWidget {
                       onTap: () => workspaceCubit.setView(WorkspaceView.list),
                     ),
                     _buildNavItem(
-                      icon: Icons.insights_rounded,
+                      icon: FontAwesomeIcons.chartPie,
+                      label: AppStrings.analyticsView.tr(),
+                      isSelected: state.activeView == WorkspaceView.analytics,
+                      onTap: () => workspaceCubit.setView(WorkspaceView.analytics),
+                    ),
+                    _buildNavItem(
+                      icon: FontAwesomeIcons.trophy,
                       label: AppStrings.dailyAchievements.tr(),
                       isSelected: state.activeView == WorkspaceView.achievements,
                       onTap: () => workspaceCubit.setView(WorkspaceView.achievements),
                     ),
                     _buildNavItem(
-                      icon: Icons.calendar_month_rounded,
+                      icon: FontAwesomeIcons.calendarCheck,
                       label: AppStrings.monthlyPlan.tr(),
                       isSelected: state.activeView == WorkspaceView.monthlyPlan,
                       onTap: () => workspaceCubit.setView(WorkspaceView.monthlyPlan),
                     ),
                     _buildNavItem(
-                      icon: Icons.table_view_rounded,
+                      icon: FontAwesomeIcons.fileExcel,
                       label: AppStrings.excelImport.tr(),
                       isSelected: state.activeView == WorkspaceView.excelImport,
                       onTap: () => workspaceCubit.setView(WorkspaceView.excelImport),
@@ -140,14 +148,16 @@ class ClickUpSidebar extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                       child: Row(
                         children: [
+                          const FaIcon(FontAwesomeIcons.folderTree, size: 12, color: ClickUpColors.neutral400),
+                          const SizedBox(width: 6),
                           Text(
                             AppStrings.modules.tr().toUpperCase(),
-                            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.grey),
+                            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: ClickUpColors.neutral400),
                           ),
                           const Spacer(),
                           Text(
                             '${modules.length}',
-                            style: const TextStyle(fontSize: 10, color: Colors.grey),
+                            style: const TextStyle(fontSize: 10, color: ClickUpColors.neutral400),
                           ),
                         ],
                       ),
@@ -156,7 +166,7 @@ class ClickUpSidebar extends StatelessWidget {
                     // All Modules Chip
                     _buildModuleTile(
                       code: 'ALL',
-                      name: 'كافة الأنظمة',
+                      name: AppStrings.all.tr(),
                       isSelected: state.selectedModuleCode == 'ALL',
                       onTap: () => workspaceCubit.selectModule('ALL'),
                     ),
@@ -192,27 +202,33 @@ class ClickUpSidebar extends StatelessWidget {
         children: [
           const SizedBox(height: 16),
           IconButton(
-            icon: const Icon(Icons.menu_rounded),
+            icon: const FaIcon(FontAwesomeIcons.anglesRight, size: 14),
+            tooltip: AppStrings.expandMenu.tr(),
             onPressed: () => cubit.toggleSidebar(),
           ),
           const SizedBox(height: 16),
           IconButton(
-            icon: const Icon(Icons.check_circle_outline_rounded),
+            icon: const FaIcon(FontAwesomeIcons.listCheck, size: 15),
             tooltip: AppStrings.tasks.tr(),
             onPressed: () => cubit.setView(WorkspaceView.list),
           ),
           IconButton(
-            icon: const Icon(Icons.insights_rounded),
+            icon: const FaIcon(FontAwesomeIcons.chartPie, size: 15),
+            tooltip: AppStrings.analyticsView.tr(),
+            onPressed: () => cubit.setView(WorkspaceView.analytics),
+          ),
+          IconButton(
+            icon: const FaIcon(FontAwesomeIcons.trophy, size: 15),
             tooltip: AppStrings.dailyAchievements.tr(),
             onPressed: () => cubit.setView(WorkspaceView.achievements),
           ),
           IconButton(
-            icon: const Icon(Icons.calendar_month_rounded),
+            icon: const FaIcon(FontAwesomeIcons.calendarCheck, size: 15),
             tooltip: AppStrings.monthlyPlan.tr(),
             onPressed: () => cubit.setView(WorkspaceView.monthlyPlan),
           ),
           IconButton(
-            icon: const Icon(Icons.table_view_rounded),
+            icon: const FaIcon(FontAwesomeIcons.fileExcel, size: 15),
             tooltip: AppStrings.excelImport.tr(),
             onPressed: () => cubit.setView(WorkspaceView.excelImport),
           ),
@@ -232,14 +248,14 @@ class ClickUpSidebar extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 14),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
-        color: isDark ? ClickUpColors.darkCard : Colors.white,
+        color: isDark ? ClickUpColors.darkCard : ClickUpColors.white,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
           color: isDark ? ClickUpColors.darkBorder : ClickUpColors.lightBorder,
         ),
       ),
       child: PopupMenuButton<String>(
-        tooltip: 'تبديل المستخدم',
+        tooltip: AppStrings.switchAccount.tr(),
         onSelected: (uid) => cubit.switchUser(uid),
         itemBuilder: (ctx) => users.map((u) {
           return PopupMenuItem(
@@ -251,7 +267,7 @@ class ClickUpSidebar extends StatelessWidget {
                   backgroundColor: ClickUpColors.primary.withValues(alpha: 0.2),
                   child: Text(
                     u.name.substring(0, 1),
-                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: ClickUpColors.primary),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -259,7 +275,7 @@ class ClickUpSidebar extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(u.name, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                    Text('${u.role.label} (${u.stack.label})', style: const TextStyle(fontSize: 10, color: Colors.grey)),
+                    Text('${u.role.label} (${u.stack.label})', style: const TextStyle(fontSize: 10, color: ClickUpColors.neutral400)),
                   ],
                 ),
               ],
@@ -273,7 +289,7 @@ class ClickUpSidebar extends StatelessWidget {
               backgroundColor: ClickUpColors.primary,
               child: Text(
                 currentUser.name.substring(0, 1),
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                style: const TextStyle(color: ClickUpColors.white, fontWeight: FontWeight.bold, fontSize: 12),
               ),
             ),
             const SizedBox(width: 8),
@@ -288,12 +304,12 @@ class ClickUpSidebar extends StatelessWidget {
                   ),
                   Text(
                     currentUser.role.label,
-                    style: const TextStyle(fontSize: 10, color: Colors.grey),
+                    style: const TextStyle(fontSize: 10, color: ClickUpColors.neutral400),
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.unfold_more_rounded, size: 16, color: Colors.grey),
+            const FaIcon(FontAwesomeIcons.sort, size: 12, color: ClickUpColors.neutral400),
           ],
         ),
       ),
@@ -313,12 +329,12 @@ class ClickUpSidebar extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 3),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? ClickUpColors.primary.withValues(alpha: 0.12) : Colors.transparent,
+          color: isSelected ? ClickUpColors.primary.withValues(alpha: 0.12) : ClickUpColors.transparent,
           borderRadius: BorderRadius.circular(6),
         ),
         child: Row(
           children: [
-            Icon(icon, size: 18, color: isSelected ? ClickUpColors.primary : Colors.grey),
+            FaIcon(icon, size: 15, color: isSelected ? ClickUpColors.primary : ClickUpColors.neutral400),
             const SizedBox(width: 10),
             Text(
               label,
@@ -347,7 +363,7 @@ class ClickUpSidebar extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 2),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: isSelected ? ClickUpColors.primary.withValues(alpha: 0.15) : Colors.transparent,
+          color: isSelected ? ClickUpColors.primary.withValues(alpha: 0.15) : ClickUpColors.transparent,
           borderRadius: BorderRadius.circular(6),
         ),
         child: Row(
@@ -355,7 +371,7 @@ class ClickUpSidebar extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
               decoration: BoxDecoration(
-                color: isSelected ? ClickUpColors.primary : Colors.grey.withValues(alpha: 0.2),
+                color: isSelected ? ClickUpColors.primary : ClickUpColors.neutral500.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Text(
@@ -363,7 +379,7 @@ class ClickUpSidebar extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.bold,
-                  color: isSelected ? Colors.white : null,
+                  color: isSelected ? ClickUpColors.white : null,
                 ),
               ),
             ),

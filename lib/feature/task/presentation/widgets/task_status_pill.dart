@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:onyx_todo/core/enum/task_enums.dart';
 
 class TaskStatusPill extends StatelessWidget {
@@ -10,6 +11,17 @@ class TaskStatusPill extends StatelessWidget {
     required this.status,
     this.onStatusChanged,
   });
+
+  IconData _getStatusIcon(TaskStatus s) {
+    return switch (s) {
+      TaskStatus.open => FontAwesomeIcons.circleDot,
+      TaskStatus.inProgress => FontAwesomeIcons.arrowsRotate,
+      TaskStatus.backendSolved => FontAwesomeIcons.server,
+      TaskStatus.frontendSolved => FontAwesomeIcons.code,
+      TaskStatus.qaTesting => FontAwesomeIcons.flask,
+      TaskStatus.closed => FontAwesomeIcons.circleCheck,
+    };
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,13 +40,10 @@ class TaskStatusPill extends StatelessWidget {
           value: s,
           child: Row(
             children: [
-              Container(
-                width: 10,
-                height: 10,
-                decoration: BoxDecoration(
-                  color: s.color,
-                  shape: BoxShape.circle,
-                ),
+              FaIcon(
+                _getStatusIcon(s),
+                size: 13,
+                color: s.color,
               ),
               const SizedBox(width: 8),
               Text(
@@ -54,19 +63,16 @@ class TaskStatusPill extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: statusColor.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(5),
         border: Border.all(color: statusColor.withValues(alpha: 0.35)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            width: 7,
-            height: 7,
-            decoration: BoxDecoration(
-              color: statusColor,
-              shape: BoxShape.circle,
-            ),
+          FaIcon(
+            _getStatusIcon(status),
+            size: 11,
+            color: statusColor,
           ),
           const SizedBox(width: 6),
           Text(
@@ -78,8 +84,8 @@ class TaskStatusPill extends StatelessWidget {
             ),
           ),
           if (showArrow) ...[
-            const SizedBox(width: 4),
-            Icon(Icons.arrow_drop_down, size: 14, color: statusColor),
+            const SizedBox(width: 5),
+            FaIcon(FontAwesomeIcons.caretDown, size: 10, color: statusColor),
           ],
         ],
       ),

@@ -10,6 +10,7 @@ enum WorkspaceView {
   list,
   board,
   workload,
+  analytics,
   achievements,
   monthlyPlan,
   excelImport,
