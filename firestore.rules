@@ -1,0 +1,51 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper function to check authentication
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // ─── Tasks Collection ─────────────────────────────────────────────
+    // Stores individual ERP module tasks, statuses, priorities, and assignees
+    match /tasks/{taskId} {
+      allow read, write: if true; // Set to isAuthenticated() in production mode with Auth
+    }
+
+    // ─── Sequence Counters Collection ──────────────────────────────────
+    // Atomic counters for unique task codes (e.g. V5_1_8_GNR)
+    match /counters/{counterId} {
+      allow read, write: if true;
+    }
+
+    // ─── Monthly CRM Plans Collection ─────────────────────────────────
+    // Month plans, targets, submitted hours, and manager approvals
+    match /monthly_plans/{planId} {
+      allow read, write: if true;
+    }
+
+    // ─── Daily & Weekly Achievements Collection ───────────────────────
+    // Developer daily logs, blockers, hours, and WhatsApp summaries
+    match /daily_achievements/{achievementId} {
+      allow read, write: if true;
+    }
+
+    // ─── Onyx ERP Modules Collection ──────────────────────────────────
+    match /modules/{moduleId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // ─── ERP Versions Collection ──────────────────────────────────────
+    match /versions/{versionId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // ─── Team Users & Roles Collection ────────────────────────────────
+    match /users/{userId} {
+      allow read: if true;
+      allow write: if true;
+    }
+  }
+}

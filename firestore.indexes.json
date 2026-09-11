@@ -1,0 +1,39 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "tasks",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "moduleCode", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "tasks",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "version", "order": "ASCENDING" },
+        { "fieldPath": "moduleCode", "order": "ASCENDING" },
+        { "fieldPath": "sequenceNumber", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "monthly_plans",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "year", "order": "ASCENDING" },
+        { "fieldPath": "month", "order": "ASCENDING" },
+        { "fieldPath": "developerName", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "daily_achievements",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "developerName", "order": "ASCENDING" },
+        { "fieldPath": "date", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}
