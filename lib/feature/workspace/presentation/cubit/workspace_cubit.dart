@@ -1,5 +1,4 @@
 import 'package:onyx_todo/core/controller/cubit/base_cubit.dart';
-import 'package:onyx_todo/core/controller/cubit/sub_state.dart';
 import 'package:onyx_todo/core/enum/ui_state.dart';
 import 'package:onyx_todo/feature/auth/domain/repositories/auth_repository.dart';
 import 'package:onyx_todo/feature/workspace/domain/repositories/workspace_repository.dart';
@@ -25,10 +24,10 @@ class WorkspaceCubit extends BaseCubit<WorkspaceState> {
       versionsState: state.versionsState.copyWith(state: UiState.loading),
     ));
 
-    final [modulesRes, versionsRes] = await Future.wait([
+    final (modulesRes, versionsRes) = await (
       _workspaceRepository.getModules(),
       _workspaceRepository.getVersions(),
-    ]);
+    ).wait;
 
     modulesRes.fold(
       (failure) => emit(state.copyWith(

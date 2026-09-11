@@ -8,6 +8,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:onyx_todo/core/extension/context_extensions.dart';
+import 'package:onyx_todo/core/ui/clickup_colors.dart';
 import 'package:onyx_todo/core/ui/color_manager.dart';
 import 'package:onyx_todo/core/ui/font_manager.dart';
 import 'package:onyx_todo/core/ui/styles_manager.dart';
@@ -392,5 +393,23 @@ ThemeData getApplicationTheme() {
     // input decoration theme (text form field)
     inputDecorationTheme: ThemeManger.inputDecorationTheme,
     // label style
+  );
+}
+
+ThemeData getClickUpTheme({bool isDark = true}) {
+  final bg = isDark ? ClickUpColors.darkBackground : ClickUpColors.lightBackground;
+  final surface = isDark ? ClickUpColors.darkCard : ClickUpColors.lightCard;
+
+  return ThemeData(
+    useMaterial3: true,
+    brightness: isDark ? Brightness.dark : Brightness.light,
+    fontFamily: FontConstants.cairoFontFamily,
+    scaffoldBackgroundColor: bg,
+    cardColor: surface,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: ClickUpColors.primary,
+      brightness: isDark ? Brightness.dark : Brightness.light,
+      surface: surface,
+    ),
   );
 }

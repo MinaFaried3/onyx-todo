@@ -7,6 +7,7 @@
 library;
 
 export 'arabic_numbers.dart';
+export 'bloc_reader.dart';
 export 'bool_extension.dart';
 export 'context_extensions.dart';
 export 'date_time.dart';

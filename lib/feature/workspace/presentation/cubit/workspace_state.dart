@@ -1,6 +1,6 @@
-import 'package:equatable/equatable.dart';
 import 'package:onyx_todo/core/controller/cubit/base_state.dart';
 import 'package:onyx_todo/core/controller/cubit/sub_state.dart';
+import 'package:onyx_todo/core/enum/ui_state.dart';
 import 'package:onyx_todo/core/network/error/app_failures.dart';
 import 'package:onyx_todo/feature/auth/domain/entities/user_profile.dart';
 import 'package:onyx_todo/feature/workspace/domain/entities/onyx_module.dart';
@@ -15,7 +15,7 @@ enum WorkspaceView {
   excelImport,
 }
 
-final class WorkspaceState extends Equatable implements BaseState {
+final class WorkspaceState extends BaseState {
   final SubState<List<OnyxModule>> modulesState;
   final SubState<List<OnyxVersion>> versionsState;
   final String selectedModuleCode; // 'ALL' or specific module code
@@ -24,9 +24,10 @@ final class WorkspaceState extends Equatable implements BaseState {
   final bool isSidebarCollapsed;
   final UserProfile currentUser;
   final List<UserProfile> availableUsers;
-  final Failure? _failure;
 
   const WorkspaceState({
+    super.uiState,
+    super.failure,
     this.modulesState = const SubState(),
     this.versionsState = const SubState(),
     this.selectedModuleCode = 'ALL',
@@ -35,14 +36,12 @@ final class WorkspaceState extends Equatable implements BaseState {
     this.isSidebarCollapsed = false,
     required this.currentUser,
     this.availableUsers = const [],
-    Failure? failure,
-  }) : _failure = failure;
-
-  @override
-  Failure? get failure => _failure;
+  });
 
   @override
   List<Object?> get props => [
+        uiState,
+        failure,
         modulesState,
         versionsState,
         selectedModuleCode,
@@ -51,10 +50,12 @@ final class WorkspaceState extends Equatable implements BaseState {
         isSidebarCollapsed,
         currentUser,
         availableUsers,
-        _failure,
       ];
 
+  @override
   WorkspaceState copyWith({
+    UiState? uiState,
+    Failure? Function()? failure,
     SubState<List<OnyxModule>>? modulesState,
     SubState<List<OnyxVersion>>? versionsState,
     String? selectedModuleCode,
@@ -63,9 +64,10 @@ final class WorkspaceState extends Equatable implements BaseState {
     bool? isSidebarCollapsed,
     UserProfile? currentUser,
     List<UserProfile>? availableUsers,
-    Failure? Function()? failure,
   }) {
     return WorkspaceState(
+      uiState: uiState ?? this.uiState,
+      failure: failure != null ? failure.copy : this.failure,
       modulesState: modulesState ?? this.modulesState,
       versionsState: versionsState ?? this.versionsState,
       selectedModuleCode: selectedModuleCode ?? this.selectedModuleCode,
@@ -74,7 +76,6 @@ final class WorkspaceState extends Equatable implements BaseState {
       isSidebarCollapsed: isSidebarCollapsed ?? this.isSidebarCollapsed,
       currentUser: currentUser ?? this.currentUser,
       availableUsers: availableUsers ?? this.availableUsers,
-      failure: failure.copy,
     );
   }
 }

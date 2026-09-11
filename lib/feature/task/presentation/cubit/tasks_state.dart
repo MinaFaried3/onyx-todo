@@ -1,11 +1,11 @@
-import 'package:equatable/equatable.dart';
 import 'package:onyx_todo/core/controller/cubit/base_state.dart';
 import 'package:onyx_todo/core/controller/cubit/sub_state.dart';
 import 'package:onyx_todo/core/enum/task_enums.dart';
+import 'package:onyx_todo/core/enum/ui_state.dart';
 import 'package:onyx_todo/core/network/error/app_failures.dart';
 import 'package:onyx_todo/feature/task/domain/entities/task_entity.dart';
 
-final class TasksState extends Equatable implements BaseState {
+final class TasksState extends BaseState {
   final SubState<List<TaskEntity>> tasksState;
   final SubState<TaskEntity> createTaskState;
   final String searchQuery;
@@ -13,9 +13,10 @@ final class TasksState extends Equatable implements BaseState {
   final TaskStatus? statusFilter;
   final String? assigneeFilter;
   final TaskEntity? selectedTask;
-  final Failure? _failure;
 
   const TasksState({
+    super.uiState,
+    super.failure,
     this.tasksState = const SubState(),
     this.createTaskState = const SubState(),
     this.searchQuery = '',
@@ -23,11 +24,7 @@ final class TasksState extends Equatable implements BaseState {
     this.statusFilter,
     this.assigneeFilter,
     this.selectedTask,
-    Failure? failure,
-  }) : _failure = failure;
-
-  @override
-  Failure? get failure => _failure;
+  });
 
   List<TaskEntity> get filteredTasks {
     final tasks = tasksState.data ?? [];
@@ -58,6 +55,8 @@ final class TasksState extends Equatable implements BaseState {
 
   @override
   List<Object?> get props => [
+        uiState,
+        failure,
         tasksState,
         createTaskState,
         searchQuery,
@@ -65,10 +64,12 @@ final class TasksState extends Equatable implements BaseState {
         statusFilter,
         assigneeFilter,
         selectedTask,
-        _failure,
       ];
 
+  @override
   TasksState copyWith({
+    UiState? uiState,
+    Failure? Function()? failure,
     SubState<List<TaskEntity>>? tasksState,
     SubState<TaskEntity>? createTaskState,
     String? searchQuery,
@@ -76,9 +77,10 @@ final class TasksState extends Equatable implements BaseState {
     TaskStatus? Function()? statusFilter,
     String? Function()? assigneeFilter,
     TaskEntity? Function()? selectedTask,
-    Failure? Function()? failure,
   }) {
     return TasksState(
+      uiState: uiState ?? this.uiState,
+      failure: failure != null ? failure.copy : this.failure,
       tasksState: tasksState ?? this.tasksState,
       createTaskState: createTaskState ?? this.createTaskState,
       searchQuery: searchQuery ?? this.searchQuery,
@@ -86,7 +88,6 @@ final class TasksState extends Equatable implements BaseState {
       statusFilter: statusFilter != null ? statusFilter() : this.statusFilter,
       assigneeFilter: assigneeFilter != null ? assigneeFilter() : this.assigneeFilter,
       selectedTask: selectedTask != null ? selectedTask() : this.selectedTask,
-      failure: failure.copy,
     );
   }
 }

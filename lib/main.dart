@@ -1,122 +1,115 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:onyx_todo/core/config/environments/core_config.dart';
+import 'package:onyx_todo/core/config/environments/security_config.dart';
+import 'package:onyx_todo/core/injection/injection_container.dart';
+import 'package:onyx_todo/core/navigation/routes/app_router.dart';
+import 'package:onyx_todo/core/navigation/routes/builders/route_builder_helper.dart';
+import 'package:onyx_todo/core/onyx_todo_init.dart';
+import 'package:onyx_todo/core/ui/theme_manager.dart';
+import 'package:onyx_todo/feature/achievement/domain/repositories/achievement_repository.dart';
+import 'package:onyx_todo/feature/achievement/presentation/cubit/achievement_cubit.dart';
+import 'package:onyx_todo/feature/auth/domain/repositories/auth_repository.dart';
+import 'package:onyx_todo/feature/excel_import/data/services/excel_parser_service.dart';
+import 'package:onyx_todo/feature/excel_import/presentation/cubit/excel_import_cubit.dart';
+import 'package:onyx_todo/feature/month_plan/domain/repositories/month_plan_repository.dart';
+import 'package:onyx_todo/feature/month_plan/presentation/cubit/month_plan_cubit.dart';
+import 'package:onyx_todo/feature/task/domain/repositories/task_repository.dart';
+import 'package:onyx_todo/feature/task/presentation/cubit/tasks_cubit.dart';
+import 'package:onyx_todo/feature/workspace/domain/repositories/workspace_repository.dart';
+import 'package:onyx_todo/feature/workspace/presentation/cubit/workspace_cubit.dart';
+import 'package:onyx_todo/feature/workspace/presentation/screens/workspace_shell_screen.dart';
+import 'package:onyx_todo/firebase_options.dart';
 
-void main() {
-  runApp(const MyApp());
-}
+void main() async {
+  final config = CoreConfig(
+    appId: 'onyx_todo',
+    apiBaseUrl: 'https://api.onyx.com',
+    environment: Environment.dev,
+    firebase: FirebaseConfig(
+      options: DefaultFirebaseOptions.currentPlatform,
+      analytics: false,
+      crashlytics: false,
+      performance: false,
+    ),
+    security: const SecurityConfig(
+      enableSslPinning: false,
+      checkSafeDevice: false,
+    ),
+  );
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: .center,
-          children: [
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+  await runOnyxApp(
+    config: config,
+    routerBuilder: ({
+      required String initialLocation,
+      required GlobalKey<NavigatorState> navigatorKey,
+      required List<NavigatorObserver> observers,
+    }) {
+      return buildCoreRouter(
+        initialLocation: '/',
+        navigatorKey: navigatorKey,
+        observers: observers,
+        routes: [
+          GoRoute(
+            path: '/',
+            pageBuilder: (context, state) => RouteBuilderHelper.buildPage(
+              state: state,
+              providers: () => [
+                BlocProvider<WorkspaceCubit>(
+                  create: (ctx) => WorkspaceCubit(
+                    workspaceRepository: getIt<WorkspaceRepository>(),
+                    authRepository: getIt<AuthRepository>(),
+                  ),
+                ),
+                BlocProvider<TasksCubit>(
+                  create: (ctx) => TasksCubit(
+                    taskRepository: getIt<TaskRepository>(),
+                  ),
+                ),
+                BlocProvider<MonthPlanCubit>(
+                  create: (ctx) => MonthPlanCubit(
+                    monthPlanRepository: getIt<MonthPlanRepository>(),
+                  ),
+                ),
+                BlocProvider<AchievementCubit>(
+                  create: (ctx) => AchievementCubit(
+                    achievementRepository: getIt<AchievementRepository>(),
+                  ),
+                ),
+                BlocProvider<ExcelImportCubit>(
+                  create: (ctx) => ExcelImportCubit(
+                    excelParserService: getIt<ExcelParserService>(),
+                    taskRepository: getIt<TaskRepository>(),
+                  ),
+                ),
+              ],
+              child: const WorkspaceShellScreen(),
             ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
+          ),
+        ],
+      );
+    },
+    child: const OnyxTodoApp(),
+  );
+}
+
+class OnyxTodoApp extends StatelessWidget {
+  const OnyxTodoApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp.router(
+      title: 'Onyx Task Manager',
+      debugShowCheckedModeBanner: false,
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
+      theme: getClickUpTheme(isDark: false),
+      darkTheme: getClickUpTheme(isDark: true),
+      themeMode: ThemeMode.dark,
+      routerConfig: getIt<GoRouter>(),
     );
   }
 }
