@@ -73,17 +73,15 @@ class TaskIdBadge extends StatelessWidget {
                   color: OnyxColors.primary,
                 ),
                 const SizedBox(width: 4),
-                Flexible(
-                  child: Text(
-                    formattedId,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: OnyxColors.primary,
-                      fontSize: isLarge ? 13 : 11,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.3,
-                    ),
+                Text(
+                  formattedId,
+                  maxLines: 1,
+                  softWrap: false,
+                  style: TextStyle(
+                    color: OnyxColors.primary,
+                    fontSize: isLarge ? 13 : 11,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.3,
                   ),
                 ),
                 const SizedBox(width: 4),

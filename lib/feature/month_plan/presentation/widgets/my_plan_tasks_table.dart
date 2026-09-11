@@ -43,7 +43,7 @@ class MyPlanTasksTable extends StatelessWidget {
             ),
             child: Row(
               children: [
-                SizedBox(width: 140, child: Text(AppStrings.taskIdCol.tr(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+                SizedBox(width: 180, child: Text(AppStrings.taskIdCol.tr(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
                 SizedBox(width: 80, child: Text(AppStrings.moduleCol.tr(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
                 SizedBox(width: 120, child: Text(AppStrings.screenCol.tr(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
                 Expanded(child: Text(AppStrings.titleCol.tr(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
@@ -86,7 +86,7 @@ class MyPlanTasksTable extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    SizedBox(width: 140, child: TaskIdBadge(formattedId: t.formattedId)),
+                    SizedBox(width: 180, child: TaskIdBadge(formattedId: t.formattedId)),
                     SizedBox(width: 80, child: Text(t.moduleCode, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11))),
                     SizedBox(width: 120, child: Text(t.screenName, style: const TextStyle(fontSize: 12))),
                     Expanded(
