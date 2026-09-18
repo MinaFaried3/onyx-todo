@@ -20,6 +20,7 @@ abstract final class AppStrings {
   static String get filter => 'filter';
   static String get cancel => 'cancel';
   static String get save => 'save';
+  static String get menu => 'menu';
   static String get close => 'close';
   static String get confirm => 'confirm';
   static String get all => 'all';
@@ -122,6 +123,7 @@ abstract final class AppStrings {
   static String get filterThisWeek => 'filter_this_week';
   static String get filterLastWeek => 'filter_last_week';
   static String get filterThisMonth => 'filter_this_month';
+  static String get filterLastMonth => 'filter_last_month';
   static String get filterCustom => 'filter_custom';
   static String get copyWhatsappSummary => 'copy_whatsapp_summary';
   static String get whatsappSummaryCopied => 'whatsapp_summary_copied';

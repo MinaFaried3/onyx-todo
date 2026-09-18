@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:onyx_todo/core/extension/bloc_reader.dart';
 import 'package:onyx_todo/core/ui/onyx_colors.dart';
+import 'package:onyx_todo/core/ui/responsive/responsive_extension.dart';
 import 'package:onyx_todo/feature/achievement/presentation/screens/achievement_screen.dart';
 import 'package:onyx_todo/feature/excel_import/presentation/screens/excel_import_screen.dart';
 import 'package:onyx_todo/feature/month_plan/presentation/screens/month_plan_screen.dart';
@@ -27,40 +28,49 @@ class WorkspaceShellScreen extends HookWidget {
       return null;
     }, const []);
 
+    final isMobile = context.isMobile;
+
+    final canvas = Column(
+      children: [
+        // Top Navigation and Actions Bar
+        const OnyxTopBar(),
+
+        // Active Workspace Body Content
+        Expanded(
+          child: BlocBuilder<WorkspaceCubit, WorkspaceState>(
+            buildWhen: (prev, curr) => prev.activeView != curr.activeView,
+            builder: (context, state) {
+              return switch (state.activeView) {
+                WorkspaceView.achievements => const AchievementScreen(),
+                WorkspaceView.monthlyPlan => const MonthPlanScreen(),
+                WorkspaceView.excelImport => const ExcelImportScreen(),
+                WorkspaceView.teamManagement => const TeamManagementScreen(),
+                _ => const TasksScreen(),
+              };
+            },
+          ),
+        ),
+      ],
+    );
+
     return Scaffold(
       backgroundColor: isDark ? OnyxColors.darkBackground : OnyxColors.lightBackground,
-      body: Row(
-        children: [
-          // Collapsible Onyx Navigation Sidebar
-          const OnyxSidebar(),
-
-          // Main App Canvas
-          Expanded(
-            child: Column(
+      drawer: isMobile
+          ? const Drawer(
+              child: OnyxSidebar(isDrawer: true),
+            )
+          : null,
+      body: isMobile
+          ? SafeArea(child: canvas)
+          : Row(
               children: [
-                // Top Navigation and Actions Bar
-                const OnyxTopBar(),
+                // Collapsible Onyx Navigation Sidebar
+                const OnyxSidebar(),
 
-                // Active Workspace Body Content
-                Expanded(
-                  child: BlocBuilder<WorkspaceCubit, WorkspaceState>(
-                    buildWhen: (prev, curr) => prev.activeView != curr.activeView,
-                    builder: (context, state) {
-                      return switch (state.activeView) {
-                        WorkspaceView.achievements => const AchievementScreen(),
-                        WorkspaceView.monthlyPlan => const MonthPlanScreen(),
-                        WorkspaceView.excelImport => const ExcelImportScreen(),
-                        WorkspaceView.teamManagement => const TeamManagementScreen(),
-                        _ => const TasksScreen(),
-                      };
-                    },
-                  ),
-                ),
+                // Main App Canvas
+                Expanded(child: canvas),
               ],
             ),
-          ),
-        ],
-      ),
     );
   }
 }

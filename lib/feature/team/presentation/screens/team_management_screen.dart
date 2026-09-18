@@ -7,6 +7,7 @@ import 'package:onyx_todo/core/enum/task_enums.dart';
 import 'package:onyx_todo/core/extension/bloc_reader.dart';
 import 'package:onyx_todo/core/localization/app_strings.dart';
 import 'package:onyx_todo/core/ui/onyx_colors.dart';
+import 'package:onyx_todo/core/ui/responsive/responsive_extension.dart';
 import 'package:onyx_todo/feature/auth/domain/entities/user_profile.dart';
 import 'package:onyx_todo/feature/auth/presentation/widgets/user_password_reset_dialog.dart';
 import 'package:onyx_todo/feature/task/presentation/cubit/tasks_cubit.dart';
@@ -26,6 +27,7 @@ class TeamManagementScreen extends HookWidget {
     final selectedRoleFilter = useState<UserRole?>(null);
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isMobile = context.isMobile;
 
     return BlocBuilder<WorkspaceCubit, WorkspaceState>(
       builder: (context, state) {
@@ -35,41 +37,69 @@ class TeamManagementScreen extends HookWidget {
         return Scaffold(
           backgroundColor: isDark ? OnyxColors.darkBackground : OnyxColors.lightBackground,
           body: Padding(
-            padding: const EdgeInsets.all(24),
+            padding: EdgeInsets.all(isMobile ? 12 : 24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Top Header with Tabs
-                Row(
-                  children: [
-                    const FaIcon(FontAwesomeIcons.usersGear, color: OnyxColors.primary, size: 22),
-                    const SizedBox(width: 12),
-                    Text(
-                      AppStrings.teamsAndUsers.tr(),
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
+                if (isMobile) ...[
+                  Row(
+                    children: [
+                      const FaIcon(FontAwesomeIcons.usersGear, color: OnyxColors.primary, size: 22),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          AppStrings.teamsAndUsers.tr(),
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
+                          ),
+                        ),
                       ),
+                      if (activeTab.value == 0)
+                        ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: OnyxColors.primary,
+                            foregroundColor: OnyxColors.white,
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          ),
+                          icon: const FaIcon(FontAwesomeIcons.plus, size: 12),
+                          label: Text(
+                            AppStrings.addTeam.tr(),
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                          ),
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (_) => const TeamCreateDialog(),
+                            );
+                          },
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: isDark ? OnyxColors.darkCard : OnyxColors.neutral200,
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    const SizedBox(width: 24),
-
-                    // Tab Switcher
-                    Container(
-                      decoration: BoxDecoration(
-                        color: isDark ? OnyxColors.darkCard : OnyxColors.neutral200,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      padding: const EdgeInsets.all(4),
-                      child: Row(
-                        children: [
-                          ChoiceChip(
-                            label: Row(
-                              children: [
-                                const FaIcon(FontAwesomeIcons.peopleGroup, size: 12),
-                                const SizedBox(width: 6),
-                                Text(AppStrings.teams.tr()),
-                              ],
+                    padding: const EdgeInsets.all(4),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: ChoiceChip(
+                            label: Center(
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const FaIcon(FontAwesomeIcons.peopleGroup, size: 12),
+                                  const SizedBox(width: 6),
+                                  Text(AppStrings.teams.tr()),
+                                ],
+                              ),
                             ),
                             selected: activeTab.value == 0,
                             selectedColor: OnyxColors.primary,
@@ -80,14 +110,19 @@ class TeamManagementScreen extends HookWidget {
                             ),
                             onSelected: (_) => activeTab.value = 0,
                           ),
-                          const SizedBox(width: 4),
-                          ChoiceChip(
-                            label: Row(
-                              children: [
-                                const FaIcon(FontAwesomeIcons.users, size: 12),
-                                const SizedBox(width: 6),
-                                Text(AppStrings.users.tr()),
-                              ],
+                        ),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: ChoiceChip(
+                            label: Center(
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const FaIcon(FontAwesomeIcons.users, size: 12),
+                                  const SizedBox(width: 6),
+                                  Text(AppStrings.users.tr()),
+                                ],
+                              ),
                             ),
                             selected: activeTab.value == 1,
                             selectedColor: OnyxColors.primary,
@@ -98,33 +133,97 @@ class TeamManagementScreen extends HookWidget {
                             ),
                             onSelected: (_) => activeTab.value = 1,
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                    const Spacer(),
-
-                    if (activeTab.value == 0)
-                      ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: OnyxColors.primary,
-                          foregroundColor: OnyxColors.white,
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                ] else ...[
+                  Row(
+                    children: [
+                      const FaIcon(FontAwesomeIcons.usersGear, color: OnyxColors.primary, size: 22),
+                      const SizedBox(width: 12),
+                      Text(
+                        AppStrings.teamsAndUsers.tr(),
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
                         ),
-                        icon: const FaIcon(FontAwesomeIcons.plus, size: 12),
-                        label: Text(
-                          AppStrings.addTeam.tr(),
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (_) => const TeamCreateDialog(),
-                          );
-                        },
                       ),
-                  ],
-                ),
+                      const SizedBox(width: 24),
+
+                      // Tab Switcher
+                      Container(
+                        decoration: BoxDecoration(
+                          color: isDark ? OnyxColors.darkCard : OnyxColors.neutral200,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        padding: const EdgeInsets.all(4),
+                        child: Row(
+                          children: [
+                            ChoiceChip(
+                              label: Row(
+                                children: [
+                                  const FaIcon(FontAwesomeIcons.peopleGroup, size: 12),
+                                  const SizedBox(width: 6),
+                                  Text(AppStrings.teams.tr()),
+                                ],
+                              ),
+                              selected: activeTab.value == 0,
+                              selectedColor: OnyxColors.primary,
+                              labelStyle: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: activeTab.value == 0 ? OnyxColors.white : OnyxColors.neutral400,
+                              ),
+                              onSelected: (_) => activeTab.value = 0,
+                            ),
+                            const SizedBox(width: 4),
+                            ChoiceChip(
+                              label: Row(
+                                children: [
+                                  const FaIcon(FontAwesomeIcons.users, size: 12),
+                                  const SizedBox(width: 6),
+                                  Text(AppStrings.users.tr()),
+                                ],
+                              ),
+                              selected: activeTab.value == 1,
+                              selectedColor: OnyxColors.primary,
+                              labelStyle: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: activeTab.value == 1 ? OnyxColors.white : OnyxColors.neutral400,
+                              ),
+                              onSelected: (_) => activeTab.value = 1,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Spacer(),
+
+                      if (activeTab.value == 0)
+                        ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: OnyxColors.primary,
+                            foregroundColor: OnyxColors.white,
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          ),
+                          icon: const FaIcon(FontAwesomeIcons.plus, size: 12),
+                          label: Text(
+                            AppStrings.addTeam.tr(),
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (_) => const TeamCreateDialog(),
+                            );
+                          },
+                        ),
+                    ],
+                  ),
+                ],
                 const SizedBox(height: 20),
 
                 // Tab Content
@@ -315,8 +414,10 @@ class TeamManagementScreen extends HookWidget {
                         color: isDark ? OnyxColors.darkBackground : OnyxColors.neutral100,
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      child: Wrap(
+                        alignment: WrapAlignment.spaceAround,
+                        spacing: 12,
+                        runSpacing: 10,
                         children: [
                           _buildStatColumn(AppStrings.totalTasksMetric.tr(), '${teamTasks.length}', OnyxColors.primary),
                           _buildStatColumn(AppStrings.statusInProgress.tr(), '$inProgressCount', OnyxColors.info),
@@ -399,50 +500,100 @@ class TeamManagementScreen extends HookWidget {
       return matchesSearch && matchesRole;
     }).toList();
 
+    final isMobile = context.isMobile;
+
     return Column(
       children: [
         // Search and Role Filter Bar
-        Row(
-          children: [
-            SizedBox(
-              width: 260,
-              height: 38,
-              child: TextField(
-                onChanged: (v) => searchQuery.value = v,
-                decoration: InputDecoration(
-                  hintText: '${AppStrings.search.tr()} بالاسم أو البريد...',
-                  prefixIcon: const Center(
-                    widthFactor: 1.0,
-                    child: FaIcon(FontAwesomeIcons.magnifyingGlass, size: 12, color: OnyxColors.neutral400),
+        if (isMobile)
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                width: double.infinity,
+                height: 38,
+                child: TextField(
+                  onChanged: (v) => searchQuery.value = v,
+                  decoration: InputDecoration(
+                    hintText: '${AppStrings.search.tr()} بالاسم أو البريد...',
+                    prefixIcon: const Center(
+                      widthFactor: 1.0,
+                      child: FaIcon(FontAwesomeIcons.magnifyingGlass, size: 12, color: OnyxColors.neutral400),
+                    ),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                    contentPadding: const EdgeInsets.symmetric(vertical: 8),
+                    isDense: true,
                   ),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                  contentPadding: const EdgeInsets.symmetric(vertical: 8),
-                  isDense: true,
                 ),
               ),
-            ),
-            const SizedBox(width: 12),
-            DropdownButton<UserRole?>(
-              value: roleFilter.value,
-              hint: Text(AppStrings.userRole.tr(), style: const TextStyle(fontSize: 12)),
-              underline: const SizedBox(),
-              items: [
-                DropdownMenuItem(value: null, child: Text(AppStrings.all.tr(), style: const TextStyle(fontSize: 12))),
-                ...UserRole.values.map((r) => DropdownMenuItem(value: r, child: Text(r.label, style: const TextStyle(fontSize: 12)))),
-              ],
-              onChanged: (r) => roleFilter.value = r,
-            ),
-            const Spacer(),
-            Text(
-              '${AppStrings.allUsers.tr()}: ${filteredUsers.length}',
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral600,
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  DropdownButton<UserRole?>(
+                    value: roleFilter.value,
+                    hint: Text(AppStrings.userRole.tr(), style: const TextStyle(fontSize: 12)),
+                    underline: const SizedBox(),
+                    items: [
+                      DropdownMenuItem(value: null, child: Text(AppStrings.all.tr(), style: const TextStyle(fontSize: 12))),
+                      ...UserRole.values.map((r) => DropdownMenuItem(value: r, child: Text(r.label, style: const TextStyle(fontSize: 12)))),
+                    ],
+                    onChanged: (r) => roleFilter.value = r,
+                  ),
+                  Text(
+                    '${AppStrings.allUsers.tr()}: ${filteredUsers.length}',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral600,
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ],
-        ),
+            ],
+          )
+        else
+          Row(
+            children: [
+              SizedBox(
+                width: 260,
+                height: 38,
+                child: TextField(
+                  onChanged: (v) => searchQuery.value = v,
+                  decoration: InputDecoration(
+                    hintText: '${AppStrings.search.tr()} بالاسم أو البريد...',
+                    prefixIcon: const Center(
+                      widthFactor: 1.0,
+                      child: FaIcon(FontAwesomeIcons.magnifyingGlass, size: 12, color: OnyxColors.neutral400),
+                    ),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                    contentPadding: const EdgeInsets.symmetric(vertical: 8),
+                    isDense: true,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              DropdownButton<UserRole?>(
+                value: roleFilter.value,
+                hint: Text(AppStrings.userRole.tr(), style: const TextStyle(fontSize: 12)),
+                underline: const SizedBox(),
+                items: [
+                  DropdownMenuItem(value: null, child: Text(AppStrings.all.tr(), style: const TextStyle(fontSize: 12))),
+                  ...UserRole.values.map((r) => DropdownMenuItem(value: r, child: Text(r.label, style: const TextStyle(fontSize: 12)))),
+                ],
+                onChanged: (r) => roleFilter.value = r,
+              ),
+              const Spacer(),
+              Text(
+                '${AppStrings.allUsers.tr()}: ${filteredUsers.length}',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral600,
+                ),
+              ),
+            ],
+          ),
         const SizedBox(height: 16),
 
         // Users List Table
@@ -460,6 +611,155 @@ class TeamManagementScreen extends HookWidget {
                 final u = filteredUsers[index];
                 final team = teams.where((t) => t.id == u.teamId || t.memberIds.contains(u.id)).firstOrNull;
                 final isCurrent = u.id == workspaceCubit.state.currentUser.id;
+
+                if (isMobile) {
+                  return Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            CircleAvatar(
+                              radius: 16,
+                              backgroundColor: OnyxColors.primary.withValues(alpha: 0.2),
+                              child: Text(
+                                u.name.substring(0, 1),
+                                style: const TextStyle(fontWeight: FontWeight.bold, color: OnyxColors.primary),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Flexible(
+                                        child: Text(
+                                          u.name,
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.bold,
+                                            color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                      if (isCurrent) ...[
+                                        const SizedBox(width: 6),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                          decoration: BoxDecoration(
+                                            color: OnyxColors.success.withValues(alpha: 0.15),
+                                            borderRadius: BorderRadius.circular(4),
+                                          ),
+                                          child: Text(
+                                            AppStrings.activeNow.tr(),
+                                            style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: OnyxColors.success),
+                                          ),
+                                        ),
+                                      ],
+                                    ],
+                                  ),
+                                  Text(
+                                    u.email,
+                                    style: const TextStyle(fontSize: 11, color: OnyxColors.neutral400),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            IconButton(
+                              icon: const FaIcon(FontAwesomeIcons.key, size: 12),
+                              tooltip: AppStrings.resetPassword.tr(),
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (_) => UserPasswordResetDialog(initialEmail: u.email),
+                                );
+                              },
+                            ),
+                            if (!isCurrent)
+                              IconButton(
+                                icon: const FaIcon(FontAwesomeIcons.rightToBracket, size: 12, color: OnyxColors.primary),
+                                tooltip: AppStrings.switchAccount.tr(),
+                                onPressed: () => workspaceCubit.switchUser(u.id),
+                              ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 6,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: [
+                            PopupMenuButton<UserRole>(
+                              tooltip: AppStrings.changeRole.tr(),
+                              onSelected: (role) => workspaceCubit.updateUserRole(u.id, role),
+                              itemBuilder: (_) => UserRole.values.map((r) {
+                                return PopupMenuItem(value: r, child: Text(r.label));
+                              }).toList(),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: OnyxColors.primary.withValues(alpha: 0.12),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      u.role.label,
+                                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: OnyxColors.primary),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    const FaIcon(FontAwesomeIcons.caretDown, size: 9, color: OnyxColors.neutral400),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            PopupMenuButton<String>(
+                              tooltip: AppStrings.assignToTeam.tr(),
+                              onSelected: (tId) => workspaceCubit.assignUserToTeam(u.id, tId),
+                              itemBuilder: (_) => teams.map((t) {
+                                return PopupMenuItem(value: t.id, child: Text(t.name));
+                              }).toList(),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: isDark ? OnyxColors.darkBackground : OnyxColors.neutral100,
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      team?.name ?? AppStrings.unassigned.tr(),
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        color: team != null ? OnyxColors.info : OnyxColors.neutral400,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    const FaIcon(FontAwesomeIcons.caretDown, size: 9, color: OnyxColors.neutral400),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Text(
+                              '${AppStrings.lastActive.tr()}: ${DateFormat('yyyy/MM/dd HH:mm').format(u.lastActiveAt)}',
+                              style: const TextStyle(fontSize: 10, color: OnyxColors.neutral400),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  );
+                }
 
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),

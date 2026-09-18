@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:onyx_todo/core/extension/bloc_reader.dart';
 import 'package:onyx_todo/core/localization/app_strings.dart';
 import 'package:onyx_todo/core/ui/onyx_colors.dart';
+import 'package:onyx_todo/core/ui/responsive/responsive_extension.dart';
 import 'package:onyx_todo/feature/notification/presentation/widgets/notification_dropdown_overlay.dart';
 import 'package:onyx_todo/feature/task/presentation/widgets/task_create_dialog.dart';
 import 'package:onyx_todo/feature/workspace/presentation/cubit/workspace_state.dart';
@@ -26,10 +27,11 @@ class OnyxTopBar extends StatelessWidget {
 
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final isMobile = context.isMobile;
 
     return Container(
       height: 52,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: EdgeInsets.symmetric(horizontal: isMobile ? 12 : 16),
       decoration: BoxDecoration(
         color: isDark ? OnyxColors.darkSidebar : OnyxColors.lightSidebar,
         border: Border(
@@ -41,6 +43,24 @@ class OnyxTopBar extends StatelessWidget {
       ),
       child: Row(
         children: [
+          // Mobile Hamburger Button
+          if (isMobile) ...[
+            Builder(
+              builder: (innerCtx) => IconButton(
+                icon: FaIcon(
+                  FontAwesomeIcons.bars,
+                  size: 16,
+                  color: isDark ? OnyxColors.neutral300 : OnyxColors.neutral700,
+                ),
+                tooltip: AppStrings.menu.tr(),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+                onPressed: () => Scaffold.of(innerCtx).openDrawer(),
+              ),
+            ),
+            const SizedBox(width: 10),
+          ],
+
           // Breadcrumb / Active Space Title & View Tabs (Scrollable when constrained)
           Expanded(
             child: SingleChildScrollView(
@@ -51,13 +71,14 @@ class OnyxTopBar extends StatelessWidget {
                 children: [
                   const FaIcon(FontAwesomeIcons.solidFolder, size: 14, color: OnyxColors.primary),
                   const SizedBox(width: 8),
-                  Text(
-                    '${AppStrings.appName.tr()} / ',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
+                  if (!isMobile)
+                    Text(
+                      '${AppStrings.appName.tr()} / ',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
+                      ),
                     ),
-                  ),
                   Text(
                     state.selectedModuleCode == 'ALL'
                         ? AppStrings.allModules.tr()

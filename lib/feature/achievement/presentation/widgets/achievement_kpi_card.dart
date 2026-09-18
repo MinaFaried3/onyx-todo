@@ -22,9 +22,8 @@ class AchievementKpiCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(16),
+    return Container(
+      padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: isDark ? OnyxColors.darkCard : OnyxColors.lightCard,
           borderRadius: BorderRadius.circular(10),
@@ -67,7 +66,8 @@ class AchievementKpiCard extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
+      );
   }
 }
+
+

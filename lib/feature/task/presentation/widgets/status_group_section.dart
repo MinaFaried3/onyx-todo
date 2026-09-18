@@ -5,10 +5,12 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:onyx_todo/core/enum/task_enums.dart';
 import 'package:onyx_todo/core/localization/app_strings.dart';
 import 'package:onyx_todo/core/ui/onyx_colors.dart';
+import 'package:onyx_todo/core/ui/responsive/responsive_extension.dart';
 import 'package:onyx_todo/feature/task/domain/entities/task_entity.dart';
 import 'package:onyx_todo/feature/task/presentation/widgets/assignee_avatar_badge.dart';
 import 'package:onyx_todo/feature/task/presentation/widgets/clickup_status_ring.dart';
 import 'package:onyx_todo/feature/task/presentation/widgets/task_id_badge.dart';
+import 'package:onyx_todo/feature/task/presentation/widgets/task_mobile_card_tile.dart';
 import 'package:onyx_todo/feature/task/presentation/widgets/task_priority_flag.dart';
 
 class StatusGroupSection extends HookWidget {
@@ -36,6 +38,7 @@ class StatusGroupSection extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final isExpanded = useState(true);
+    final isMobile = context.isMobile;
 
     final groupColor = status != null
         ? status!.color
@@ -161,93 +164,104 @@ class StatusGroupSection extends HookWidget {
             ),
           ),
 
-          // ─── Table Column Headers ──────────────────────────────────────────────
+          // ─── Table Column Headers (Desktop/Tablet only) ───────────────────────
           if (isExpanded.value) ...[
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-              decoration: BoxDecoration(
-                color: isDark ? OnyxColors.darkSidebar : OnyxColors.neutral50,
-                border: Border(
-                  top: BorderSide(
-                    color: isDark ? OnyxColors.darkBorder : OnyxColors.lightBorder,
-                    width: 0.5,
-                  ),
-                  bottom: BorderSide(
-                    color: isDark ? OnyxColors.darkBorder : OnyxColors.lightBorder,
-                    width: 0.5,
+            if (!isMobile)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                decoration: BoxDecoration(
+                  color: isDark ? OnyxColors.darkSidebar : OnyxColors.neutral50,
+                  border: Border(
+                    top: BorderSide(
+                      color: isDark ? OnyxColors.darkBorder : OnyxColors.lightBorder,
+                      width: 0.5,
+                    ),
+                    bottom: BorderSide(
+                      color: isDark ? OnyxColors.darkBorder : OnyxColors.lightBorder,
+                      width: 0.5,
+                    ),
                   ),
                 ),
+                child: Row(
+                  children: [
+                    const SizedBox(width: 28), // space for status ring
+                    SizedBox(
+                      width: 180,
+                      child: Text(
+                        AppStrings.taskId.tr(),
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 5,
+                      child: Text(
+                        AppStrings.taskTitle.tr(),
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 90,
+                      child: Text(
+                        AppStrings.assignees.tr(),
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 85,
+                      child: Text(
+                        AppStrings.dueDate.tr(),
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 75,
+                      child: Text(
+                        AppStrings.priority.tr(),
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              child: Row(
-                children: [
-                  const SizedBox(width: 28), // space for status ring
-                  SizedBox(
-                    width: 180,
-                    child: Text(
-                      AppStrings.taskId.tr(),
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 5,
-                    child: Text(
-                      AppStrings.taskTitle.tr(),
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 90,
-                    child: Text(
-                      AppStrings.assignees.tr(),
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 85,
-                    child: Text(
-                      AppStrings.dueDate.tr(),
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 75,
-                    child: Text(
-                      AppStrings.priority.tr(),
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
 
-            // ─── Task Rows ────────────────────────────────────────────────────────
-            ...tasks.map((task) {
-              final devName = task.frontendDevName ?? task.backendDevName ?? task.middleDevName ?? 'Unassigned';
-              final hasDueDate = task.dueDate != null;
-              final isOverdue = hasDueDate && task.dueDate!.isBefore(DateTime.now());
+            // ─── Task Content: Mobile Cards vs Desktop Rows ───────────────────────
+            if (isMobile)
+              ...tasks.map(
+                (task) => TaskMobileCardTile(
+                  task: task,
+                  isDark: isDark,
+                  onTaskTap: onTaskTap,
+                  onStatusChanged: onStatusChanged,
+                ),
+              )
+            else
+              ...tasks.map((task) {
+                final devName = task.frontendDevName ?? task.backendDevName ?? task.middleDevName ?? 'Unassigned';
+                final hasDueDate = task.dueDate != null;
+                final isOverdue = hasDueDate && task.dueDate!.isBefore(DateTime.now());
 
-              return InkWell(
-                onTap: () => onTaskTap(task),
+                return InkWell(
+                  onTap: () => onTaskTap(task),
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                   decoration: BoxDecoration(

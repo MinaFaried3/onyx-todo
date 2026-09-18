@@ -7,6 +7,7 @@ import 'package:onyx_todo/core/extension/bloc_reader.dart';
 import 'package:onyx_todo/core/extension/context_extensions.dart';
 import 'package:onyx_todo/core/localization/app_strings.dart';
 import 'package:onyx_todo/core/ui/onyx_colors.dart';
+import 'package:onyx_todo/core/ui/responsive/responsive_extension.dart';
 import 'package:onyx_todo/feature/month_plan/domain/entities/monthly_plan_entity.dart';
 import 'package:onyx_todo/feature/month_plan/domain/entities/monthly_plan_task_item.dart';
 import 'package:onyx_todo/feature/task/presentation/cubit/tasks_cubit.dart';
@@ -62,6 +63,52 @@ class TeamTaskPoolView extends HookWidget {
         final allSelected = selectableTasks.isNotEmpty &&
             selectableTasks.every((t) => selectedTaskIds.value.contains(t.id));
 
+        final isMobile = context.isMobile;
+
+        void addSelectedToPlan() {
+          if (activePlan == null || selectedTaskIds.value.isEmpty) return;
+          final tasksToAdd = allTasks
+              .where((t) => selectedTaskIds.value.contains(t.id))
+              .map((t) => MonthlyPlanTaskItem(
+                    taskId: t.id,
+                    formattedId: t.formattedId,
+                    title: t.title,
+                    moduleCode: t.moduleCode,
+                    screenName: t.screenName,
+                    estimatedDays: (t.estimatedHours / 8.0).clamp(0.5, 30.0),
+                    estimatedHours: t.estimatedHours > 0 ? t.estimatedHours : 8.0,
+                    actualHours: t.actualHours,
+                    status: t.status.value,
+                    startDate: t.createdDate,
+                    endDate: t.dueDate,
+                    description: t.description,
+                  ))
+              .toList();
+
+          final currentPlanned = List<MonthlyPlanTaskItem>.from(activePlan!.plannedTasks);
+          currentPlanned.addAll(tasksToAdd);
+
+          final newTotalHours = currentPlanned.fold<double>(
+            0.0,
+            (sum, item) => sum + item.estimatedHours,
+          );
+
+          final updatedPlan = activePlan!.copyWith(
+            plannedTasks: currentPlanned,
+            totalEstimatedHours: newTotalHours,
+          );
+
+          monthPlanCubit.saveOrUpdatePlan(updatedPlan);
+          selectedTaskIds.value = {};
+
+          context.safeShowSnackBar(
+            SnackBar(
+              content: Text(AppStrings.tasksAddedToPlan.tr()),
+              backgroundColor: OnyxColors.success,
+            ),
+          );
+        }
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -75,135 +122,182 @@ class TeamTaskPoolView extends HookWidget {
                   color: isDark ? OnyxColors.darkBorder : OnyxColors.lightBorder,
                 ),
               ),
-              child: Row(
-                children: [
-                  // Fast Search Box
-                  Expanded(
-                    flex: 3,
-                    child: TextField(
-                      decoration: InputDecoration(
-                        hintText: AppStrings.searchTeamPoolHint.tr(),
-                        hintStyle: TextStyle(
-                          fontSize: 12,
-                          color: isDark ? OnyxColors.neutral500 : OnyxColors.neutral400,
-                        ),
-                        prefixIcon: const Icon(Icons.search, size: 18),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                        isDense: true,
-                      ),
-                      onChanged: (val) => searchQuery.value = val,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-
-                  // Module Selector Dropdown
-                  DropdownButton<String?>(
-                    value: selectedModule.value,
-                    hint: Text(
-                      AppStrings.filterByModule.tr(),
-                      style: const TextStyle(fontSize: 12),
-                    ),
-                    underline: const SizedBox(),
-                    items: [
-                      DropdownMenuItem<String?>(
-                        value: null,
-                        child: Text(AppStrings.allModules.tr(), style: const TextStyle(fontSize: 12)),
-                      ),
-                      ...modules.map((m) {
-                        return DropdownMenuItem<String?>(
-                          value: m.code,
-                          child: Text('${m.code} - ${m.nameEn}', style: const TextStyle(fontSize: 12)),
-                        );
-                      }),
-                    ],
-                    onChanged: (val) => selectedModule.value = val,
-                  ),
-                  const Spacer(),
-
-                  // Select All / Deselect All Toggle
-                  if (selectableTasks.isNotEmpty)
-                    TextButton.icon(
-                      icon: Icon(
-                        allSelected ? Icons.check_box : Icons.check_box_outline_blank,
-                        size: 16,
-                        color: OnyxColors.primary,
-                      ),
-                      label: Text(
-                        allSelected ? 'إلغاء التحديد' : 'تحديد الكل',
-                        style: const TextStyle(fontSize: 12),
-                      ),
-                      onPressed: () {
-                        if (allSelected) {
-                          selectedTaskIds.value = {};
-                        } else {
-                          selectedTaskIds.value = selectableTasks.map((t) => t.id).toSet();
-                        }
-                      },
-                    ),
-                  const SizedBox(width: 10),
-
-                  // Add Selected to My Plan Button
-                  ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: OnyxColors.primary,
-                      foregroundColor: OnyxColors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                    ),
-                    icon: const FaIcon(FontAwesomeIcons.circlePlus, size: 13),
-                    label: Text(
-                      selectedTaskIds.value.isEmpty
-                          ? AppStrings.addSelectedToPlan.tr()
-                          : '${AppStrings.addSelectedToPlan.tr()} (${selectedTaskIds.value.length})',
-                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                    ),
-                    onPressed: activePlan == null || selectedTaskIds.value.isEmpty
-                        ? null
-                        : () {
-                            final tasksToAdd = allTasks
-                                .where((t) => selectedTaskIds.value.contains(t.id))
-                                .map((t) => MonthlyPlanTaskItem(
-                                      taskId: t.id,
-                                      formattedId: t.formattedId,
-                                      title: t.title,
-                                      moduleCode: t.moduleCode,
-                                      screenName: t.screenName,
-                                      estimatedDays: (t.estimatedHours / 8.0).clamp(0.5, 30.0),
-                                      estimatedHours: t.estimatedHours > 0 ? t.estimatedHours : 8.0,
-                                      actualHours: t.actualHours,
-                                      status: t.status.value,
-                                      startDate: t.createdDate,
-                                      endDate: t.dueDate,
-                                      description: t.description,
-                                    ))
-                                .toList();
-
-                            final currentPlanned = List<MonthlyPlanTaskItem>.from(activePlan!.plannedTasks);
-                            currentPlanned.addAll(tasksToAdd);
-
-                            final newTotalHours = currentPlanned.fold<double>(
-                              0.0,
-                              (sum, item) => sum + item.estimatedHours,
-                            );
-
-                            final updatedPlan = activePlan!.copyWith(
-                              plannedTasks: currentPlanned,
-                              totalEstimatedHours: newTotalHours,
-                            );
-
-                            monthPlanCubit.saveOrUpdatePlan(updatedPlan);
-                            selectedTaskIds.value = {};
-
-                            context.safeShowSnackBar(
-                              SnackBar(
-                                content: Text(AppStrings.tasksAddedToPlan.tr()),
-                                backgroundColor: OnyxColors.success,
+              child: isMobile
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Fast Search Box
+                        SizedBox(
+                          width: double.infinity,
+                          height: 38,
+                          child: TextField(
+                            decoration: InputDecoration(
+                              hintText: AppStrings.searchTeamPoolHint.tr(),
+                              hintStyle: TextStyle(
+                                fontSize: 12,
+                                color: isDark ? OnyxColors.neutral500 : OnyxColors.neutral400,
                               ),
-                            );
-                          },
-                  ),
-                ],
-              ),
+                              prefixIcon: const Icon(Icons.search, size: 18),
+                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                              isDense: true,
+                            ),
+                            onChanged: (val) => searchQuery.value = val,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            DropdownButton<String?>(
+                              value: selectedModule.value,
+                              hint: Text(
+                                AppStrings.filterByModule.tr(),
+                                style: const TextStyle(fontSize: 12),
+                              ),
+                              underline: const SizedBox(),
+                              items: [
+                                DropdownMenuItem<String?>(
+                                  value: null,
+                                  child: Text(AppStrings.allModules.tr(), style: const TextStyle(fontSize: 12)),
+                                ),
+                                ...modules.map((m) {
+                                  return DropdownMenuItem<String?>(
+                                    value: m.code,
+                                    child: Text('${m.code} - ${m.nameEn}', style: const TextStyle(fontSize: 12)),
+                                  );
+                                }),
+                              ],
+                              onChanged: (val) => selectedModule.value = val,
+                            ),
+                            if (selectableTasks.isNotEmpty)
+                              TextButton.icon(
+                                icon: Icon(
+                                  allSelected ? Icons.check_box : Icons.check_box_outline_blank,
+                                  size: 16,
+                                  color: OnyxColors.primary,
+                                ),
+                                label: Text(
+                                  allSelected ? 'إلغاء التحديد' : 'تحديد الكل',
+                                  style: const TextStyle(fontSize: 12),
+                                ),
+                                onPressed: () {
+                                  if (allSelected) {
+                                    selectedTaskIds.value = {};
+                                  } else {
+                                    selectedTaskIds.value = selectableTasks.map((t) => t.id).toSet();
+                                  }
+                                },
+                              ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: OnyxColors.primary,
+                              foregroundColor: OnyxColors.white,
+                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                            ),
+                            icon: const FaIcon(FontAwesomeIcons.circlePlus, size: 13),
+                            label: Text(
+                              selectedTaskIds.value.isEmpty
+                                  ? AppStrings.addSelectedToPlan.tr()
+                                  : '${AppStrings.addSelectedToPlan.tr()} (${selectedTaskIds.value.length})',
+                              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                            ),
+                            onPressed: activePlan == null || selectedTaskIds.value.isEmpty ? null : addSelectedToPlan,
+                          ),
+                        ),
+                      ],
+                    )
+                  : Row(
+                      children: [
+                        // Fast Search Box
+                        Expanded(
+                          flex: 3,
+                          child: TextField(
+                            decoration: InputDecoration(
+                              hintText: AppStrings.searchTeamPoolHint.tr(),
+                              hintStyle: TextStyle(
+                                fontSize: 12,
+                                color: isDark ? OnyxColors.neutral500 : OnyxColors.neutral400,
+                              ),
+                              prefixIcon: const Icon(Icons.search, size: 18),
+                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                              isDense: true,
+                            ),
+                            onChanged: (val) => searchQuery.value = val,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+
+                        // Module Selector Dropdown
+                        DropdownButton<String?>(
+                          value: selectedModule.value,
+                          hint: Text(
+                            AppStrings.filterByModule.tr(),
+                            style: const TextStyle(fontSize: 12),
+                          ),
+                          underline: const SizedBox(),
+                          items: [
+                            DropdownMenuItem<String?>(
+                              value: null,
+                              child: Text(AppStrings.allModules.tr(), style: const TextStyle(fontSize: 12)),
+                            ),
+                            ...modules.map((m) {
+                              return DropdownMenuItem<String?>(
+                                value: m.code,
+                                child: Text('${m.code} - ${m.nameEn}', style: const TextStyle(fontSize: 12)),
+                              );
+                            }),
+                          ],
+                          onChanged: (val) => selectedModule.value = val,
+                        ),
+                        const Spacer(),
+
+                        // Select All / Deselect All Toggle
+                        if (selectableTasks.isNotEmpty)
+                          TextButton.icon(
+                            icon: Icon(
+                              allSelected ? Icons.check_box : Icons.check_box_outline_blank,
+                              size: 16,
+                              color: OnyxColors.primary,
+                            ),
+                            label: Text(
+                              allSelected ? 'إلغاء التحديد' : 'تحديد الكل',
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                            onPressed: () {
+                              if (allSelected) {
+                                selectedTaskIds.value = {};
+                              } else {
+                                selectedTaskIds.value = selectableTasks.map((t) => t.id).toSet();
+                              }
+                            },
+                          ),
+                        const SizedBox(width: 10),
+
+                        // Add Selected to My Plan Button
+                        ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: OnyxColors.primary,
+                            foregroundColor: OnyxColors.white,
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                          ),
+                          icon: const FaIcon(FontAwesomeIcons.circlePlus, size: 13),
+                          label: Text(
+                            selectedTaskIds.value.isEmpty
+                                ? AppStrings.addSelectedToPlan.tr()
+                                : '${AppStrings.addSelectedToPlan.tr()} (${selectedTaskIds.value.length})',
+                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                          ),
+                          onPressed: activePlan == null || selectedTaskIds.value.isEmpty ? null : addSelectedToPlan,
+                        ),
+                      ],
+                    ),
             ),
             const SizedBox(height: 14),
 
@@ -236,6 +330,123 @@ class TeamTaskPoolView extends HookWidget {
                           final task = filteredTasks[index];
                           final isInPlan = existingTaskIds.contains(task.id);
                           final isSelected = selectedTaskIds.value.contains(task.id);
+
+                          if (isMobile) {
+                            return Container(
+                              color: isSelected ? OnyxColors.primary.withValues(alpha: 0.08) : Colors.transparent,
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      if (isInPlan)
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                          decoration: BoxDecoration(
+                                            color: OnyxColors.success.withValues(alpha: 0.15),
+                                            borderRadius: BorderRadius.circular(4),
+                                          ),
+                                          child: const Text(
+                                            'في الخطة',
+                                            style: TextStyle(fontSize: 10, color: OnyxColors.success, fontWeight: FontWeight.bold),
+                                          ),
+                                        )
+                                      else
+                                        SizedBox(
+                                          width: 24,
+                                          height: 24,
+                                          child: Checkbox(
+                                            value: isSelected,
+                                            activeColor: OnyxColors.primary,
+                                            onChanged: (val) {
+                                              final current = Set<String>.from(selectedTaskIds.value);
+                                              if (val == true) {
+                                                current.add(task.id);
+                                              } else {
+                                                current.remove(task.id);
+                                              }
+                                              selectedTaskIds.value = current;
+                                            },
+                                          ),
+                                        ),
+                                      const SizedBox(width: 8),
+                                      ClickUpStatusRing(status: task.status, size: 14),
+                                      const SizedBox(width: 8),
+                                      TaskIdBadge(formattedId: task.formattedId),
+                                      const SizedBox(width: 8),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                                        decoration: BoxDecoration(
+                                          color: isDark ? OnyxColors.neutral800 : OnyxColors.neutral200,
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                        child: Text(
+                                          task.moduleCode,
+                                          style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
+                                      const Spacer(),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                        decoration: BoxDecoration(
+                                          color: task.priority.color.withValues(alpha: 0.12),
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                        child: Text(
+                                          task.priority.label,
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold,
+                                            color: task.priority.color,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                        decoration: BoxDecoration(
+                                          color: isDark ? OnyxColors.neutral800 : OnyxColors.neutral100,
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                        child: Text(
+                                          '${task.estimatedHours > 0 ? task.estimatedHours.toStringAsFixed(0) : '8'}h',
+                                          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Row(
+                                    children: [
+                                      if (task.screenName.isNotEmpty) ...[
+                                        Text(
+                                          '${task.screenName} • ',
+                                          style: TextStyle(
+                                            fontSize: 11,
+                                            color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral600,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ],
+                                      Expanded(
+                                        child: Text(
+                                          task.title,
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600,
+                                            color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
+                                          ),
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
 
                           return Container(
                             color: isSelected ? OnyxColors.primary.withValues(alpha: 0.08) : Colors.transparent,

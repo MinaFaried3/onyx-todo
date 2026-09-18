@@ -5,8 +5,10 @@ import 'package:onyx_todo/core/enum/task_enums.dart';
 import 'package:onyx_todo/core/extension/bloc_reader.dart';
 import 'package:onyx_todo/core/localization/app_strings.dart';
 import 'package:onyx_todo/core/ui/onyx_colors.dart';
+import 'package:onyx_todo/core/ui/responsive/responsive_extension.dart';
 import 'package:onyx_todo/feature/month_plan/domain/entities/monthly_plan_entity.dart';
 import 'package:onyx_todo/feature/month_plan/presentation/widgets/edit_plan_task_dialog.dart';
+import 'package:onyx_todo/feature/month_plan/presentation/widgets/my_plan_task_mobile_card.dart';
 import 'package:onyx_todo/feature/task/presentation/widgets/task_id_badge.dart';
 
 class MyPlanTasksTable extends StatelessWidget {
@@ -23,6 +25,7 @@ class MyPlanTasksTable extends StatelessWidget {
   Widget build(BuildContext context) {
     final monthPlanCubit = context.monthPlanCubit;
     final canEdit = plan.status == PlanStatus.draft || plan.status == PlanStatus.rejected;
+    final isMobile = context.isMobile;
 
     return Container(
       decoration: BoxDecoration(
@@ -34,30 +37,32 @@ class MyPlanTasksTable extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // Table Header
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            decoration: BoxDecoration(
-              color: isDark ? OnyxColors.neutral800 : OnyxColors.neutral100,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+          // Table Header (Desktop/Tablet only)
+          if (!isMobile) ...[
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              decoration: BoxDecoration(
+                color: isDark ? OnyxColors.neutral800 : OnyxColors.neutral100,
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+              ),
+              child: Row(
+                children: [
+                  SizedBox(width: 180, child: Text(AppStrings.taskIdCol.tr(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+                  SizedBox(width: 80, child: Text(AppStrings.moduleCol.tr(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+                  SizedBox(width: 120, child: Text(AppStrings.screenCol.tr(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+                  Expanded(child: Text(AppStrings.titleCol.tr(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+                  SizedBox(width: 90, child: Text(AppStrings.estDaysCol.tr(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+                  SizedBox(width: 90, child: Text(AppStrings.estHoursCol.tr(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+                  SizedBox(width: 90, child: Text(AppStrings.actHoursCol.tr(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+                  if (canEdit) const SizedBox(width: 64),
+                ],
+              ),
             ),
-            child: Row(
-              children: [
-                SizedBox(width: 180, child: Text(AppStrings.taskIdCol.tr(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
-                SizedBox(width: 80, child: Text(AppStrings.moduleCol.tr(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
-                SizedBox(width: 120, child: Text(AppStrings.screenCol.tr(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
-                Expanded(child: Text(AppStrings.titleCol.tr(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
-                SizedBox(width: 90, child: Text(AppStrings.estDaysCol.tr(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
-                SizedBox(width: 90, child: Text(AppStrings.estHoursCol.tr(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
-                SizedBox(width: 90, child: Text(AppStrings.actHoursCol.tr(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
-                if (canEdit) const SizedBox(width: 64),
-              ],
+            Divider(
+              height: 1,
+              color: isDark ? OnyxColors.darkBorder : OnyxColors.lightBorder,
             ),
-          ),
-          Divider(
-            height: 1,
-            color: isDark ? OnyxColors.darkBorder : OnyxColors.lightBorder,
-          ),
+          ],
 
           // Table Rows
           if (plan.plannedTasks.isEmpty)
@@ -70,6 +75,15 @@ class MyPlanTasksTable extends StatelessWidget {
                     color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
                   ),
                 ),
+              ),
+            )
+          else if (isMobile)
+            ...plan.plannedTasks.map(
+              (t) => MyPlanTaskMobileCard(
+                task: t,
+                isDark: isDark,
+                canEdit: canEdit,
+                onDelete: () => monthPlanCubit.removeTaskFromPlan(t.taskId),
               ),
             )
           else

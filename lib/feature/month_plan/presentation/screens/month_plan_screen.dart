@@ -6,6 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:onyx_todo/core/extension/bloc_reader.dart';
 import 'package:onyx_todo/core/localization/app_strings.dart';
 import 'package:onyx_todo/core/ui/onyx_colors.dart';
+import 'package:onyx_todo/core/ui/responsive/responsive_extension.dart';
 import 'package:onyx_todo/feature/month_plan/presentation/cubit/month_plan_cubit.dart';
 import 'package:onyx_todo/feature/month_plan/presentation/cubit/month_plan_state.dart';
 import 'package:onyx_todo/feature/month_plan/presentation/widgets/create_plan_dialog.dart';
@@ -24,6 +25,7 @@ class MonthPlanScreen extends HookWidget {
 
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final isMobile = context.isMobile;
 
     final selectedTab = useState(0); // 0: My Plan, 1: Team Task Pool
 
@@ -42,114 +44,211 @@ class MonthPlanScreen extends HookWidget {
         return Scaffold(
           backgroundColor: Colors.transparent,
           body: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.all(isMobile ? 12 : 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Top Header Bar
-                Row(
-                  children: [
-                    const FaIcon(FontAwesomeIcons.calendarCheck, color: OnyxColors.primary, size: 24),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            AppStrings.monthlyPlan.tr(),
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
-                            ),
+                if (isMobile) ...[
+                  Row(
+                    children: [
+                      const FaIcon(FontAwesomeIcons.calendarCheck, color: OnyxColors.primary, size: 22),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          AppStrings.monthlyPlan.tr(),
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
                           ),
-                          Text(
-                            AppStrings.crmSystemTitle.tr(),
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-
-                    // Month & Year Selector
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: isDark ? OnyxColors.darkCard : OnyxColors.lightCard,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: isDark ? OnyxColors.darkBorder : OnyxColors.lightBorder,
                         ),
                       ),
-                      child: Row(
-                        children: [
-                          Text(
-                            '${state.selectedMonth} / ${state.selectedYear}',
-                            style: const TextStyle(fontWeight: FontWeight.bold),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      // Month & Year Selector
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: isDark ? OnyxColors.darkCard : OnyxColors.lightCard,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: isDark ? OnyxColors.darkBorder : OnyxColors.lightBorder,
+                            ),
                           ),
-                          const SizedBox(width: 10),
-                          IconButton(
-                            icon: const FaIcon(FontAwesomeIcons.chevronLeft, size: 12),
-                            padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(),
-                            onPressed: () {
-                              final prevMonth = state.selectedMonth == 1 ? 12 : state.selectedMonth - 1;
-                              final prevYear = state.selectedMonth == 1 ? state.selectedYear - 1 : state.selectedYear;
-                              monthPlanCubit.selectMonthYear(
-                                month: prevMonth,
-                                year: prevYear,
-                                developerName: currentUser.isDepartmentManager ? null : currentUser.name,
-                              );
-                            },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              IconButton(
+                                icon: const FaIcon(FontAwesomeIcons.chevronLeft, size: 12),
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(),
+                                onPressed: () {
+                                  final prevMonth = state.selectedMonth == 1 ? 12 : state.selectedMonth - 1;
+                                  final prevYear = state.selectedMonth == 1 ? state.selectedYear - 1 : state.selectedYear;
+                                  monthPlanCubit.selectMonthYear(
+                                    month: prevMonth,
+                                    year: prevYear,
+                                    developerName: currentUser.isDepartmentManager ? null : currentUser.name,
+                                  );
+                                },
+                              ),
+                              Text(
+                                '${state.selectedMonth} / ${state.selectedYear}',
+                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                              ),
+                              IconButton(
+                                icon: const FaIcon(FontAwesomeIcons.chevronRight, size: 12),
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(),
+                                onPressed: () {
+                                  final nextMonth = state.selectedMonth == 12 ? 1 : state.selectedMonth + 1;
+                                  final nextYear = state.selectedMonth == 12 ? state.selectedYear + 1 : state.selectedYear;
+                                  monthPlanCubit.selectMonthYear(
+                                    month: nextMonth,
+                                    year: nextYear,
+                                    developerName: currentUser.isDepartmentManager ? null : currentUser.name,
+                                  );
+                                },
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 8),
-                          IconButton(
-                            icon: const FaIcon(FontAwesomeIcons.chevronRight, size: 12),
-                            padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(),
-                            onPressed: () {
-                              final nextMonth = state.selectedMonth == 12 ? 1 : state.selectedMonth + 1;
-                              final nextYear = state.selectedMonth == 12 ? state.selectedYear + 1 : state.selectedYear;
-                              monthPlanCubit.selectMonthYear(
-                                month: nextMonth,
-                                year: nextYear,
-                                developerName: currentUser.isDepartmentManager ? null : currentUser.name,
-                              );
-                            },
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
+                      const SizedBox(width: 8),
 
-                    // New Plan Button
-                    ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: OnyxColors.primary,
-                        foregroundColor: OnyxColors.lightCard,
+                      // New Plan Button
+                      ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: OnyxColors.primary,
+                          foregroundColor: OnyxColors.lightCard,
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        ),
+                        icon: const FaIcon(FontAwesomeIcons.plus, size: 12),
+                        label: Text(AppStrings.createMonthPlan.tr(), style: const TextStyle(fontSize: 12)),
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (ctx) => CreatePlanDialog(
+                              month: state.selectedMonth,
+                              year: state.selectedYear,
+                            ),
+                          );
+                        },
                       ),
-                      icon: const FaIcon(FontAwesomeIcons.plus, size: 13),
-                      label: Text(AppStrings.createMonthPlan.tr()),
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (ctx) => CreatePlanDialog(
-                            month: state.selectedMonth,
-                            year: state.selectedYear,
+                    ],
+                  ),
+                ] else ...[
+                  Row(
+                    children: [
+                      const FaIcon(FontAwesomeIcons.calendarCheck, color: OnyxColors.primary, size: 24),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              AppStrings.monthlyPlan.tr(),
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
+                              ),
+                            ),
+                            Text(
+                              AppStrings.crmSystemTitle.tr(),
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+
+                      // Month & Year Selector
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: isDark ? OnyxColors.darkCard : OnyxColors.lightCard,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: isDark ? OnyxColors.darkBorder : OnyxColors.lightBorder,
                           ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
+                        ),
+                        child: Row(
+                          children: [
+                            Text(
+                              '${state.selectedMonth} / ${state.selectedYear}',
+                              style: const TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(width: 10),
+                            IconButton(
+                              icon: const FaIcon(FontAwesomeIcons.chevronLeft, size: 12),
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                              onPressed: () {
+                                final prevMonth = state.selectedMonth == 1 ? 12 : state.selectedMonth - 1;
+                                final prevYear = state.selectedMonth == 1 ? state.selectedYear - 1 : state.selectedYear;
+                                monthPlanCubit.selectMonthYear(
+                                  month: prevMonth,
+                                  year: prevYear,
+                                  developerName: currentUser.isDepartmentManager ? null : currentUser.name,
+                                );
+                              },
+                            ),
+                            const SizedBox(width: 8),
+                            IconButton(
+                              icon: const FaIcon(FontAwesomeIcons.chevronRight, size: 12),
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                              onPressed: () {
+                                final nextMonth = state.selectedMonth == 12 ? 1 : state.selectedMonth + 1;
+                                final nextYear = state.selectedMonth == 12 ? state.selectedYear + 1 : state.selectedYear;
+                                monthPlanCubit.selectMonthYear(
+                                  month: nextMonth,
+                                  year: nextYear,
+                                  developerName: currentUser.isDepartmentManager ? null : currentUser.name,
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+
+                      // New Plan Button
+                      ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: OnyxColors.primary,
+                          foregroundColor: OnyxColors.lightCard,
+                        ),
+                        icon: const FaIcon(FontAwesomeIcons.plus, size: 13),
+                        label: Text(AppStrings.createMonthPlan.tr()),
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (ctx) => CreatePlanDialog(
+                              month: state.selectedMonth,
+                              year: state.selectedYear,
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ],
                 const SizedBox(height: 16),
 
                 // Tab Switcher: "خطة الشهر الخاصة بي" vs "مجمع مهام الفريق"
-                Row(
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
                   children: [
                     ChoiceChip(
                       label: Row(
@@ -170,7 +269,6 @@ class MonthPlanScreen extends HookWidget {
                       ),
                       onSelected: (_) => selectedTab.value = 0,
                     ),
-                    const SizedBox(width: 8),
                     ChoiceChip(
                       label: Row(
                         mainAxisSize: MainAxisSize.min,

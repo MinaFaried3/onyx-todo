@@ -49,47 +49,50 @@ class AchievementCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 10),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          item.developerName,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: OnyxColors.primary.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text(
-                            item.developerStack.label,
-                            style: const TextStyle(
-                              fontSize: 10,
-                              color: OnyxColors.primary,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 8,
+                        children: [
+                          Text(
+                            item.developerName,
+                            style: TextStyle(
+                              fontSize: 14,
                               fontWeight: FontWeight.bold,
+                              color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                    Text(
-                      dateStr,
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: OnyxColors.primary.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              item.developerStack.label,
+                              style: const TextStyle(
+                                fontSize: 10,
+                                color: OnyxColors.primary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
+                      Text(
+                        dateStr,
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                const Spacer(),
+                const SizedBox(width: 8),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(

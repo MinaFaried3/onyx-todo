@@ -17,7 +17,12 @@ import 'package:onyx_todo/feature/workspace/presentation/widgets/onyx_sidebar_it
 import 'package:onyx_todo/feature/workspace/presentation/widgets/onyx_user_switcher.dart';
 
 class OnyxSidebar extends StatelessWidget {
-  const OnyxSidebar({super.key});
+  final bool isDrawer;
+
+  const OnyxSidebar({
+    super.key,
+    this.isDrawer = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +37,7 @@ class OnyxSidebar extends StatelessWidget {
         final availableUsers = state.availableUsers;
         final modules = state.modulesState.data ?? OnyxModule.standardModules;
 
-        if (isCollapsed) {
+        if (isCollapsed && !isDrawer) {
           return OnyxCollapsedSidebar(
             cubit: workspaceCubit,
             isDark: isDark,
@@ -40,7 +45,7 @@ class OnyxSidebar extends StatelessWidget {
         }
 
         return Container(
-          width: 260,
+          width: isDrawer ? 280 : 260,
           color: isDark ? OnyxColors.darkSidebar : OnyxColors.lightSidebar,
           child: Column(
             children: [

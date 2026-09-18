@@ -6,6 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:onyx_todo/core/extension/bloc_reader.dart';
 import 'package:onyx_todo/core/localization/app_strings.dart';
 import 'package:onyx_todo/core/ui/onyx_colors.dart';
+import 'package:onyx_todo/core/ui/responsive/responsive_extension.dart';
 import 'package:onyx_todo/feature/achievement/presentation/cubit/achievement_cubit.dart';
 import 'package:onyx_todo/feature/achievement/presentation/cubit/achievement_state.dart';
 import 'package:onyx_todo/feature/achievement/presentation/widgets/achievement_card.dart';
@@ -24,14 +25,16 @@ class AchievementScreen extends HookWidget {
 
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final isMobile = context.isMobile;
+
     final selectedTeamId = useState<String?>(null);
 
+    final teams = workspaceCubit.state.teamsState.data ?? const [];
+
     useEffect(() {
-      achievementCubit.fetchAchievements(
-        developerName: currentUser.isDepartmentManager ? null : currentUser.name,
-      );
+      achievementCubit.fetchAchievements();
       return null;
-    }, [currentUser.id]);
+    }, const []);
 
     final filters = [
       {'key': 'today', 'label': AppStrings.filterToday.tr()},
@@ -39,23 +42,13 @@ class AchievementScreen extends HookWidget {
       {'key': 'this_week', 'label': AppStrings.filterThisWeek.tr()},
       {'key': 'last_week', 'label': AppStrings.filterLastWeek.tr()},
       {'key': 'this_month', 'label': AppStrings.filterThisMonth.tr()},
+      {'key': 'last_month', 'label': AppStrings.filterLastMonth.tr()},
       {'key': 'custom', 'label': AppStrings.filterCustom.tr()},
     ];
 
     return BlocBuilder<AchievementCubit, AchievementState>(
       builder: (context, state) {
-        final allAchievements = state.achievementsState.data ?? [];
-        final teams = workspaceCubit.state.teamsState.data ?? [];
-
-        // Filter achievements by team if selected
-        final achievements = selectedTeamId.value == null
-            ? allAchievements
-            : allAchievements.where((a) {
-                final team = teams.where((t) => t.id == selectedTeamId.value).firstOrNull;
-                if (team == null) return true;
-                final dev = workspaceCubit.state.availableUsers.where((u) => u.name == a.developerName).firstOrNull;
-                return dev != null && team.memberIds.contains(dev.id);
-              }).toList();
+        final achievements = state.achievementsState.data ?? [];
 
         final totalHours = achievements.fold<double>(0.0, (sum, a) => sum + a.totalHours);
         final totalTasks = achievements.fold<int>(
@@ -73,41 +66,32 @@ class AchievementScreen extends HookWidget {
         return Scaffold(
           backgroundColor: Colors.transparent,
           body: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.all(isMobile ? 12 : 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Top Header Bar
-                Row(
-                  children: [
-                    const FaIcon(FontAwesomeIcons.chartLine, color: OnyxColors.primary, size: 24),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            AppStrings.dailyAchievements.tr(),
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
-                            ),
+                if (isMobile) ...[
+                  Row(
+                    children: [
+                      const FaIcon(FontAwesomeIcons.chartLine, color: OnyxColors.primary, size: 22),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          AppStrings.dailyAchievements.tr(),
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
                           ),
-                          Text(
-                            AppStrings.teamAchievementSubtitle.tr(),
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-
-                    // Log Daily Achievement Button (for Developers)
-                    ElevatedButton.icon(
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: OnyxColors.success,
                         foregroundColor: OnyxColors.lightCard,
@@ -125,8 +109,58 @@ class AchievementScreen extends HookWidget {
                         );
                       },
                     ),
-                  ],
-                ),
+                  ),
+                ] else ...[
+                  Row(
+                    children: [
+                      const FaIcon(FontAwesomeIcons.chartLine, color: OnyxColors.primary, size: 24),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              AppStrings.dailyAchievements.tr(),
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
+                              ),
+                            ),
+                            Text(
+                              AppStrings.teamAchievementSubtitle.tr(),
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+
+                      // Log Daily Achievement Button (for Developers)
+                      ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: OnyxColors.success,
+                          foregroundColor: OnyxColors.lightCard,
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                        ),
+                        icon: const FaIcon(FontAwesomeIcons.circleCheck, size: 14),
+                        label: Text(
+                          AppStrings.logDailyAchievement.tr(),
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (ctx) => const LogAchievementDialog(),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ],
                 const SizedBox(height: 16),
 
                 // Period Filter Pills (Horizontal Scrollable)
@@ -294,36 +328,74 @@ class AchievementScreen extends HookWidget {
                 const SizedBox(height: 16),
 
                 // Summary KPIs
-                Row(
-                  children: [
-                    AchievementKpiCard(
-                      title: AppStrings.totalLoggedHours.tr(),
-                      value: '${totalHours.toStringAsFixed(1)}h',
-                      subtitle: AppStrings.workHoursUnit.tr(),
-                      icon: FontAwesomeIcons.clock,
-                      color: OnyxColors.info,
-                      isDark: isDark,
-                    ),
-                    const SizedBox(width: 14),
-                    AchievementKpiCard(
-                      title: AppStrings.completedTasksMetric.tr(),
-                      value: '$totalTasks',
-                      subtitle: AppStrings.taskCountLabel.tr(),
-                      icon: FontAwesomeIcons.circleCheck,
-                      color: OnyxColors.success,
-                      isDark: isDark,
-                    ),
-                    const SizedBox(width: 14),
-                    AchievementKpiCard(
-                      title: AppStrings.activeDevelopers.tr(),
-                      value: '${achievements.map((a) => a.developerName).toSet().length}',
-                      subtitle: AppStrings.activeDevelopers.tr(),
-                      icon: FontAwesomeIcons.users,
-                      color: OnyxColors.purple,
-                      isDark: isDark,
-                    ),
-                  ],
-                ),
+                if (isMobile)
+                  Column(
+                    children: [
+                      AchievementKpiCard(
+                        title: AppStrings.totalLoggedHours.tr(),
+                        value: '${totalHours.toStringAsFixed(1)}h',
+                        subtitle: AppStrings.workHoursUnit.tr(),
+                        icon: FontAwesomeIcons.clock,
+                        color: OnyxColors.info,
+                        isDark: isDark,
+                      ),
+                      const SizedBox(height: 10),
+                      AchievementKpiCard(
+                        title: AppStrings.completedTasksMetric.tr(),
+                        value: '$totalTasks',
+                        subtitle: AppStrings.taskCountLabel.tr(),
+                        icon: FontAwesomeIcons.circleCheck,
+                        color: OnyxColors.success,
+                        isDark: isDark,
+                      ),
+                      const SizedBox(height: 10),
+                      AchievementKpiCard(
+                        title: AppStrings.activeDevelopers.tr(),
+                        value: '${achievements.map((a) => a.developerName).toSet().length}',
+                        subtitle: AppStrings.activeDevelopers.tr(),
+                        icon: FontAwesomeIcons.users,
+                        color: OnyxColors.purple,
+                        isDark: isDark,
+                      ),
+                    ],
+                  )
+                else
+                  Row(
+                    children: [
+                      Expanded(
+                        child: AchievementKpiCard(
+                          title: AppStrings.totalLoggedHours.tr(),
+                          value: '${totalHours.toStringAsFixed(1)}h',
+                          subtitle: AppStrings.workHoursUnit.tr(),
+                          icon: FontAwesomeIcons.clock,
+                          color: OnyxColors.info,
+                          isDark: isDark,
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: AchievementKpiCard(
+                          title: AppStrings.completedTasksMetric.tr(),
+                          value: '$totalTasks',
+                          subtitle: AppStrings.taskCountLabel.tr(),
+                          icon: FontAwesomeIcons.circleCheck,
+                          color: OnyxColors.success,
+                          isDark: isDark,
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: AchievementKpiCard(
+                          title: AppStrings.activeDevelopers.tr(),
+                          value: '${achievements.map((a) => a.developerName).toSet().length}',
+                          subtitle: AppStrings.activeDevelopers.tr(),
+                          icon: FontAwesomeIcons.users,
+                          color: OnyxColors.purple,
+                          isDark: isDark,
+                        ),
+                      ),
+                    ],
+                  ),
                 const SizedBox(height: 20),
 
                 // Achievements List

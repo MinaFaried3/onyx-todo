@@ -6,6 +6,7 @@ import 'package:onyx_todo/core/enum/task_enums.dart';
 import 'package:onyx_todo/core/extension/bloc_reader.dart';
 import 'package:onyx_todo/core/localization/app_strings.dart';
 import 'package:onyx_todo/core/ui/onyx_colors.dart';
+import 'package:onyx_todo/core/ui/responsive/responsive_extension.dart';
 import 'package:onyx_todo/feature/task/domain/entities/task_entity.dart';
 import 'package:onyx_todo/feature/task/presentation/widgets/assignee_avatar_badge.dart';
 import 'package:onyx_todo/feature/task/presentation/widgets/role_pipeline_card.dart';
@@ -35,8 +36,9 @@ class TaskDrawerDetail extends HookWidget {
     final isPreviewExpanded = useState<bool>(false);
     final isEditingTitle = useState<bool>(false);
 
+    final isMobile = context.isMobile;
     final screenWidth = MediaQuery.of(context).size.width;
-    final drawerWidth = screenWidth < 768 ? screenWidth * 0.95 : 580.0;
+    final drawerWidth = isMobile ? double.infinity : (screenWidth < 768 ? screenWidth * 0.95 : 580.0);
 
     final devName = task.frontendDevName ?? task.backendDevName ?? task.middleDevName ?? 'omer banaemh';
     final hasDueDate = task.dueDate != null;
@@ -74,79 +76,85 @@ class TaskDrawerDetail extends HookWidget {
             ),
             child: Row(
               children: [
-                // Expand / Collapse icon
-                FaIcon(
-                  FontAwesomeIcons.chevronUp,
-                  size: 11,
-                  color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
-                ),
-                const SizedBox(width: 8),
-                FaIcon(
-                  FontAwesomeIcons.chevronDown,
-                  size: 11,
-                  color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
-                ),
-                const SizedBox(width: 12),
-
-                // Purple O App Icon
-                Container(
-                  width: 20,
-                  height: 20,
-                  decoration: BoxDecoration(
-                    color: OnyxColors.primary,
-                    borderRadius: BorderRadius.circular(4),
+                if (!isMobile) ...[
+                  // Expand / Collapse icon
+                  FaIcon(
+                    FontAwesomeIcons.chevronUp,
+                    size: 11,
+                    color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
                   ),
-                  child: const Center(
-                    child: Text(
-                      'O',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 11,
+                  const SizedBox(width: 8),
+                  FaIcon(
+                    FontAwesomeIcons.chevronDown,
+                    size: 11,
+                    color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
+                  ),
+                  const SizedBox(width: 12),
+
+                  // Purple O App Icon
+                  Container(
+                    width: 20,
+                    height: 20,
+                    decoration: BoxDecoration(
+                      color: OnyxColors.primary,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: const Center(
+                      child: Text(
+                        'O',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 11,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  '/ Tasks',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
+                  const SizedBox(width: 8),
+                  Text(
+                    '/ Tasks',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: isDark ? OnyxColors.darkTextPrimary : OnyxColors.lightTextPrimary,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 8),
+                  const SizedBox(width: 8),
+                ],
                 TaskIdBadge(
                   formattedId: task.displayId,
                 ),
-                const SizedBox(width: 6),
-                const FaIcon(FontAwesomeIcons.plus, size: 10, color: OnyxColors.neutral400),
+                if (!isMobile) ...[
+                  const SizedBox(width: 6),
+                  const FaIcon(FontAwesomeIcons.plus, size: 10, color: OnyxColors.neutral400),
+                ],
 
                 const Spacer(),
 
                 // Share, More, Close
-                TextButton.icon(
-                  style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    foregroundColor: isDark ? OnyxColors.neutral300 : OnyxColors.neutral700,
+                if (!isMobile) ...[
+                  TextButton.icon(
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      foregroundColor: isDark ? OnyxColors.neutral300 : OnyxColors.neutral700,
+                    ),
+                    icon: const FaIcon(FontAwesomeIcons.shareNodes, size: 12),
+                    label: const Text('Share', style: TextStyle(fontSize: 12)),
+                    onPressed: () {},
                   ),
-                  icon: const FaIcon(FontAwesomeIcons.shareNodes, size: 12),
-                  label: const Text('Share', style: TextStyle(fontSize: 12)),
-                  onPressed: () {},
-                ),
-                IconButton(
-                  icon: const FaIcon(FontAwesomeIcons.ellipsis, size: 13),
-                  tooltip: 'More',
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                  onPressed: () {},
-                ),
-                const SizedBox(width: 10),
+                  IconButton(
+                    icon: const FaIcon(FontAwesomeIcons.ellipsis, size: 13),
+                    tooltip: 'More',
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    onPressed: () {},
+                  ),
+                  const SizedBox(width: 10),
+                ],
                 IconButton(
                   icon: const FaIcon(FontAwesomeIcons.xmark, size: 15),
                   tooltip: AppStrings.close.tr(),
-                  padding: EdgeInsets.zero,
+                  padding: const EdgeInsets.all(4),
                   constraints: const BoxConstraints(),
                   onPressed: onClose,
                 ),

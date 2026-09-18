@@ -24,40 +24,38 @@ class PlanStatusCard extends StatelessWidget {
       PlanStatus.draft => AppStrings.createMonthPlan.tr(),
     };
 
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: isDark ? OnyxColors.darkCard : OnyxColors.lightCard,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: status.color.withValues(alpha: 0.5)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              AppStrings.planStatus.tr(),
-              style: TextStyle(
-                fontSize: 12,
-                color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
-              ),
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isDark ? OnyxColors.darkCard : OnyxColors.lightCard,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: status.color.withValues(alpha: 0.5)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            AppStrings.planStatus.tr(),
+            style: TextStyle(
+              fontSize: 12,
+              color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
             ),
-            const SizedBox(height: 10),
-            Text(
-              status.label,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: status.color),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            status.label,
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: status.color),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            subtitle,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 11,
+              color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
             ),
-            const SizedBox(height: 4),
-            Text(
-              subtitle,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontSize: 11,
-                color: isDark ? OnyxColors.neutral400 : OnyxColors.neutral500,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
